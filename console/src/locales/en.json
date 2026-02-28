@@ -167,6 +167,7 @@
     "twilioAuthToken": "Twilio Auth Token",
     "phoneNumber": "Phone Number",
     "phoneNumberSid": "Phone Number SID",
+    "phoneNumberSidHelp": "Found under Phone Numbers → Active Numbers in the Twilio Console.",
     "ttsProvider": "TTS Provider",
     "ttsVoice": "TTS Voice",
     "sttProvider": "STT Provider",

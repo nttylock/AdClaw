@@ -93,7 +93,7 @@ class CloudflareTunnelDriver:
         logger.info("Tunnel ready: %s (pid=%s)", url, self._process.pid)
 
         self._monitor_task = asyncio.create_task(
-            self._monitor(local_port),
+            self._monitor(),
             name="tunnel_monitor",
         )
 
@@ -176,7 +176,7 @@ class CloudflareTunnelDriver:
         except asyncio.CancelledError:
             return
 
-    async def _monitor(self, local_port: int) -> None:
+    async def _monitor(self) -> None:
         """Drain stderr and log unexpected exit without auto-restart."""
         # Keep reading stderr so the pipe buffer doesn't fill and
         # block cloudflared.  _drain_stderr returns when the process

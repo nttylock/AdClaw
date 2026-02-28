@@ -33,6 +33,10 @@ _DOWNLOAD_URLS: dict[tuple[str, str], str] = {
         "https://github.com/cloudflare/cloudflared/releases/latest"
         "/download/cloudflared-linux-arm64"
     ),
+    ("Windows", "AMD64"): (
+        "https://github.com/cloudflare/cloudflared/releases/latest"
+        "/download/cloudflared-windows-amd64.exe"
+    ),
 }
 
 
@@ -52,7 +56,12 @@ class BinaryManager:
         if path:
             return path
 
-        local = self._bin_dir / "cloudflared"
+        bin_name = (
+            "cloudflared.exe"
+            if platform.system() == "Windows"
+            else "cloudflared"
+        )
+        local = self._bin_dir / bin_name
         if local.is_file() and os.access(str(local), os.X_OK):
             return str(local)
 
@@ -64,12 +73,16 @@ class BinaryManager:
         if not url:
             raise RuntimeError(
                 f"No cloudflared download available for {key}. "
-                "Install it manually: https://developers.cloudflare.com"
-                "/cloudflare-one/connections/connect-networks/downloads/",
+                "Install it manually: "
+                "https://developers.cloudflare.com"
+                "/cloudflare-one/connections/connect-networks"
+                "/downloads/",
             )
 
+        is_windows = key[0] == "Windows"
         self._bin_dir.mkdir(parents=True, exist_ok=True)
-        dest = self._bin_dir / "cloudflared"
+        bin_name = "cloudflared.exe" if is_windows else "cloudflared"
+        dest = self._bin_dir / bin_name
 
         logger.info("Downloading cloudflared from %s ...", url)
 
@@ -106,6 +119,9 @@ class BinaryManager:
         else:
             urlretrieve(url, str(dest))
 
-        dest.chmod(dest.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP)
+        if not is_windows:
+            dest.chmod(
+                dest.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP,
+            )
         logger.info("cloudflared installed to %s", dest)
         return str(dest)

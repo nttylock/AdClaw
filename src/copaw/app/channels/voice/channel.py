@@ -45,9 +45,10 @@ class VoiceChannel(BaseChannel):
         self.tunnel_mgr = None  # CloudflareTunnelDriver, set by from_config
         self._config: Any = None
         self._enabled = False
-        self._pending_ws_tokens: collections.OrderedDict[str, None] = (
-            collections.OrderedDict()
-        )
+        self._pending_ws_tokens: collections.OrderedDict[
+            str,
+            None,
+        ] = collections.OrderedDict()
 
     @classmethod
     def from_config(

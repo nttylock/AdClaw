@@ -167,6 +167,7 @@
     "twilioAuthToken": "Twilio 认证令牌",
     "phoneNumber": "电话号码",
     "phoneNumberSid": "电话号码 SID",
+    "phoneNumberSidHelp": "可在 Twilio 控制台的 Phone Numbers → Active Numbers 中找到。",
     "ttsProvider": "TTS 提供商",
     "ttsVoice": "TTS 语音",
     "sttProvider": "STT 提供商",
