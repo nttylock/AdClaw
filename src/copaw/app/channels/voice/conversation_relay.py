@@ -60,7 +60,7 @@ class ConversationRelayHandler:
     async def handle(self) -> None:
         """Main loop: receive and dispatch messages from Twilio."""
         try:
-            while True:
+            while not self._closed:
                 raw = await self.ws.receive_text()
                 try:
                     msg = json.loads(raw)
@@ -93,9 +93,12 @@ class ConversationRelayHandler:
                 )
         finally:
             self._closed = True
+            try:
+                await self.ws.close()
+            except Exception:
+                pass
             if self.call_sid:
                 self._session_mgr.end_session(self.call_sid)
-                self._session_mgr.remove_session(self.call_sid)
 
     async def _handle_setup(self, msg: dict) -> None:
         """Process the initial ``setup`` message from Twilio."""
@@ -274,6 +277,12 @@ class ConversationRelayHandler:
         self._closed = True
         try:
             await self.ws.send_text(json.dumps({"type": "end"}))
-            await self.ws.close()
         except Exception:
-            logger.exception("Failed to close WebSocket in ConversationRelay")
+            logger.exception("Failed to send end frame in ConversationRelay")
+        finally:
+            try:
+                await self.ws.close()
+            except Exception:
+                logger.exception(
+                    "Failed to close WebSocket in ConversationRelay"
+                )

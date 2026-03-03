@@ -8,7 +8,7 @@ import secrets
 from typing import Any, Dict, Optional
 
 from ..base import BaseChannel, OnReplySent, ProcessHandler
-from ..renderer import RenderStyle
+from ..renderer import MessageRenderer, RenderStyle
 from .session import CallSessionManager
 from .twilio_manager import TwilioManager
 
@@ -40,6 +40,7 @@ class VoiceChannel(BaseChannel):
             supports_code_fence=False,
             use_emoji=False,
         )
+        self._renderer = MessageRenderer(self._render_style)
         self.session_mgr = CallSessionManager()
         self.twilio_mgr: Optional[TwilioManager] = None
         self.tunnel_mgr = None  # CloudflareTunnelDriver, set by from_config
@@ -134,7 +135,12 @@ class VoiceChannel(BaseChannel):
             try:
                 await session.handler.close()
             except Exception:
-                pass
+                logger.exception(
+                    "Error closing session handler: call_sid=%s",
+                    session.call_sid,
+                )
+            finally:
+                self.session_mgr.end_session(session.call_sid)
 
         if self.tunnel_mgr:
             try:
