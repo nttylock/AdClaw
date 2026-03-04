@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 from abc import ABC
 from typing import (
     Optional,
@@ -671,6 +672,8 @@ class BaseChannel(ABC):
         """
         pass
 
+    _THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
+
     def _response_to_text(self, response: "AgentResponse") -> str:
         """Extract reply text from AgentResponse (last message in output)."""
         if not response.output:
@@ -692,7 +695,10 @@ class BaseChannel(ABC):
                 None,
             ):
                 parts.append(c.refusal)
-        return "".join(parts)
+        text = "".join(parts)
+        # Strip <think>...</think> blocks (Qwen, DeepSeek reasoning models)
+        text = self._THINK_RE.sub("", text)
+        return text.strip()
 
     def clone(self, config) -> "BaseChannel":
         """Clone a new channel instance with updated config, cloning
