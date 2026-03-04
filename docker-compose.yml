@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   adclaw:
-    image: citedy/adclaw:latest
+    image: nttylock/adclaw:latest
     build:
       context: .
       dockerfile: deploy/Dockerfile

@@ -47,7 +47,7 @@ docker run -d --name adclaw --restart unless-stopped \
   -p 8088:8088 \
   -v adclaw-data:/app/working \
   -e CITEDY_API_KEY=your_key_here \
-  citedy/adclaw:latest
+  nttylock/adclaw:latest
 ```
 
 Open http://localhost:8088 — the welcome wizard will guide you.
