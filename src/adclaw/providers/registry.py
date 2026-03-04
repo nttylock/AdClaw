@@ -67,6 +67,32 @@ AZURE_OPENAI_MODELS: List[ModelInfo] = [
     ModelInfo(id="gpt-4o-mini", name="GPT-4o Mini"),
 ]
 
+ALIYUN_INTL_MODELS: List[ModelInfo] = [
+    ModelInfo(id="qwen3.5-plus", name="Qwen3.5 Plus"),
+    ModelInfo(id="qwen3-max-2026-01-23", name="Qwen3 Max"),
+    ModelInfo(id="qwen3-coder-plus", name="Qwen3 Coder Plus"),
+    ModelInfo(id="glm-5", name="GLM-5"),
+    ModelInfo(id="kimi-k2.5", name="Kimi K2.5"),
+    ModelInfo(id="MiniMax-M2.5", name="MiniMax M2.5"),
+]
+
+OPENROUTER_MODELS: List[ModelInfo] = [
+    ModelInfo(id="anthropic/claude-sonnet-4", name="Claude Sonnet 4"),
+    ModelInfo(id="anthropic/claude-haiku-4", name="Claude Haiku 4"),
+    ModelInfo(id="openai/gpt-5", name="GPT-5"),
+    ModelInfo(id="openai/gpt-4.1", name="GPT-4.1"),
+    ModelInfo(id="google/gemini-2.5-pro", name="Gemini 2.5 Pro"),
+    ModelInfo(id="deepseek/deepseek-v3", name="DeepSeek V3"),
+    ModelInfo(id="qwen/qwen3-235b", name="Qwen3 235B"),
+    ModelInfo(id="meta-llama/llama-4-maverick", name="Llama 4 Maverick"),
+]
+
+ANTHROPIC_MODELS: List[ModelInfo] = [
+    ModelInfo(id="claude-opus-4-6", name="Claude Opus 4.6"),
+    ModelInfo(id="claude-sonnet-4-6", name="Claude Sonnet 4.6"),
+    ModelInfo(id="claude-haiku-4-5-20251001", name="Claude Haiku 4.5"),
+]
+
 PROVIDER_MODELSCOPE = ProviderDefinition(
     id="modelscope",
     name="ModelScope",
@@ -125,6 +151,30 @@ PROVIDER_AZURE_OPENAI = ProviderDefinition(
     models=AZURE_OPENAI_MODELS,
 )
 
+PROVIDER_ALIYUN_INTL = ProviderDefinition(
+    id="aliyun-intl",
+    name="Aliyun Coding (International)",
+    default_base_url="https://coding-intl.dashscope.aliyuncs.com/v1",
+    api_key_prefix="sk-sp",
+    models=ALIYUN_INTL_MODELS,
+)
+
+PROVIDER_OPENROUTER = ProviderDefinition(
+    id="openrouter",
+    name="OpenRouter",
+    default_base_url="https://openrouter.ai/api/v1",
+    api_key_prefix="sk-or-",
+    models=OPENROUTER_MODELS,
+)
+
+PROVIDER_ANTHROPIC = ProviderDefinition(
+    id="anthropic",
+    name="Anthropic",
+    default_base_url="https://api.anthropic.com/v1",
+    api_key_prefix="sk-ant-",
+    models=ANTHROPIC_MODELS,
+)
+
 PROVIDER_OLLAMA = ProviderDefinition(
     id="ollama",
     name="Ollama",
@@ -141,7 +191,10 @@ _BUILTIN_IDS: frozenset[str] = frozenset(
         "modelscope",
         "dashscope",
         "aliyun-codingplan",
+        "aliyun-intl",
         "openai",
+        "openrouter",
+        "anthropic",
         "azure-openai",
         "ollama",
         "llamacpp",
@@ -150,10 +203,13 @@ _BUILTIN_IDS: frozenset[str] = frozenset(
 )
 
 PROVIDERS: dict[str, ProviderDefinition] = {
+    PROVIDER_OPENROUTER.id: PROVIDER_OPENROUTER,
+    PROVIDER_OPENAI.id: PROVIDER_OPENAI,
+    PROVIDER_ANTHROPIC.id: PROVIDER_ANTHROPIC,
+    PROVIDER_ALIYUN_INTL.id: PROVIDER_ALIYUN_INTL,
+    PROVIDER_ALIYUN_CODINGPLAN.id: PROVIDER_ALIYUN_CODINGPLAN,
     PROVIDER_MODELSCOPE.id: PROVIDER_MODELSCOPE,
     PROVIDER_DASHSCOPE.id: PROVIDER_DASHSCOPE,
-    PROVIDER_ALIYUN_CODINGPLAN.id: PROVIDER_ALIYUN_CODINGPLAN,
-    PROVIDER_OPENAI.id: PROVIDER_OPENAI,
     PROVIDER_AZURE_OPENAI.id: PROVIDER_AZURE_OPENAI,
     PROVIDER_OLLAMA.id: PROVIDER_OLLAMA,
     PROVIDER_LLAMACPP.id: PROVIDER_LLAMACPP,
