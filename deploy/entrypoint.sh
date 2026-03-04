@@ -31,6 +31,25 @@ print('entrypoint: Citedy MCP client enabled')
   fi
 fi
 
+# Enable Telegram channel if bot token is provided at runtime
+if [ -n "$TELEGRAM_BOT_TOKEN" ]; then
+  CONFIG="${ADCLAW_WORKING_DIR:-/app/working}/config.json"
+  if [ -f "$CONFIG" ]; then
+    python3 -c "
+import json, os
+cfg_path = os.environ.get('ADCLAW_WORKING_DIR', '/app/working') + '/config.json'
+with open(cfg_path) as f:
+    cfg = json.load(f)
+tg = cfg.setdefault('channels', {}).setdefault('telegram', {})
+tg['enabled'] = True
+tg['bot_token'] = os.environ['TELEGRAM_BOT_TOKEN']
+with open(cfg_path, 'w') as f:
+    json.dump(cfg, f, indent=2)
+print('entrypoint: Telegram channel enabled')
+" 2>/dev/null || true
+  fi
+fi
+
 envsubst '${ADCLAW_PORT}' \
   < /etc/supervisor/conf.d/supervisord.conf.template \
   > /etc/supervisor/conf.d/supervisord.conf
