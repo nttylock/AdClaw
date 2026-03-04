@@ -10,7 +10,11 @@ from agentscope_runtime.engine.runner import Runner
 from agentscope_runtime.engine.schemas.agent_schemas import AgentRequest
 from dotenv import load_dotenv
 
-from .command_dispatch import _get_last_user_text, _is_command, run_command_path
+from .command_dispatch import (
+    _get_last_user_text,
+    _is_command,
+    run_command_path,
+)
 from .query_error_dump import write_query_error_dump
 from .session import SafeJSONSession
 from .utils import build_env_context
