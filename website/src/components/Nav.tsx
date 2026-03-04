@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, BookOpen, Github, Globe } from "lucide-react";
-import { CopawMascot } from "./CopawMascot";
+import { AdClawMascot } from "./AdClawMascot";
 import { t, type Lang } from "../i18n";
 
 const AGENTSCOPE_LOGO_SIZE = 22;
@@ -85,7 +85,7 @@ export function Nav({
             className="nav-brand-logo"
             style={{ marginTop: -5, display: "flex" }}
           >
-            <CopawMascot size={60} />
+            <AdClawMascot size={60} />
           </span>
         </Link>
         <div
@@ -118,11 +118,11 @@ export function Nav({
             <span>{t(lang, "nav.docs")}</span>
           </Link>
           <a
-            href="https://github.com/agentscope-ai/CoPaw"
+            href="https://github.com/agentscope-ai/AdClaw"
             target="_blank"
             rel="noopener noreferrer"
             className={linkClass}
-            title="CoPaw on GitHub"
+            title="AdClaw on GitHub"
           >
             <Github size={18} strokeWidth={1.5} aria-hidden />
             <span>{t(lang, "nav.github")}</span>
@@ -198,12 +198,12 @@ export function Nav({
           <BookOpen size={18} /> {t(lang, "nav.docs")}
         </Link>
         <a
-          href="https://github.com/agentscope-ai/CoPaw"
+          href="https://github.com/agentscope-ai/AdClaw"
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
           onClick={() => setOpen(false)}
-          title="CoPaw on GitHub"
+          title="AdClaw on GitHub"
         >
           <Github size={18} /> {t(lang, "nav.github")}
         </a>

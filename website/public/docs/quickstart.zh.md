@@ -6,7 +6,7 @@
 - **方式二 — pip 安装**：适合自行管理 Python 环境的用户。
 - **方式三 — 魔搭创空间**：一键配置，部署到创空间云端运行，无需本地安装。
 - **方式四 — Docker**：使用官方镜像（Docker Hub；国内可选 ACR），镜像 tag 含 `latest`（稳定版）与 `pre`（PyPI 预发布版）。
-- **方式五 — 阿里云 ECS**：在阿里云上一键部署 CoPaw，无需本地安装。
+- **方式五 — 阿里云 ECS**：在阿里云上一键部署 AdClaw，无需本地安装。
 
 > 📖 阅读前请先了解 [项目介绍](./intro)，完成安装与启动后可查看 [控制台](./console)。
 
@@ -23,7 +23,7 @@
 **macOS / Linux：**
 
 ```bash
-curl -fsSL https://copaw.agentscope.io/install.sh | bash
+curl -fsSL https://adclaw.agentscope.io/install.sh | bash
 ```
 
 然后打开新终端（或执行 `source ~/.zshrc` / `source ~/.bashrc`）。
@@ -31,16 +31,16 @@ curl -fsSL https://copaw.agentscope.io/install.sh | bash
 **Windows (CMD):**
 
 ```cmd
-curl -fsSL https://copaw.agentscope.io/install.bat -o install.bat && install.bat
+curl -fsSL https://adclaw.agentscope.io/install.bat -o install.bat && install.bat
 ```
 
 **Windows（PowerShell）：**
 
 ```powershell
-irm https://copaw.agentscope.io/install.ps1 | iex
+irm https://adclaw.agentscope.io/install.ps1 | iex
 ```
 
-然后打开新终端（安装脚本会自动将 CoPaw 加入 PATH）。
+然后打开新终端（安装脚本会自动将 AdClaw 加入 PATH）。
 
 > **⚠️ Windows 企业版 LTSC 用户特别提示**
 >
@@ -51,9 +51,9 @@ irm https://copaw.agentscope.io/install.ps1 | iex
 >    脚本已完成文件安装，由于 **受限语言模式** ，脚本无法自动写入环境变量，此时只需手动配置：
 >
 >    - **找到安装目录**：
->      - 检查 `uv` 是否可用：在 CMD 中输入 `uv --version` ，如果显示版本号，则**只需配置 CoPaw 路径**；如果提示 `'uv' 不是内部或外部命令，也不是可运行的程序或批处理文件。`，则需同时配置两者。
+>      - 检查 `uv` 是否可用：在 CMD 中输入 `uv --version` ，如果显示版本号，则**只需配置 AdClaw 路径**；如果提示 `'uv' 不是内部或外部命令，也不是可运行的程序或批处理文件。`，则需同时配置两者。
 >      - uv路径（任选其一，取决于安装位置，若`uv`不可用则填）：通常在`%USERPROFILE%\.local\bin`、`%USERPROFILE%\AppData\Local\uv`或 Python 安装目录下的 `Scripts` 文件夹
->      - CoPaw路径：通常在 `%USERPROFILE%\.copaw\bin` 。
+>      - AdClaw路径：通常在 `%USERPROFILE%\.adclaw\bin` 。
 >    - **手动添加到系统的 Path 环境变量**：
 >      - 按 `Win + R`，输入 `sysdm.cpl` 并回车，打开“系统属性”。
 >      - 点击 “高级” -> “环境变量”。
@@ -65,9 +65,9 @@ irm https://copaw.agentscope.io/install.ps1 | iex
 > 由于 **受限语言模式** ，脚本可能无法自动下载`uv`。
 >
 > - **手动安装uv**：参考 [GitHub Release](https://github.com/astral-sh/uv/releases)下载并将`uv.exe`放至`%USERPROFILE%\.local\bin`或`%USERPROFILE%\AppData\Local\uv`；或者确保已安装 Python ，然后运行`python -m pip install -U uv`
-> - **配置`uv`环境变量**：将`uv`所在目录和 `%USERPROFILE%\.copaw\bin` 添加到系统的 `Path` 变量中。
-> - **重新运行**：打开新终端，再次执行安装脚本以完成 `CoPaw` 安装。
-> - **配置`CoPaw`环境变量**：将 `%USERPROFILE%\.copaw\bin` 添加到系统的 `Path` 变量中。
+> - **配置`uv`环境变量**：将`uv`所在目录和 `%USERPROFILE%\.adclaw\bin` 添加到系统的 `Path` 变量中。
+> - **重新运行**：打开新终端，再次执行安装脚本以完成 `AdClaw` 安装。
+> - **配置`AdClaw`环境变量**：将 `%USERPROFILE%\.adclaw\bin` 添加到系统的 `Path` 变量中。
 
 也可以指定选项：
 
@@ -101,32 +101,32 @@ bash install.sh --extras ollama      # Ollama（跨平台，需 Ollama 服务运
 .\install.ps1 -Extras ollama        # Ollama
 ```
 
-升级只需重新运行安装命令。卸载请运行 `copaw uninstall`。
+升级只需重新运行安装命令。卸载请运行 `adclaw uninstall`。
 
 ### 步骤二：初始化
 
-在工作目录（默认 `~/.copaw`）下生成 `config.json` 与 `HEARTBEAT.md`。两种方式：
+在工作目录（默认 `~/.adclaw`）下生成 `config.json` 与 `HEARTBEAT.md`。两种方式：
 
 - **快速用默认配置**（不交互，适合先跑起来再改配置）：
   ```bash
-  copaw init --defaults
+  adclaw init --defaults
   ```
 - **交互式初始化**（按提示填写心跳间隔、投递目标、活跃时段，并可顺带配置频道与 Skills）：
   ```bash
-  copaw init
+  adclaw init
   ```
   详见 [CLI - 快速上手](./cli#快速上手)。
 
-若已有配置想覆盖，可使用 `copaw init --force`（会提示确认）。
+若已有配置想覆盖，可使用 `adclaw init --force`（会提示确认）。
 初始化后若尚未启用频道，接入钉钉、飞书、QQ 等需在 [频道配置](./channels) 中按文档填写。
 
 ### 步骤三：启动服务
 
 ```bash
-copaw app
+adclaw app
 ```
 
-服务默认监听 `127.0.0.1:8088`。若已配置频道，CoPaw 会在对应 app 内回复；若尚未配置，也可先完成本节再前往频道配置。
+服务默认监听 `127.0.0.1:8088`。若已配置频道，AdClaw 会在对应 app 内回复；若尚未配置，也可先完成本节再前往频道配置。
 
 ---
 
@@ -135,11 +135,11 @@ copaw app
 如果你更习惯自行管理 Python 环境（需 Python >= 3.10, < 3.14）：
 
 ```bash
-pip install copaw
+pip install adclaw
 ```
 
 可选：先创建并激活虚拟环境再安装（`python -m venv .venv`，Linux/macOS 下
-`source .venv/bin/activate`，Windows 下 `.venv\Scripts\Activate.ps1`）。安装后会提供 `copaw` 命令。
+`source .venv/bin/activate`，Windows 下 `.venv\Scripts\Activate.ps1`）。安装后会提供 `adclaw` 命令。
 
 然后按上方 [步骤二：初始化](#步骤二初始化) 和 [步骤三：启动服务](#步骤三启动服务) 操作。
 
@@ -147,38 +147,38 @@ pip install copaw
 
 ## 方式三：魔搭创空间一键配置（无需安装）
 
-若不想在本地安装 Python，可通过魔搭创空间将 CoPaw 部署到云端运行：
+若不想在本地安装 Python，可通过魔搭创空间将 AdClaw 部署到云端运行：
 
 1. 先前往 [魔搭](https://modelscope.cn/register?back=%2Fhome) 注册并登录；
-2. 打开 [CoPaw 创空间](https://modelscope.cn/studios/fork?target=AgentScope/CoPaw)，一键配置即可使用。
+2. 打开 [AdClaw 创空间](https://modelscope.cn/studios/fork?target=AgentScope/AdClaw)，一键配置即可使用。
 
-**重要**：使用创空间请将空间设为 **非公开**，否则你的 CoPaw 可能被他人操纵。
+**重要**：使用创空间请将空间设为 **非公开**，否则你的 AdClaw 可能被他人操纵。
 
 ---
 
 ## 方式四：Docker
 
-镜像在 **Docker Hub**（`agentscope/copaw`）。镜像 tag：`latest`（稳定版）；`pre`（PyPI 预发布版）。国内用户也可选用阿里云 ACR：`agentscope-registry.ap-southeast-1.cr.aliyuncs.com/agentscope/copaw`（tag 相同）。
+镜像在 **Docker Hub**（`citedy/adclaw`）。镜像 tag：`latest`（稳定版）；`pre`（PyPI 预发布版）。国内用户也可选用阿里云 ACR：`agentscope-registry.ap-southeast-1.cr.aliyuncs.com/citedy/adclaw`（tag 相同）。
 
 拉取并运行：
 
 ```bash
-docker pull agentscope/copaw:latest
-docker run -p 8088:8088 -v copaw-data:/app/working agentscope/copaw:latest
+docker pull citedy/adclaw:latest
+docker run -p 8088:8088 -v adclaw-data:/app/working citedy/adclaw:latest
 ```
 
-然后在浏览器打开 **http://127.0.0.1:8088/** 进入控制台。配置、记忆与 Skills 保存在 `copaw-data` 卷中。传入 API Key 可在 `docker run` 时加 `-e DASHSCOPE_API_KEY=xxx` 或 `--env-file .env`。
+然后在浏览器打开 **http://127.0.0.1:8088/** 进入控制台。配置、记忆与 Skills 保存在 `adclaw-data` 卷中。传入 API Key 可在 `docker run` 时加 `-e DASHSCOPE_API_KEY=xxx` 或 `--env-file .env`。
 
 ---
 
 ## 方式五：部署到阿里云 ECS
 
-若希望将 CoPaw 部署在阿里云上，可使用阿里云 ECS 一键部署：
+若希望将 AdClaw 部署在阿里云上，可使用阿里云 ECS 一键部署：
 
-1. 打开 [CoPaw 阿里云 ECS 部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884)，按页面提示填写部署参数；
+1. 打开 [AdClaw 阿里云 ECS 部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884)，按页面提示填写部署参数；
 2. 参数配置完成后确认费用并创建实例，部署完成后即可获取访问地址并使用服务。
 
-详细步骤与说明请参考 [阿里云开发者社区：CoPaw 3 分钟部署你的 AI 助理](https://developer.aliyun.com/article/1713682)。
+详细步骤与说明请参考 [阿里云开发者社区：AdClaw 3 分钟部署你的 AI 助理](https://developer.aliyun.com/article/1713682)。
 
 ---
 

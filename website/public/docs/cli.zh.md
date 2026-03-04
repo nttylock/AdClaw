@@ -1,6 +1,6 @@
 # CLI
 
-`copaw` 是 CoPaw 的命令行工具。本页按「上手 → 配置 → 日常管理」的顺序组织——
+`adclaw` 是 AdClaw 的命令行工具。本页按「上手 → 配置 → 日常管理」的顺序组织——
 新用户从头读，老用户直接跳到需要的章节。
 
 > 还不清楚「频道」「心跳」「定时任务」是什么？先看 [项目介绍](./intro)。
@@ -9,16 +9,16 @@
 
 ## 快速上手
 
-第一次用 CoPaw，只需要这两条命令。
+第一次用 AdClaw，只需要这两条命令。
 
-### copaw init
+### adclaw init
 
 首次初始化，交互式引导你完成所有配置。
 
 ```bash
-copaw init              # 交互式初始化（推荐新用户）
-copaw init --defaults   # 不交互，用默认值（适合脚本）
-copaw init --force      # 覆盖已有配置文件
+adclaw init              # 交互式初始化（推荐新用户）
+adclaw init --defaults   # 不交互，用默认值（适合脚本）
+adclaw init --force      # 覆盖已有配置文件
 ```
 
 **交互流程（按顺序）：**
@@ -32,16 +32,16 @@ copaw init --force      # 覆盖已有配置文件
 7. **环境变量** —— 可选添加工具所需的键值对。
 8. **HEARTBEAT.md** —— 在默认编辑器中编辑心跳检查清单。
 
-### copaw app
+### adclaw app
 
-启动 CoPaw 服务。频道、定时任务、控制台等所有运行时功能都依赖此服务。
+启动 AdClaw 服务。频道、定时任务、控制台等所有运行时功能都依赖此服务。
 
 ```bash
-copaw app                             # 默认 127.0.0.1:8088
-copaw app --host 0.0.0.0 --port 9090 # 自定义地址
-copaw app --reload                    # 代码改动自动重载（开发用）
-copaw app --workers 4                 # 多 worker 模式
-copaw app --log-level debug           # 详细日志
+adclaw app                             # 默认 127.0.0.1:8088
+adclaw app --host 0.0.0.0 --port 9090 # 自定义地址
+adclaw app --reload                    # 代码改动自动重载（开发用）
+adclaw app --workers 4                 # 多 worker 模式
+adclaw app --log-level debug           # 详细日志
 ```
 
 | 选项          | 默认值      | 说明                                                          |
@@ -54,68 +54,68 @@ copaw app --log-level debug           # 详细日志
 
 ### 控制台
 
-`copaw app` 启动后，在浏览器打开 `http://127.0.0.1:8088/` 即可进入 **控制台** ——
+`adclaw app` 启动后，在浏览器打开 `http://127.0.0.1:8088/` 即可进入 **控制台** ——
 一个用于对话、频道、定时任务、技能、模型等的 Web 管理界面。详见 [控制台](./console)。
 
-若未构建前端，根路径会返回类似 `{"message": "CoPaw Web Console is not available."}` 的提示信息（实际文案可能调整），API 仍可正常使用。
+若未构建前端，根路径会返回类似 `{"message": "AdClaw Web Console is not available."}` 的提示信息（实际文案可能调整），API 仍可正常使用。
 
 **构建方式：** 在项目 `console/` 目录下执行 `npm ci && npm run build`，产物在
-`src/copaw/console/`。Docker 镜像或 pip 安装包已内置控制台，无需单独构建。
+`src/adclaw/console/`。Docker 镜像或 pip 安装包已内置控制台，无需单独构建。
 
 ---
 
 ## 模型与环境变量
 
-使用 CoPaw 前至少需要配置一个 LLM 提供商。环境变量为内置工具（如网页搜索）提供凭据。
+使用 AdClaw 前至少需要配置一个 LLM 提供商。环境变量为内置工具（如网页搜索）提供凭据。
 
-### copaw models
+### adclaw models
 
 管理 LLM 提供商和活跃模型。
 
 | 命令                                   | 说明                                   |
 | -------------------------------------- | -------------------------------------- |
-| `copaw models list`                    | 查看所有提供商、API Key 状态和当前模型 |
-| `copaw models config`                  | 完整交互式配置：API Key → 选择模型     |
-| `copaw models config-key [provider]`   | 单独配置某个提供商的 API Key           |
-| `copaw models set-llm`                 | 只切换活跃模型（不改 API Key）         |
-| `copaw models download <repo_id>`      | 下载本地模型（llama.cpp / MLX）        |
-| `copaw models local`                   | 查看已下载的本地模型                   |
-| `copaw models remove-local <model_id>` | 删除已下载的本地模型                   |
-| `copaw models ollama-pull <model>`     | 下载 Ollama 模型                       |
-| `copaw models ollama-list`             | 查看 Ollama 模型                       |
-| `copaw models ollama-remove <model>`   | 删除 Ollama 模型                       |
+| `adclaw models list`                    | 查看所有提供商、API Key 状态和当前模型 |
+| `adclaw models config`                  | 完整交互式配置：API Key → 选择模型     |
+| `adclaw models config-key [provider]`   | 单独配置某个提供商的 API Key           |
+| `adclaw models set-llm`                 | 只切换活跃模型（不改 API Key）         |
+| `adclaw models download <repo_id>`      | 下载本地模型（llama.cpp / MLX）        |
+| `adclaw models local`                   | 查看已下载的本地模型                   |
+| `adclaw models remove-local <model_id>` | 删除已下载的本地模型                   |
+| `adclaw models ollama-pull <model>`     | 下载 Ollama 模型                       |
+| `adclaw models ollama-list`             | 查看 Ollama 模型                       |
+| `adclaw models ollama-remove <model>`   | 删除 Ollama 模型                       |
 
 ```bash
-copaw models list                    # 看当前状态
-copaw models config                  # 完整交互式配置
-copaw models config-key modelscope   # 只配 ModelScope 的 API Key
-copaw models config-key dashscope    # 只配 DashScope 的 API Key
-copaw models config-key custom       # 配置自定义提供商（Base URL + Key）
-copaw models set-llm                 # 只切换模型
+adclaw models list                    # 看当前状态
+adclaw models config                  # 完整交互式配置
+adclaw models config-key modelscope   # 只配 ModelScope 的 API Key
+adclaw models config-key dashscope    # 只配 DashScope 的 API Key
+adclaw models config-key custom       # 配置自定义提供商（Base URL + Key）
+adclaw models set-llm                 # 只切换模型
 ```
 
 #### 本地模型
 
-CoPaw 也支持通过 llama.cpp 或 MLX 在本地运行模型——无需 API Key。
-先安装后端：`pip install 'copaw[llamacpp]'` 或 `pip install 'copaw[mlx]'`。
+AdClaw 也支持通过 llama.cpp 或 MLX 在本地运行模型——无需 API Key。
+先安装后端：`pip install 'adclaw[llamacpp]'` 或 `pip install 'adclaw[mlx]'`。
 
 ```bash
 # 下载模型（自动选择 Q4_K_M GGUF）
-copaw models download Qwen/Qwen3-4B-GGUF
+adclaw models download Qwen/Qwen3-4B-GGUF
 
 # 下载 MLX 模型
-copaw models download Qwen/Qwen3-4B --backend mlx
+adclaw models download Qwen/Qwen3-4B --backend mlx
 
 # 从 ModelScope 下载
-copaw models download Qwen/Qwen2-0.5B-Instruct-GGUF --source modelscope
+adclaw models download Qwen/Qwen2-0.5B-Instruct-GGUF --source modelscope
 
 # 查看已下载模型
-copaw models local
-copaw models local --backend mlx
+adclaw models local
+adclaw models local --backend mlx
 
 # 删除已下载模型
-copaw models remove-local <model_id>
-copaw models remove-local <model_id> --yes   # 跳过确认
+adclaw models remove-local <model_id>
+adclaw models remove-local <model_id> --yes   # 跳过确认
 ```
 
 | 选项        | 简写 | 默认值        | 说明                                           |
@@ -126,83 +126,83 @@ copaw models remove-local <model_id> --yes   # 跳过确认
 
 #### Ollama 模型
 
-CoPaw 集成 Ollama 以在本地运行模型。模型从 Ollama 守护进程动态加载——请先从 [ollama.com](https://ollama.com) 安装 Ollama。
+AdClaw 集成 Ollama 以在本地运行模型。模型从 Ollama 守护进程动态加载——请先从 [ollama.com](https://ollama.com) 安装 Ollama。
 
-安装 Ollama SDK：`pip install 'copaw[ollama]'`（或使用 `--extras ollama` 重新运行安装脚本）
+安装 Ollama SDK：`pip install 'adclaw[ollama]'`（或使用 `--extras ollama` 重新运行安装脚本）
 
 ```bash
 # 下载 Ollama 模型
-copaw models ollama-pull mistral:7b
-copaw models ollama-pull qwen2.5:3b
+adclaw models ollama-pull mistral:7b
+adclaw models ollama-pull qwen2.5:3b
 
 # 查看 Ollama 模型
-copaw models ollama-list
+adclaw models ollama-list
 
 # 删除 Ollama 模型
-copaw models ollama-remove mistral:7b
-copaw models ollama-remove qwen2.5:3b --yes   # 跳过确认
+adclaw models ollama-remove mistral:7b
+adclaw models ollama-remove qwen2.5:3b --yes   # 跳过确认
 
 # 在配置流程中使用（自动检测 Ollama 模型）
-copaw models config           # 选择 Ollama → 从模型列表中选择
-copaw models set-llm          # 切换到其他 Ollama 模型
+adclaw models config           # 选择 Ollama → 从模型列表中选择
+adclaw models set-llm          # 切换到其他 Ollama 模型
 ```
 
 **与本地模型的主要区别：**
 
-- 模型来自 Ollama 守护进程（不由 CoPaw 下载）
+- 模型来自 Ollama 守护进程（不由 AdClaw 下载）
 - 使用 `ollama-pull` / `ollama-remove` 而非 `download` / `remove-local`
-- 通过 Ollama CLI 或 CoPaw 添加/删除模型时，模型列表自动更新
+- 通过 Ollama CLI 或 AdClaw 添加/删除模型时，模型列表自动更新
 
-> **注意：** API Key 的有效性需要用户自行保证，CoPaw 不会验证。
+> **注意：** API Key 的有效性需要用户自行保证，AdClaw 不会验证。
 > 详见 [配置 — 模型提供商](./config#模型提供商)。
 
-### copaw env
+### adclaw env
 
 管理工具和技能在运行时使用的环境变量。
 
 | 命令                      | 说明                 |
 | ------------------------- | -------------------- |
-| `copaw env list`          | 列出所有已配置的变量 |
-| `copaw env set KEY VALUE` | 设置或更新变量       |
-| `copaw env delete KEY`    | 删除变量             |
+| `adclaw env list`          | 列出所有已配置的变量 |
+| `adclaw env set KEY VALUE` | 设置或更新变量       |
+| `adclaw env delete KEY`    | 删除变量             |
 
 ```bash
-copaw env list
-copaw env set TAVILY_API_KEY "tvly-xxxxxxxx"
-copaw env set GITHUB_TOKEN "ghp_xxxxxxxx"
-copaw env delete TAVILY_API_KEY
+adclaw env list
+adclaw env set TAVILY_API_KEY "tvly-xxxxxxxx"
+adclaw env set GITHUB_TOKEN "ghp_xxxxxxxx"
+adclaw env delete TAVILY_API_KEY
 ```
 
-> **注意：** CoPaw 只负责存储和加载，值的有效性需要用户自行保证。
+> **注意：** AdClaw 只负责存储和加载，值的有效性需要用户自行保证。
 > 详见 [配置 — 环境变量](./config#环境变量)。
 
 ---
 
 ## 频道
 
-将 CoPaw 连接到消息平台。
+将 AdClaw 连接到消息平台。
 
-### copaw channels
+### adclaw channels
 
 管理频道配置（iMessage / Discord / DingTalk / Feishu / QQ / Console 等）。
 **说明**：交互式配置用 `config`（无 `configure` 子命令）；卸载自定义频道用 `remove`（无 `uninstall`）。
 
 | 命令                           | 说明                                                                            |
 | ------------------------------ | ------------------------------------------------------------------------------- |
-| `copaw channels list`          | 查看所有频道的状态（密钥脱敏）                                                  |
-| `copaw channels install <key>` | 在 `custom_channels/` 安装频道：创建模板，或用 `--path` / `--url` 安装          |
-| `copaw channels add <key>`     | 安装并加入 config；内置频道只写 config；支持 `--path` / `--url`                 |
-| `copaw channels remove <key>`  | 从 `custom_channels/` 删除自定义频道（内置不可删）；`--keep-config` 保留 config |
-| `copaw channels config`        | 交互式启用/禁用频道并填写凭据                                                   |
+| `adclaw channels list`          | 查看所有频道的状态（密钥脱敏）                                                  |
+| `adclaw channels install <key>` | 在 `custom_channels/` 安装频道：创建模板，或用 `--path` / `--url` 安装          |
+| `adclaw channels add <key>`     | 安装并加入 config；内置频道只写 config；支持 `--path` / `--url`                 |
+| `adclaw channels remove <key>`  | 从 `custom_channels/` 删除自定义频道（内置不可删）；`--keep-config` 保留 config |
+| `adclaw channels config`        | 交互式启用/禁用频道并填写凭据                                                   |
 
 ```bash
-copaw channels list                    # 看当前状态
-copaw channels install my_channel      # 创建自定义频道模板
-copaw channels install my_channel --path ./my_channel.py
-copaw channels add dingtalk            # 把钉钉加入 config
-copaw channels remove my_channel       # 删除自定义频道（并默认从 config 移除）
-copaw channels remove my_channel --keep-config   # 只删模块，保留 config 条目
-copaw channels config                  # 交互式配置
+adclaw channels list                    # 看当前状态
+adclaw channels install my_channel      # 创建自定义频道模板
+adclaw channels install my_channel --path ./my_channel.py
+adclaw channels add dingtalk            # 把钉钉加入 config
+adclaw channels remove my_channel       # 删除自定义频道（并默认从 config 移除）
+adclaw channels remove my_channel --keep-config   # 只删模块，保留 config 条目
+adclaw channels config                  # 交互式配置
 ```
 
 交互式 `config` 流程：依次选择频道、启用/禁用、填写凭据，循环直到选择「保存退出」。
@@ -222,21 +222,21 @@ copaw channels config                  # 交互式配置
 
 ## 定时任务
 
-让 CoPaw 按时间自动执行任务——「每天 9 点发消息」「每 2 小时提问并转发回复」。
-**需要 `copaw app` 正在运行。**
+让 AdClaw 按时间自动执行任务——「每天 9 点发消息」「每 2 小时提问并转发回复」。
+**需要 `adclaw app` 正在运行。**
 
-### copaw cron
+### adclaw cron
 
 | 命令                         | 说明                           |
 | ---------------------------- | ------------------------------ |
-| `copaw cron list`            | 列出所有任务                   |
-| `copaw cron get <job_id>`    | 查看任务配置                   |
-| `copaw cron state <job_id>`  | 查看运行状态（下次运行时间等） |
-| `copaw cron create ...`      | 创建任务                       |
-| `copaw cron delete <job_id>` | 删除任务                       |
-| `copaw cron pause <job_id>`  | 暂停任务                       |
-| `copaw cron resume <job_id>` | 恢复暂停的任务                 |
-| `copaw cron run <job_id>`    | 立刻执行一次                   |
+| `adclaw cron list`            | 列出所有任务                   |
+| `adclaw cron get <job_id>`    | 查看任务配置                   |
+| `adclaw cron state <job_id>`  | 查看运行状态（下次运行时间等） |
+| `adclaw cron create ...`      | 创建任务                       |
+| `adclaw cron delete <job_id>` | 删除任务                       |
+| `adclaw cron pause <job_id>`  | 暂停任务                       |
+| `adclaw cron resume <job_id>` | 恢复暂停的任务                 |
+| `adclaw cron run <job_id>`    | 立刻执行一次                   |
 
 ### 创建任务
 
@@ -245,11 +245,11 @@ copaw channels config                  # 交互式配置
 任务分两种类型：
 
 - **text** —— 到点向频道发一段固定文案。
-- **agent** —— 到点向 CoPaw 提问，把回复发到频道。
+- **agent** —— 到点向 AdClaw 提问，把回复发到频道。
 
 ```bash
 # text：每天 9 点发「早上好！」到钉钉
-copaw cron create \
+adclaw cron create \
   --type text \
   --name "每日早安" \
   --cron "0 9 * * *" \
@@ -258,8 +258,8 @@ copaw cron create \
   --target-session "会话ID" \
   --text "早上好！"
 
-# agent：每 2 小时让 CoPaw 回答并转发
-copaw cron create \
+# agent：每 2 小时让 AdClaw 回答并转发
+adclaw cron create \
   --type agent \
   --name "检查待办" \
   --cron "0 */2 * * *" \
@@ -275,10 +275,10 @@ copaw cron create \
 **方式二——JSON 文件（适合复杂或批量）**
 
 ```bash
-copaw cron create -f job_spec.json
+adclaw cron create -f job_spec.json
 ```
 
-JSON 结构见 `copaw cron get <job_id>` 的返回。
+JSON 结构见 `adclaw cron get <job_id>` 的返回。
 
 ### 额外选项
 
@@ -305,44 +305,44 @@ JSON 结构见 `copaw cron get <job_id>` 的返回。
 
 ## 会话管理
 
-通过 API 管理聊天会话。**需要 `copaw app` 正在运行。**
+通过 API 管理聊天会话。**需要 `adclaw app` 正在运行。**
 
-### copaw chats
+### adclaw chats
 
 | 命令                                   | 说明                                               |
 | -------------------------------------- | -------------------------------------------------- |
-| `copaw chats list`                     | 列出所有会话（支持 `--user-id`、`--channel` 筛选） |
-| `copaw chats get <id>`                 | 查看会话详情和消息历史                             |
-| `copaw chats create ...`               | 创建新会话                                         |
-| `copaw chats update <id> --name "..."` | 重命名会话                                         |
-| `copaw chats delete <id>`              | 删除会话                                           |
+| `adclaw chats list`                     | 列出所有会话（支持 `--user-id`、`--channel` 筛选） |
+| `adclaw chats get <id>`                 | 查看会话详情和消息历史                             |
+| `adclaw chats create ...`               | 创建新会话                                         |
+| `adclaw chats update <id> --name "..."` | 重命名会话                                         |
+| `adclaw chats delete <id>`              | 删除会话                                           |
 
 ```bash
-copaw chats list
-copaw chats list --user-id alice --channel dingtalk
-copaw chats get 823845fe-dd13-43c2-ab8b-d05870602fd8
-copaw chats create --session-id "discord:alice" --user-id alice --name "My Chat"
-copaw chats create -f chat.json
-copaw chats update <chat_id> --name "新名称"
-copaw chats delete <chat_id>
+adclaw chats list
+adclaw chats list --user-id alice --channel dingtalk
+adclaw chats get 823845fe-dd13-43c2-ab8b-d05870602fd8
+adclaw chats create --session-id "discord:alice" --user-id alice --name "My Chat"
+adclaw chats create -f chat.json
+adclaw chats update <chat_id> --name "新名称"
+adclaw chats delete <chat_id>
 ```
 
 ---
 
 ## 技能
 
-扩展 CoPaw 的能力（PDF 阅读、网页搜索等）。
+扩展 AdClaw 的能力（PDF 阅读、网页搜索等）。
 
-### copaw skills
+### adclaw skills
 
 | 命令                  | 说明                              |
 | --------------------- | --------------------------------- |
-| `copaw skills list`   | 列出所有技能及启用/禁用状态       |
-| `copaw skills config` | 交互式启用/禁用技能（复选框界面） |
+| `adclaw skills list`   | 列出所有技能及启用/禁用状态       |
+| `adclaw skills config` | 交互式启用/禁用技能（复选框界面） |
 
 ```bash
-copaw skills list     # 看有哪些技能
-copaw skills config   # 交互式开关
+adclaw skills list     # 看有哪些技能
+adclaw skills config   # 交互式开关
 ```
 
 交互界面中：↑/↓ 选择、空格 切换、回车 确认。确认前会预览变更。
@@ -353,14 +353,14 @@ copaw skills config   # 交互式开关
 
 ## 维护
 
-### copaw clean
+### adclaw clean
 
-清空工作目录（默认 `~/.copaw`）下的所有内容。
+清空工作目录（默认 `~/.adclaw`）下的所有内容。
 
 ```bash
-copaw clean             # 交互确认
-copaw clean --yes       # 不确认直接清空
-copaw clean --dry-run   # 只列出会被删的内容，不删
+adclaw clean             # 交互确认
+adclaw clean --yes       # 不确认直接清空
+adclaw clean --dry-run   # 只列出会被删的内容，不删
 ```
 
 ---
@@ -371,25 +371,25 @@ copaw clean --dry-run   # 只列出会被删的内容，不删
 
 | 选项            | 默认值      | 说明                                      |
 | --------------- | ----------- | ----------------------------------------- |
-| `--host`        | `127.0.0.1` | API 地址（自动检测上次 `copaw app` 的值） |
-| `--port`        | `8088`      | API 端口（自动检测上次 `copaw app` 的值） |
+| `--host`        | `127.0.0.1` | API 地址（自动检测上次 `adclaw app` 的值） |
+| `--port`        | `8088`      | API 端口（自动检测上次 `adclaw app` 的值） |
 | `-h` / `--help` |             | 显示帮助                                  |
 
 如果服务运行在非默认地址，全局传入即可：
 
 ```bash
-copaw --host 0.0.0.0 --port 9090 cron list
+adclaw --host 0.0.0.0 --port 9090 cron list
 ```
 
 ## 工作目录
 
-配置和数据都在 `~/.copaw`（默认）：`config.json`、`HEARTBEAT.md`、`jobs.json`、
+配置和数据都在 `~/.adclaw`（默认）：`config.json`、`HEARTBEAT.md`、`jobs.json`、
 `chats.json`、技能文件、记忆文件和 Agent 人设 Markdown 文件。
 
 | 变量                | 说明             |
 | ------------------- | ---------------- |
-| `COPAW_WORKING_DIR` | 覆盖工作目录路径 |
-| `COPAW_CONFIG_FILE` | 覆盖配置文件路径 |
+| `ADCLAW_WORKING_DIR` | 覆盖工作目录路径 |
+| `ADCLAW_CONFIG_FILE` | 覆盖配置文件路径 |
 
 详见 [配置与工作目录](./config)。
 
@@ -399,21 +399,21 @@ copaw --host 0.0.0.0 --port 9090 cron list
 
 | 命令             | 子命令                                                                                                                                 |  需要服务运行？   |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- | :---------------: |
-| `copaw init`     | —                                                                                                                                      |        否         |
-| `copaw app`      | —                                                                                                                                      | —（启动服务本身） |
-| `copaw models`   | `list` · `config` · `config-key` · `set-llm` · `download` · `local` · `remove-local` · `ollama-pull` · `ollama-list` · `ollama-remove` |        否         |
-| `copaw env`      | `list` · `set` · `delete`                                                                                                              |        否         |
-| `copaw channels` | `list` · `install` · `add` · `remove` · `config`                                                                                       |        否         |
-| `copaw cron`     | `list` · `get` · `state` · `create` · `delete` · `pause` · `resume` · `run`                                                            |      **是**       |
-| `copaw chats`    | `list` · `get` · `create` · `update` · `delete`                                                                                        |      **是**       |
-| `copaw skills`   | `list` · `config`                                                                                                                      |        否         |
-| `copaw clean`    | —                                                                                                                                      |        否         |
+| `adclaw init`     | —                                                                                                                                      |        否         |
+| `adclaw app`      | —                                                                                                                                      | —（启动服务本身） |
+| `adclaw models`   | `list` · `config` · `config-key` · `set-llm` · `download` · `local` · `remove-local` · `ollama-pull` · `ollama-list` · `ollama-remove` |        否         |
+| `adclaw env`      | `list` · `set` · `delete`                                                                                                              |        否         |
+| `adclaw channels` | `list` · `install` · `add` · `remove` · `config`                                                                                       |        否         |
+| `adclaw cron`     | `list` · `get` · `state` · `create` · `delete` · `pause` · `resume` · `run`                                                            |      **是**       |
+| `adclaw chats`    | `list` · `get` · `create` · `update` · `delete`                                                                                        |      **是**       |
+| `adclaw skills`   | `list` · `config`                                                                                                                      |        否         |
+| `adclaw clean`    | —                                                                                                                                      |        否         |
 
 ---
 
 ## 相关页面
 
-- [项目介绍](./intro) —— CoPaw 可以做什么
+- [项目介绍](./intro) —— AdClaw 可以做什么
 - [控制台](./console) —— Web 管理界面
 - [频道配置](./channels) —— 钉钉、飞书、iMessage、Discord、QQ 详细步骤
 - [心跳](./heartbeat) —— 定时自检/摘要

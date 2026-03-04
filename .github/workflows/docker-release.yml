@@ -1,4 +1,4 @@
-# Build CoPaw multi-arch Docker image and push to DockerHub + Aliyun ACR on release.
+# Build AdClaw multi-arch Docker image and push to DockerHub + Aliyun ACR on release.
 # Tags per registry: <version> and pre (pre updated every run).
 name: Docker Build and Push on Release
 
@@ -14,7 +14,7 @@ on:
 
 env:
   ACR_REGISTRY: agentscope-registry.ap-southeast-1.cr.aliyuncs.com
-  IMAGE: agentscope/copaw
+  IMAGE: citedy/adclaw
 
 jobs:
   build-and-push:
@@ -45,11 +45,11 @@ jobs:
       - name: Build and push multi-arch (version + pre)
         env:
           VERSION: ${{ github.event.release.tag_name || inputs.version }}
-          COPAW_ENABLED_CHANNELS: "discord,dingtalk,feishu,qq,console"
+          ADCLAW_ENABLED_CHANNELS: "discord,dingtalk,feishu,qq,console"
         run: |
           TAGS="-t ${ACR_REGISTRY}/${IMAGE}:${VERSION} -t ${ACR_REGISTRY}/${IMAGE}:pre \
             -t docker.io/${IMAGE}:${VERSION} -t docker.io/${IMAGE}:pre"
           docker buildx build --platform linux/amd64,linux/arm64 \
             -f deploy/Dockerfile \
-            --build-arg COPAW_ENABLED_CHANNELS="${COPAW_ENABLED_CHANNELS}" \
+            --build-arg ADCLAW_ENABLED_CHANNELS="${ADCLAW_ENABLED_CHANNELS}" \
             ${TAGS} --push .

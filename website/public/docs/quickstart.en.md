@@ -23,7 +23,7 @@ No Python required — the installer handles everything automatically using [uv]
 **macOS / Linux:**
 
 ```bash
-curl -fsSL https://copaw.agentscope.io/install.sh | bash
+curl -fsSL https://adclaw.agentscope.io/install.sh | bash
 ```
 
 Then open a new terminal (or `source ~/.zshrc` / `source ~/.bashrc`).
@@ -31,16 +31,16 @@ Then open a new terminal (or `source ~/.zshrc` / `source ~/.bashrc`).
 **Windows (CMD):**
 
 ```cmd
-curl -fsSL https://copaw.agentscope.io/install.bat -o install.bat && install.bat
+curl -fsSL https://adclaw.agentscope.io/install.bat -o install.bat && install.bat
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-irm https://copaw.agentscope.io/install.ps1 | iex
+irm https://adclaw.agentscope.io/install.ps1 | iex
 ```
 
-Then open a new terminal (the installer adds CoPaw to your PATH automatically).
+Then open a new terminal (the installer adds AdClaw to your PATH automatically).
 
 > **⚠️ Special Notice for Windows Enterprise LTSC Users**
 >
@@ -51,9 +51,9 @@ Then open a new terminal (the installer adds CoPaw to your PATH automatically).
 >    The script completes file installation. Due to **Constrained Language Mode**, it cannot automatically update environment variables. Manually configure as follows:
 >
 >    - **Locate the installation directory**:
->      - Check if `uv` is available: Enter `uv --version` in CMD. If a version number appears, **only configure the CoPaw path**. If you receive the prompt `'uv' is not recognized as an internal or external command, operable program or batch file,` configure both paths.
+>      - Check if `uv` is available: Enter `uv --version` in CMD. If a version number appears, **only configure the AdClaw path**. If you receive the prompt `'uv' is not recognized as an internal or external command, operable program or batch file,` configure both paths.
 >      - uv path (choose one based on installation location; use if step 1 fails): Typically `%USERPROFILE%\.local\bin`, `%USERPROFILE%\AppData\Local\uv`, or the `Scripts` folder within your Python installation directory
->      - CoPaw path: Typically located at `%USERPROFILE%\.copaw\bin`.
+>      - AdClaw path: Typically located at `%USERPROFILE%\.adclaw\bin`.
 >    - **Manually add to the system's Path environment variable**:
 >      - Press `Win + R`, type `sysdm.cpl` and press Enter to open System Properties.
 >      - Click “Advanced” -> “Environment Variables”.
@@ -65,9 +65,9 @@ Then open a new terminal (the installer adds CoPaw to your PATH automatically).
 > Due to **Constrained Language Mode**, the script may fail to automatically download `uv`.
 >
 > - **Manually install uv**: Refer to the [GitHub Release](https://github.com/astral-sh/uv/releases) to download `uv.exe` and place it in `%USERPROFILE%\.local\bin` or `%USERPROFILE%\AppData\Local\uv`; or ensure Python is installed and run `python -m pip install -U uv`.
-> - **Configure `uv` environment variables**: Add the `uv` directory and `%USERPROFILE%\.copaw\bin` to your system's `Path` variable.
-> - **Re-run the installation**: Open a new terminal and execute the installation script again to complete the `CoPaw` installation.
-> - **Configure the `CoPaw` environment variable**: Add `%USERPROFILE%\.copaw\bin` to your system's `Path` variable.
+> - **Configure `uv` environment variables**: Add the `uv` directory and `%USERPROFILE%\.adclaw\bin` to your system's `Path` variable.
+> - **Re-run the installation**: Open a new terminal and execute the installation script again to complete the `AdClaw` installation.
+> - **Configure the `AdClaw` environment variable**: Add `%USERPROFILE%\.adclaw\bin` to your system's `Path` variable.
 
 You can also pass options:
 
@@ -101,37 +101,37 @@ bash install.sh --extras ollama      # Ollama (cross-platform, requires Ollama s
 .\install.ps1 -Extras ollama        # Ollama
 ```
 
-To upgrade, simply re-run the install command. To uninstall, run `copaw uninstall`.
+To upgrade, simply re-run the install command. To uninstall, run `adclaw uninstall`.
 
 ### Step 2: Init
 
 Generate `config.json` and `HEARTBEAT.md` in the working directory (default
-`~/.copaw`). Two options:
+`~/.adclaw`). Two options:
 
 - **Use defaults** (no prompts; good for getting running first, then editing
   config later):
   ```bash
-  copaw init --defaults
+  adclaw init --defaults
   ```
 - **Interactive** (prompts for heartbeat interval, target, active hours, and
   optional channel and Skills setup):
   ```bash
-  copaw init
+  adclaw init
   ```
   See [CLI - Getting started](./cli#getting-started).
 
-To overwrite existing config, use `copaw init --force` (you will be prompted).
+To overwrite existing config, use `adclaw init --force` (you will be prompted).
 After init, if no channel is enabled yet, follow [Channels](./channels) to add
 DingTalk, Feishu, QQ, etc.
 
 ### Step 3: Start the server
 
 ```bash
-copaw app
+adclaw app
 ```
 
 The server listens on `127.0.0.1:8088` by default. If you have already
-configured a channel, CoPaw will reply there; otherwise you can add one after
+configured a channel, AdClaw will reply there; otherwise you can add one after
 this step via [Channels](./channels).
 
 ---
@@ -141,11 +141,11 @@ this step via [Channels](./channels).
 If you prefer managing Python yourself (requires Python >= 3.10, < 3.14):
 
 ```bash
-pip install copaw
+pip install adclaw
 ```
 
 Optional: create and activate a virtualenv first (`python -m venv .venv`, then
-`source .venv/bin/activate` on Linux/macOS or `.venv\Scripts\Activate.ps1` on Windows). This installs the `copaw` command.
+`source .venv/bin/activate` on Linux/macOS or `.venv\Scripts\Activate.ps1` on Windows). This installs the `adclaw` command.
 
 Then follow [Step 2: Init](#step-2-init) and [Step 3: Start the server](#step-3-start-the-server) above.
 
@@ -153,36 +153,36 @@ Then follow [Step 2: Init](#step-2-init) and [Step 3: Start the server](#step-3-
 
 ## Option C: ModelScope Studio one-click setup (no install)
 
-If you prefer not to install Python locally, you can deploy CoPaw to ModelScope Studio's cloud:
+If you prefer not to install Python locally, you can deploy AdClaw to ModelScope Studio's cloud:
 
 1. First, sign up and log in at [ModelScope](https://modelscope.cn/register?back=%2Fhome);
-2. Open the [CoPaw Studio](https://modelscope.cn/studios/fork?target=AgentScope/CoPaw) and complete the one-click setup.
+2. Open the [AdClaw Studio](https://modelscope.cn/studios/fork?target=AgentScope/AdClaw) and complete the one-click setup.
 
 **Important**: Set your Studio to **non-public**, or others may control your
-CoPaw.
+AdClaw.
 
 ---
 
 ## Option D: Docker
 
-Images are on **Docker Hub** (`agentscope/copaw`). Image tags: `latest` (stable); `pre` (PyPI pre-release). Also available on Alibaba Cloud ACR for users in China: `agentscope-registry.ap-southeast-1.cr.aliyuncs.com/agentscope/copaw` (same tags).
+Images are on **Docker Hub** (`citedy/adclaw`). Image tags: `latest` (stable); `pre` (PyPI pre-release). Also available on Alibaba Cloud ACR for users in China: `agentscope-registry.ap-southeast-1.cr.aliyuncs.com/citedy/adclaw` (same tags).
 
 Pull and run:
 
 ```bash
-docker pull agentscope/copaw:latest
-docker run -p 8088:8088 -v copaw-data:/app/working agentscope/copaw:latest
+docker pull citedy/adclaw:latest
+docker run -p 8088:8088 -v adclaw-data:/app/working citedy/adclaw:latest
 ```
 
-Then open **http://127.0.0.1:8088/** in your browser for the Console. Config, memory, and skills are stored in the `copaw-data` volume. To pass API keys, add `-e DASHSCOPE_API_KEY=xxx` or `--env-file .env` to `docker run`.
+Then open **http://127.0.0.1:8088/** in your browser for the Console. Config, memory, and skills are stored in the `adclaw-data` volume. To pass API keys, add `-e DASHSCOPE_API_KEY=xxx` or `--env-file .env` to `docker run`.
 
 ---
 
 ## Option E: Deploy on Alibaba Cloud ECS
 
-To run CoPaw on Alibaba Cloud, use the ECS one-click deployment:
+To run AdClaw on Alibaba Cloud, use the ECS one-click deployment:
 
-1. Open the [CoPaw on Alibaba Cloud (ECS) deployment link](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884) and fill in the parameters as prompted;
+1. Open the [AdClaw on Alibaba Cloud (ECS) deployment link](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884) and fill in the parameters as prompted;
 2. Confirm the cost and create the instance; when deployment finishes, you can get the access URL and start using the service.
 
 For step-by-step instructions, see [Alibaba Cloud Developer: Deploy your AI assistant in 3 minutes](https://developer.aliyun.com/article/1713682).

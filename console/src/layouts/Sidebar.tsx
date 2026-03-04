@@ -173,7 +173,7 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           <>
             <img
               src="/logo.png"
-              alt="CoPaw"
+              alt="AdClaw"
               style={{ height: 32, width: "auto" }}
             />
             {version && (

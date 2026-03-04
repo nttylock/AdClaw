@@ -1,10 +1,10 @@
 # Models
 
-You need to configure a model before chatting with CoPaw. You can do this under **Console → Settings → Models**.
+You need to configure a model before chatting with AdClaw. You can do this under **Console → Settings → Models**.
 
 ![Console models](https://img.alicdn.com/imgextra/i1/O1CN01zHAE1Z26w6jXl2xbr_!!6000000007725-2-tps-3802-1968.png)
 
-CoPaw supports multiple LLM providers: **cloud providers** (require API Key), **local providers** (llama.cpp / MLX), and **Ollama provider**, and you can add **custom providers**. This page explains how to configure each type.
+AdClaw supports multiple LLM providers: **cloud providers** (require API Key), **local providers** (llama.cpp / MLX), and **Ollama provider**, and you can add **custom providers**. This page explains how to configure each type.
 
 ---
 
@@ -41,9 +41,9 @@ Local providers run models on your machine with **no API Key**; data stays on-de
 
 **Prerequisites:**
 
-- Install the matching backend in the same environment as CoPaw:
-  - llama.cpp: `pip install 'copaw[llamacpp]'`
-  - MLX: `pip install 'copaw[mlx]'`
+- Install the matching backend in the same environment as AdClaw:
+  - llama.cpp: `pip install 'adclaw[llamacpp]'`
+  - MLX: `pip install 'adclaw[mlx]'`
 
 1. On the Models page you’ll see cards for llama.cpp and MLX.
 
@@ -79,12 +79,12 @@ Local providers run models on your machine with **no API Key**; data stays on-de
 
 ## Ollama provider
 
-The Ollama provider uses the **Ollama daemon** installed on your machine. Models are managed by Ollama; CoPaw does not download them directly, and the list syncs with Ollama.
+The Ollama provider uses the **Ollama daemon** installed on your machine. Models are managed by Ollama; AdClaw does not download them directly, and the list syncs with Ollama.
 
 **Prerequisites:**
 
 - Install Ollama from [ollama.com](https://ollama.com).
-- Install Ollama support in CoPaw’s environment: `pip install 'copaw[ollama]'`.
+- Install Ollama support in AdClaw’s environment: `pip install 'adclaw[ollama]'`.
 
 1. On the Models page you’ll see the Ollama provider card.
 
@@ -112,7 +112,7 @@ The Ollama provider uses the **Ollama daemon** installed on your machine. Models
 
    ![name](https://img.alicdn.com/imgextra/i2/O1CN01955KEG1vtOcDcdedZ_!!6000000006230-2-tps-3802-1968.png)
 
-> If you see `Ollama SDK not installed. Install with: pip install 'copaw[ollama]'`, make sure Ollama is installed from ollama.com and you’ve run `pip install 'copaw[ollama]'` in CoPaw’s environment. To remove a model, click **Models** on the Ollama card, then the **trash icon** next to the model and confirm.
+> If you see `Ollama SDK not installed. Install with: pip install 'adclaw[ollama]'`, make sure Ollama is installed from ollama.com and you’ve run `pip install 'adclaw[ollama]'` in AdClaw’s environment. To remove a model, click **Models** on the Ollama card, then the **trash icon** next to the model and confirm.
 >
 > ![delete](https://img.alicdn.com/imgextra/i1/O1CN01OvNNu21shXVzD14go_!!6000000005798-2-tps-3802-1968.png)
 

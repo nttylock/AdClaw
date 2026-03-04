@@ -38,9 +38,9 @@ export default defineConfig(({ mode }) => {
       include: ["diff"],
     },
     build: {
-      // Output to CoPaw's console directory,
+      // Output to AdClaw's console directory,
       // so we don't need to copy files manually after build.
-      outDir: path.resolve(__dirname, "../src/copaw/console"),
+      outDir: path.resolve(__dirname, "../src/adclaw/console"),
       emptyOutDir: true,
     },
   };

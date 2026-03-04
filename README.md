@@ -1,24 +1,24 @@
 <div align="center">
 
-# CoPaw
+# AdClaw
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-black.svg?logo=github)](https://github.com/agentscope-ai/CoPaw)
-[![PyPI](https://img.shields.io/pypi/v/copaw?color=3775A9&label=PyPI&logo=pypi)](https://pypi.org/project/copaw/)
-[![Documentation](https://img.shields.io/badge/Docs-Website-green.svg?logo=readthedocs&label=Docs)](https://copaw.agentscope.io/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-black.svg?logo=github)](https://github.com/agentscope-ai/AdClaw)
+[![PyPI](https://img.shields.io/pypi/v/adclaw?color=3775A9&label=PyPI&logo=pypi)](https://pypi.org/project/adclaw/)
+[![Documentation](https://img.shields.io/badge/Docs-Website-green.svg?logo=readthedocs&label=Docs)](https://adclaw.agentscope.io/)
 [![Python Version](https://img.shields.io/badge/python-3.10%20~%20%3C3.14-blue.svg?logo=python&label=Python)](https://www.python.org/downloads/)
-[![Last Commit](https://img.shields.io/github/last-commit/agentscope-ai/CoPaw)](https://github.com/agentscope-ai/CoPaw)
+[![Last Commit](https://img.shields.io/github/last-commit/agentscope-ai/AdClaw)](https://github.com/agentscope-ai/AdClaw)
 [![License](https://img.shields.io/badge/license-Apache%202.0-red.svg?logo=apache&label=License)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-black-black.svg?logo=python&label=CodeStyle)](https://github.com/psf/black)
-[![GitHub Stars](https://img.shields.io/github/stars/agentscope-ai/CoPaw?style=flat&logo=github&color=yellow&label=Stars)](https://github.com/agentscope-ai/CoPaw/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/agentscope-ai/CoPaw?style=flat&logo=github&color=purple&label=Forks)](https://github.com/agentscope-ai/CoPaw/network)
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-Ask_Devin-navy.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/agentscope-ai/CoPaw)
+[![GitHub Stars](https://img.shields.io/github/stars/agentscope-ai/AdClaw?style=flat&logo=github&color=yellow&label=Stars)](https://github.com/agentscope-ai/AdClaw/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/agentscope-ai/AdClaw?style=flat&logo=github&color=purple&label=Forks)](https://github.com/agentscope-ai/AdClaw/network)
+[![DeepWiki](https://img.shields.io/badge/DeepWiki-Ask_Devin-navy.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/agentscope-ai/AdClaw)
 [![Discord](https://img.shields.io/badge/Discord-Join_Us-blueviolet.svg?logo=discord)](https://discord.gg/eYMpfnkG8h)
 [![DingTalk](https://img.shields.io/badge/DingTalk-Join_Us-orange.svg)](https://qr.dingtalk.com/action/joingroup?code=v1,k1,OmDlBXpjW+I2vWjKDsjvI9dhcXjGZi3bQiojOq3dlDw=&_dt_no_comment=1&origin=11)
 
-[[Documentation](https://copaw.agentscope.io/)] [[中文 README](README_zh.md)] [[日本語](README_ja.md)]
+[[Documentation](https://adclaw.agentscope.io/)] [[中文 README](README_zh.md)] [[日本語](README_ja.md)]
 
 <p align="center">
-  <img src="https://img.alicdn.com/imgextra/i1/O1CN01tvT5rg1JHQNRP8tXR_!!6000000001003-2-tps-1632-384.png" alt="CoPaw Logo" width="120">
+  <img src="https://img.alicdn.com/imgextra/i1/O1CN01tvT5rg1JHQNRP8tXR_!!6000000001003-2-tps-1632-384.png" alt="AdClaw Logo" width="120">
 </p>
 
 <p align="center"><b>Works for you, grows with you.</b></p>
@@ -53,7 +53,7 @@ Your Personal AI Assistant; easy to install, deploy on your own machine or on th
 
 ## News
 
-[2026-03-02] We released v0.0.4! See the [v0.0.4 Release Notes](https://github.com/agentscope-ai/CoPaw/releases/tag/v0.0.4) for the full changelog.
+[2026-03-02] We released v0.0.4! See the [v0.0.4 Release Notes](https://github.com/agentscope-ai/AdClaw/releases/tag/v0.0.4) for the full changelog.
 
 - **[v0.0.4]** **FEAT:** Telegram channel; OpenAI & Azure OpenAI providers; Ollama SDK; coding-plan provider; model connection testing; heartbeat monitoring panel; CORS configuration; audio file support for DingTalk & Feishu.
 - **[v0.0.4]** **FEAT:** Token-based memory compaction; file block processing; embedding configuration; normalized tool_choice behavior.
@@ -67,9 +67,9 @@ Your Personal AI Assistant; easy to install, deploy on your own machine or on th
 
 > **Recommended reading:**
 >
-> - **I want to run CoPaw in 3 commands**: [Quick Start](#quick-start) → open Console in browser.
-> - **I want to chat in DingTalk / Feishu / QQ**: [Quick Start](#quick-start) → [Channels](https://copaw.agentscope.io/docs/channels).
-> - **I don’t want to install Python**: [One-line install](#one-line-install-beta-continuously-improving) handles Python automatically, or use [ModelScope one-click](https://modelscope.cn/studios/fork?target=AgentScope/CoPaw) for cloud.
+> - **I want to run AdClaw in 3 commands**: [Quick Start](#quick-start) → open Console in browser.
+> - **I want to chat in DingTalk / Feishu / QQ**: [Quick Start](#quick-start) → [Channels](https://adclaw.agentscope.io/docs/channels).
+> - **I don’t want to install Python**: [One-line install](#one-line-install-beta-continuously-improving) handles Python automatically, or use [ModelScope one-click](https://modelscope.cn/studios/fork?target=AgentScope/AdClaw) for cloud.
 
 - [News](#news)
 - [Quick Start](#quick-start)
@@ -80,7 +80,7 @@ Your Personal AI Assistant; easy to install, deploy on your own machine or on th
 - [Roadmap](#roadmap)
 - [Contributing](#get-involved)
 - [Install from source](#install-from-source)
-- [Why CoPaw?](#why-copaw)
+- [Why AdClaw?](#why-adclaw)
 - [Built by](#built-by)
 - [License](#license)
 
@@ -93,12 +93,12 @@ Your Personal AI Assistant; easy to install, deploy on your own machine or on th
 If you prefer managing Python yourself:
 
 ```bash
-pip install copaw
-copaw init --defaults
-copaw app
+pip install adclaw
+adclaw init --defaults
+adclaw app
 ```
 
-Then open **http://127.0.0.1:8088/** in your browser for the Console (chat with CoPaw, configure the agent). To talk in DingTalk, Feishu, QQ, etc., add a channel in the [docs](https://copaw.agentscope.io/docs/channels).
+Then open **http://127.0.0.1:8088/** in your browser for the Console (chat with AdClaw, configure the agent). To talk in DingTalk, Feishu, QQ, etc., add a channel in the [docs](https://adclaw.agentscope.io/docs/channels).
 
 ![Console](https://img.alicdn.com/imgextra/i4/O1CN01iuGyNc1mNwsUU5NQI_!!6000000004943-2-tps-3822-2070.png)
 
@@ -109,31 +109,31 @@ No Python required — the installer handles everything:
 **macOS / Linux:**
 
 ```bash
-curl -fsSL https://copaw.agentscope.io/install.sh | bash
+curl -fsSL https://adclaw.agentscope.io/install.sh | bash
 ```
 
 To install with Ollama support:
 
 ```bash
-curl -fsSL https://copaw.agentscope.io/install.sh | bash -s -- --extras ollama
+curl -fsSL https://adclaw.agentscope.io/install.sh | bash -s -- --extras ollama
 ```
 
 To install with multiple extras (e.g., Ollama + llama.cpp):
 
 ```bash
-curl -fsSL https://copaw.agentscope.io/install.sh | bash -s -- --extras ollama,llamacpp
+curl -fsSL https://adclaw.agentscope.io/install.sh | bash -s -- --extras ollama,llamacpp
 ```
 
 **Windows (CMD):**
 
 ```CMD
-curl -fsSL https://copaw.agentscope.io/install.bat -o install.bat && install.bat
+curl -fsSL https://adclaw.agentscope.io/install.bat -o install.bat && install.bat
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-irm https://copaw.agentscope.io/install.ps1 | iex
+irm https://adclaw.agentscope.io/install.ps1 | iex
 ```
 
 > **Note**: The installer will automatically check the status of uv. If it is not installed, it will attempt to download and configure it automatically. If the automatic installation fails, please follow the on-screen prompts or execute `python -m pip install -U uv`, then rerun the installer.
@@ -145,9 +145,9 @@ irm https://copaw.agentscope.io/install.ps1 | iex
 >
 >    The script completes file installation. Due to **Constrained Language Mode**, it cannot automatically update environment variables. Manually configure as follows:
 >    - **Locate the installation directory**:
->      - Check if `uv` is available: Enter `uv --version` in CMD. If a version number appears, **only configure the CoPaw path**. If you receive the prompt `'uv' is not recognized as an internal or external command, operable program or batch file,` configure both paths.
+>      - Check if `uv` is available: Enter `uv --version` in CMD. If a version number appears, **only configure the AdClaw path**. If you receive the prompt `'uv' is not recognized as an internal or external command, operable program or batch file,` configure both paths.
 >      - uv path (choose one based on installation location; use if `uv` fails): Typically `%USERPROFILE%\.local\bin`, `%USERPROFILE%\AppData\Local\uv`, or the `Scripts` folder within your Python installation directory
->      - CoPaw path: Typically located at `%USERPROFILE%\.copaw\bin`.
+>      - AdClaw path: Typically located at `%USERPROFILE%\.adclaw\bin`.
 >    - **Manually add to the system's Path environment variable**:
 >      - Press `Win + R`, type `sysdm.cpl` and press Enter to open System Properties.
 >      - Click “Advanced” -> “Environment Variables”.
@@ -157,15 +157,15 @@ irm https://copaw.agentscope.io/install.ps1 | iex
 >
 >   Due to **Constrained Language Mode**, the script may fail to automatically download `uv`.
 >   - **Manually install uv**: Refer to the [GitHub Release](https://github.com/astral-sh/uv/releases) to download `uv.exe` and place it in `%USERPROFILE%\.local\bin` or `%USERPROFILE%\AppData\Local\uv`; or ensure Python is installed and run `python -m pip install -U uv`.
->   - **Configure `uv` environment variables**: Add the `uv` directory and `%USERPROFILE%\.copaw\bin` to your system's `Path` variable.
->   - **Re-run the installation**: Open a new terminal and execute the installation script again to complete the `CoPaw` installation.
->   - **Configure the `CoPaw` environment variable**: Add `%USERPROFILE%\.copaw\bin` to your system's `Path` variable.
+>   - **Configure `uv` environment variables**: Add the `uv` directory and `%USERPROFILE%\.adclaw\bin` to your system's `Path` variable.
+>   - **Re-run the installation**: Open a new terminal and execute the installation script again to complete the `AdClaw` installation.
+>   - **Configure the `AdClaw` environment variable**: Add `%USERPROFILE%\.adclaw\bin` to your system's `Path` variable.
 
 Once installed, open a new terminal and run:
 
 ```bash
-copaw init --defaults   # or: copaw init (interactive)
-copaw app
+adclaw init --defaults   # or: adclaw init (interactive)
+adclaw app
 ```
 
 <details>
@@ -189,8 +189,8 @@ bash install.sh --extras llamacpp,mlx
 curl -fsSL ... | bash
 
 # Uninstall
-copaw uninstall          # keeps config and data
-copaw uninstall --purge  # removes everything
+adclaw uninstall          # keeps config and data
+adclaw uninstall --purge  # removes everything
 ```
 
 **Windows (PowerShell):**
@@ -211,67 +211,67 @@ irm ... | iex; .\install.ps1 -Version 0.0.2
 irm ... | iex
 
 # Uninstall
-copaw uninstall          # keeps config and data
-copaw uninstall --purge  # removes everything
+adclaw uninstall          # keeps config and data
+adclaw uninstall --purge  # removes everything
 ```
 
 </details>
 
 ### Using Docker
 
-Images are on **Docker Hub** (`agentscope/copaw`). Image tags: `latest` (stable); `pre` (PyPI pre-release).
+Images are on **Docker Hub** (`citedy/adclaw`). Image tags: `latest` (stable); `pre` (PyPI pre-release).
 
 ```bash
-docker pull agentscope/copaw:latest
-docker run -p 8088:8088 -v copaw-data:/app/working agentscope/copaw:latest
+docker pull citedy/adclaw:latest
+docker run -p 8088:8088 -v adclaw-data:/app/working citedy/adclaw:latest
 ```
 
-Also available on Alibaba Cloud Container Registry (ACR) for users in China: `agentscope-registry.ap-southeast-1.cr.aliyuncs.com/agentscope/copaw` (same tags).
+Also available on Alibaba Cloud Container Registry (ACR) for users in China: `agentscope-registry.ap-southeast-1.cr.aliyuncs.com/citedy/adclaw` (same tags).
 
-Then open **http://127.0.0.1:8088/** for the Console. Config, memory, and skills are stored in the `copaw-data` volume. To pass API keys (e.g. `DASHSCOPE_API_KEY`), add `-e VAR=value` or `--env-file .env` to `docker run`.
+Then open **http://127.0.0.1:8088/** for the Console. Config, memory, and skills are stored in the `adclaw-data` volume. To pass API keys (e.g. `DASHSCOPE_API_KEY`), add `-e VAR=value` or `--env-file .env` to `docker run`.
 
 The image is built from scratch. To build the image yourself, please refer to the [Build Docker image](scripts/README.md#build-docker-image) section in `scripts/README.md`, and then push to your registry.
 
 ### Using ModelScope
 
-**No local install?** [ModelScope Studio](https://modelscope.cn/studios/fork?target=AgentScope/CoPaw) one-click cloud setup. Set your Studio to **non-public** so others cannot control your CoPaw.
+**No local install?** [ModelScope Studio](https://modelscope.cn/studios/fork?target=AgentScope/AdClaw) one-click cloud setup. Set your Studio to **non-public** so others cannot control your AdClaw.
 
 ### Deploy on Alibaba Cloud ECS
 
-To run CoPaw on Alibaba Cloud (ECS), use the one-click deployment: open the [CoPaw on Alibaba Cloud (ECS) deployment link](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884) and follow the prompts. For step-by-step instructions, see [Alibaba Cloud Developer: Deploy your AI assistant in 3 minutes](https://developer.aliyun.com/article/1713682).
+To run AdClaw on Alibaba Cloud (ECS), use the one-click deployment: open the [AdClaw on Alibaba Cloud (ECS) deployment link](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-1ed84201799f40879884) and follow the prompts. For step-by-step instructions, see [Alibaba Cloud Developer: Deploy your AI assistant in 3 minutes](https://developer.aliyun.com/article/1713682).
 
 ---
 
 ## API Key
 
-If you use a **cloud LLM** (e.g. DashScope, ModelScope), you must set an API key before chatting. CoPaw will not work until a valid key is configured.
+If you use a **cloud LLM** (e.g. DashScope, ModelScope), you must set an API key before chatting. AdClaw will not work until a valid key is configured.
 
 **Where to set it:**
 
-1. **`copaw init`** — When you run `copaw init`, the command has a step to configure the LLM provider and API key. Follow the prompts to choose a provider and enter your key.
-2. **Console** — After `copaw app`, open **http://127.0.0.1:8088/** → **Settings** → **Models**. Select a provider, fill in the **API Key** field, then activate that provider and model.
+1. **`adclaw init`** — When you run `adclaw init`, the command has a step to configure the LLM provider and API key. Follow the prompts to choose a provider and enter your key.
+2. **Console** — After `adclaw app`, open **http://127.0.0.1:8088/** → **Settings** → **Models**. Select a provider, fill in the **API Key** field, then activate that provider and model.
 3. **Environment variable** — For DashScope you can set `DASHSCOPE_API_KEY` in your shell or in a `.env` file in the working directory.
 
-Tools that need extra keys (e.g. `TAVILY_API_KEY` for web search) can be set in Console **Settings → Environment variables**, or see [Config](https://copaw.agentscope.io/docs/config) for details.
+Tools that need extra keys (e.g. `TAVILY_API_KEY` for web search) can be set in Console **Settings → Environment variables**, or see [Config](https://adclaw.agentscope.io/docs/config) for details.
 
 > **Using local models only?** If you use [Local Models](#local-models) (llama.cpp or MLX), you do **not** need any API key.
 
 ## Local Models
 
-CoPaw can run LLMs entirely on your machine — no API keys or cloud services required.
+AdClaw can run LLMs entirely on your machine — no API keys or cloud services required.
 
 | Backend       | Best for                                 | Install                                                              |
 | ------------- | ---------------------------------------- | -------------------------------------------------------------------- |
-| **llama.cpp** | Cross-platform (macOS / Linux / Windows) | `pip install 'copaw[llamacpp]'` or `bash install.sh --extras llamacpp` |
-| **MLX**       | Apple Silicon Macs (M1/M2/M3/M4)         | `pip install 'copaw[mlx]'` or `bash install.sh --extras mlx`         |
-| **Ollama**    | Cross-platform (requires Ollama service) | `pip install 'copaw[ollama]'` or `bash install.sh --extras ollama`   |
+| **llama.cpp** | Cross-platform (macOS / Linux / Windows) | `pip install 'adclaw[llamacpp]'` or `bash install.sh --extras llamacpp` |
+| **MLX**       | Apple Silicon Macs (M1/M2/M3/M4)         | `pip install 'adclaw[mlx]'` or `bash install.sh --extras mlx`         |
+| **Ollama**    | Cross-platform (requires Ollama service) | `pip install 'adclaw[ollama]'` or `bash install.sh --extras ollama`   |
 
 After installing, download a model and start chatting:
 
 ```bash
-copaw models download Qwen/Qwen3-4B-GGUF
-copaw models # select the downloaded model
-copaw app # start the server
+adclaw models download Qwen/Qwen3-4B-GGUF
+adclaw models # select the downloaded model
+adclaw app # start the server
 ```
 
 You can also download and manage local models from the Console UI.
@@ -282,17 +282,17 @@ You can also download and manage local models from the Console UI.
 
 | Topic                                                         | Description                                       |
 | ------------------------------------------------------------- | ------------------------------------------------- |
-| [Introduction](https://copaw.agentscope.io/docs/intro)        | What CoPaw is and how you use it                  |
-| [Quick start](https://copaw.agentscope.io/docs/quickstart)    | Install and run (local or ModelScope Studio)      |
-| [Console](https://copaw.agentscope.io/docs/console)           | Web UI for chat and agent config                  |
-| [Channels](https://copaw.agentscope.io/docs/channels)         | DingTalk, Feishu, QQ, Discord, iMessage, and more |
-| [Heartbeat](https://copaw.agentscope.io/docs/heartbeat)       | Scheduled check-in or digest                      |
-| [Local Models](https://copaw.agentscope.io/docs/local-models) | Run models locally with llama.cpp or MLX          |
-| [CLI](https://copaw.agentscope.io/docs/cli)                   | Init, cron jobs, skills, clean                    |
-| [Skills](https://copaw.agentscope.io/docs/skills)             | Extend and customize capabilities                 |
-| [FAQ](https://copaw.agentscope.io/docs/faq)                   | Common questions and troubleshooting tips         |
-| [Memory](https://copaw.agentscope.io/docs/memory)             | Context management and long-term memory           |
-| [Config](https://copaw.agentscope.io/docs/config)             | Working directory and config file                 |
+| [Introduction](https://adclaw.agentscope.io/docs/intro)        | What AdClaw is and how you use it                  |
+| [Quick start](https://adclaw.agentscope.io/docs/quickstart)    | Install and run (local or ModelScope Studio)      |
+| [Console](https://adclaw.agentscope.io/docs/console)           | Web UI for chat and agent config                  |
+| [Channels](https://adclaw.agentscope.io/docs/channels)         | DingTalk, Feishu, QQ, Discord, iMessage, and more |
+| [Heartbeat](https://adclaw.agentscope.io/docs/heartbeat)       | Scheduled check-in or digest                      |
+| [Local Models](https://adclaw.agentscope.io/docs/local-models) | Run models locally with llama.cpp or MLX          |
+| [CLI](https://adclaw.agentscope.io/docs/cli)                   | Init, cron jobs, skills, clean                    |
+| [Skills](https://adclaw.agentscope.io/docs/skills)             | Extend and customize capabilities                 |
+| [FAQ](https://adclaw.agentscope.io/docs/faq)                   | Common questions and troubleshooting tips         |
+| [Memory](https://adclaw.agentscope.io/docs/memory)             | Context management and long-term memory           |
+| [Config](https://adclaw.agentscope.io/docs/config)             | Working directory and config file                 |
 
 Full docs in this repo: [website/public/docs/](website/public/docs/).
 
@@ -300,7 +300,7 @@ Full docs in this repo: [website/public/docs/](website/public/docs/).
 
 ## FAQ
 
-For common questions, troubleshooting tips, and known issues, please visit the **[FAQ page](https://copaw.agentscope.io/docs/faq)**.
+For common questions, troubleshooting tips, and known issues, please visit the **[FAQ page](https://adclaw.agentscope.io/docs/faq)**.
 
 ---
 
@@ -326,7 +326,7 @@ For common questions, troubleshooting tips, and known issues, please visit the *
 | Multi-agent | Built on [AgentScope](https://github.com/agentscope-ai/agentscope), native multi-agent workflows | Long-term Planning |
 | Sandbox | Deeper integration with AgentScope Runtime sandboxes | Long-term Planning |
 | Self-healing | Daemon agent for automated recovery and health monitoring | Long-term Planning |
-| CoPaw-optimized local models | LLMs tuned for CoPaw's native skills and common tasks; better local personal-assistant usability | Long-term Planning |
+| AdClaw-optimized local models | LLMs tuned for AdClaw's native skills and common tasks; better local personal-assistant usability | Long-term Planning |
 | Small + large model collaboration | Local LLMs for sensitive data; cloud LLMs for planning and coding; balance of privacy, performance, and capability | Long-term Planning |
 | Cloud-native | Deeper integration with AgentScope Runtime; leverage cloud compute, storage, and tooling | Long-term Planning |
 | Skills Hub | Enrich the [AgentScope Skills](https://github.com/agentscope-ai/agentscope-skills) repository and improve discoverability of high-quality skills | Long-term Planning |
@@ -335,31 +335,31 @@ For common questions, troubleshooting tips, and known issues, please visit the *
 
 ### Get involved
 
-We are building CoPaw in the open and welcome contributions of all kinds! Check the [Roadmap](#roadmap) above (especially items marked **Seeking Contributors**) to find areas that interest you, and read [CONTRIBUTING](https://github.com/agentscope-ai/CoPaw/blob/main/CONTRIBUTING.md) to get started. We particularly welcome:
+We are building AdClaw in the open and welcome contributions of all kinds! Check the [Roadmap](#roadmap) above (especially items marked **Seeking Contributors**) to find areas that interest you, and read [CONTRIBUTING](https://github.com/agentscope-ai/AdClaw/blob/main/CONTRIBUTING.md) to get started. We particularly welcome:
 
 - **Horizontal expansion** — new channels, model providers, skills, MCPs.
 - **Existing feature extension** — display and UX improvements, download hints, Windows path compatibility, and the like.
 
-Join the conversation on [GitHub Discussions](https://github.com/agentscope-ai/CoPaw/discussions) to suggest or pick up work.
+Join the conversation on [GitHub Discussions](https://github.com/agentscope-ai/AdClaw/discussions) to suggest or pick up work.
 
 ---
 
 ## Install from source
 
 ```bash
-git clone https://github.com/agentscope-ai/CoPaw.git
-cd CoPaw
+git clone https://github.com/agentscope-ai/AdClaw.git
+cd AdClaw
 pip install -e .
 ```
 
 - **Dev** (tests, formatting): `pip install -e ".[dev]"`
-- **Console** (build frontend): `cd console && npm ci && npm run build`, then `copaw app` from project root.
+- **Console** (build frontend): `cd console && npm ci && npm run build`, then `adclaw app` from project root.
 
 ---
 
-## Why CoPaw?
+## Why AdClaw?
 
-CoPaw represents both a **Co Personal Agent Workstation** and a "co-paw"—a partner always by your side. More than just a cold tool, CoPaw is a warm "little paw" always ready to lend a hand (or a paw!). It is the ultimate teammate for your digital life.
+AdClaw represents both a **Co Personal Agent Workstation** and a "co-paw"—a partner always by your side. More than just a cold tool, AdClaw is a warm "little paw" always ready to lend a hand (or a paw!). It is the ultimate teammate for your digital life.
 
 ---
 
@@ -379,4 +379,4 @@ CoPaw represents both a **Co Personal Agent Workstation** and a "co-paw"—a par
 
 ## License
 
-CoPaw is released under the [Apache License 2.0](LICENSE).
+AdClaw is released under the [Apache License 2.0](LICENSE).

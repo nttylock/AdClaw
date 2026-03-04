@@ -1,6 +1,6 @@
 # AdClaw — Roadmap & Implementation Plan
 
-> **Fork of [CoPaw](https://github.com/agentscope-ai/CoPaw) by AgentScope (Apache 2.0)**
+> **Fork of [AdClaw](https://github.com/agentscope-ai/AdClaw) by AgentScope (Apache 2.0)**
 > Customized as a ready-to-use AI marketing assistant powered by [Citedy](https://www.citedy.com)
 
 ---
@@ -18,14 +18,14 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 ---
 
 ## Phase 1: Core Branding & Defaults
-> **Goal:** Replace CoPaw identity with AdClaw, set sane defaults
+> **Goal:** Replace AdClaw identity with AdClaw, set sane defaults
 
-- [ ] **1.1** Rename project: CoPaw → AdClaw everywhere (package name, titles, UI text, Docker image name)
+- [ ] **1.1** Rename project: AdClaw → AdClaw everywhere (package name, titles, UI text, Docker image name)
 - [ ] **1.2** Replace logo and favicon with AdClaw/Citedy branding
 - [ ] **1.3** Update `README.md` — new description, install instructions, screenshots
 - [ ] **1.4** Set default language to English (config.json `agents.language: "en"`)
 - [ ] **1.5** Translate all workspace `.md` files (AGENTS, SOUL, PROFILE, etc.) to English (already done, commit to repo)
-- [ ] **1.6** Set `COPAW_ENABLED_CHANNELS` default to include `telegram` in Dockerfile/docker-compose
+- [ ] **1.6** Set `ADCLAW_ENABLED_CHANNELS` default to include `telegram` in Dockerfile/docker-compose
 
 ---
 
@@ -127,7 +127,7 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 
 | Resource | URL |
 |----------|-----|
-| CoPaw upstream | https://github.com/agentscope-ai/CoPaw |
+| AdClaw upstream | https://github.com/agentscope-ai/AdClaw |
 | AdClaw fork | https://github.com/nttylock/AdClaw |
 | Citedy MCP tools | https://www.citedy.com/mcp-tools.md |
 | Citedy skill spec | https://www.citedy.com/skill.md |
@@ -138,11 +138,11 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 
 ---
 
-## Key Findings from CoPaw Investigation
+## Key Findings from AdClaw Investigation
 
 | Issue | Root Cause | Fix |
 |-------|-----------|-----|
-| Telegram not in UI | `COPAW_ENABLED_CHANNELS` env var missing "telegram" | Add to Dockerfile |
+| Telegram not in UI | `ADCLAW_ENABLED_CHANNELS` env var missing "telegram" | Add to Dockerfile |
 | Aliyun API key "invalid" | Built-in provider uses `coding.dashscope.aliyuncs.com`, key is for `coding-intl` | Create custom provider or fix default URL |
 | Skills not visible to bot | Skills placed in `customized_skills/` but bot reads `active_skills/` | Copy to `active_skills/` |
 | Workspace files in Chinese | Default templates shipped in Chinese | Translated to English |

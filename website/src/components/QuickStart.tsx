@@ -5,23 +5,23 @@ import { motion } from "motion/react";
 import type { SiteConfig } from "../config";
 import { t, type Lang } from "../i18n";
 
-const DOCKER_IMAGE = "agentscope/copaw:latest";
+const DOCKER_IMAGE = "citedy/adclaw:latest";
 
 const COMMANDS = {
-  pip: ["pip install copaw", "copaw init --defaults", "copaw app"],
+  pip: ["pip install adclaw", "adclaw init --defaults", "adclaw app"],
   unix: [
-    "curl -fsSL https://copaw.agentscope.io/install.sh | bash",
-    "copaw init --defaults",
-    "copaw app",
+    "curl -fsSL https://adclaw.agentscope.io/install.sh | bash",
+    "adclaw init --defaults",
+    "adclaw app",
   ],
   windows: [
-    "irm https://copaw.agentscope.io/install.ps1 | iex",
-    "copaw init --defaults",
-    "copaw app",
+    "irm https://adclaw.agentscope.io/install.ps1 | iex",
+    "adclaw init --defaults",
+    "adclaw app",
   ],
   docker: [
     `docker pull ${DOCKER_IMAGE}`,
-    `docker run -p 8088:8088 -v copaw-data:/app/working ${DOCKER_IMAGE}`,
+    `docker run -p 8088:8088 -v adclaw-data:/app/working ${DOCKER_IMAGE}`,
   ],
 } as const;
 
