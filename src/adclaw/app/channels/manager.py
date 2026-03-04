@@ -163,7 +163,7 @@ class ChannelManager:
         """Create channels from config (config.json)."""
         available = get_available_channels()
         ch = config.channels
-        show_tool_details = getattr(config, "show_tool_details", True)
+        show_tool_details = getattr(config, "show_tool_details", False)
         extra = getattr(ch, "__pydantic_extra__", None) or {}
 
         channels: list[BaseChannel] = []
@@ -187,14 +187,14 @@ class ChannelManager:
                         ch_cfg,
                         on_reply_sent=on_last_dispatch,
                         show_tool_details=show_tool_details,
-                        filter_tool_messages=False,
+                        filter_tool_messages=True,
                     ),
                 )
             else:
                 filter_tool_messages = getattr(
                     ch_cfg,
                     "filter_tool_messages",
-                    False,
+                    True,
                 )
                 channels.append(
                     ch_cls.from_config(

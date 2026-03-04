@@ -219,10 +219,10 @@ class TelegramChannel(BaseChannel):
         http_proxy_auth: str,
         bot_prefix: str,
         on_reply_sent: OnReplySent = None,
-        show_tool_details: bool = True,
+        show_tool_details: bool = False,
         media_dir: str = "",
         show_typing: bool = True,
-        filter_tool_messages: bool = False,
+        filter_tool_messages: bool = True,
     ):
         super().__init__(
             process,
@@ -391,8 +391,8 @@ class TelegramChannel(BaseChannel):
         process: ProcessHandler,
         config: Union[TelegramChannelConfig, dict],
         on_reply_sent: OnReplySent = None,
-        show_tool_details: bool = True,
-        filter_tool_messages: bool = False,
+        show_tool_details: bool = False,
+        filter_tool_messages: bool = True,
     ) -> "TelegramChannel":
         channel_show_typing = None
         if isinstance(config, dict):
