@@ -144,11 +144,18 @@ class AgentRunner(Runner):
                     name=name,
                 )
 
-            await self.session.load_session_state(
-                session_id=session_id,
-                user_id=user_id,
-                agent=agent,
-            )
+            try:
+                await self.session.load_session_state(
+                    session_id=session_id,
+                    user_id=user_id,
+                    agent=agent,
+                )
+            except KeyError as e:
+                logger.warning(
+                    "load_session_state skipped (state schema mismatch): %s; "
+                    "will save fresh state on completion to recover file",
+                    e,
+                )
             session_state_loaded = True
 
             # Rebuild system prompt so it always reflects the latest

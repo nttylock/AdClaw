@@ -237,6 +237,7 @@ class DaemonCommandHandlerMixin:
             text = run_daemon_logs(context, lines=n)
         else:
             text = "Unknown daemon subcommand."
+        logger.info("handle_daemon_command %s completed", query)
         return Msg(
             name="Friday",
             role="assistant",

@@ -129,7 +129,7 @@ async def run_command_path(
         )
         msg = await handler.handle_daemon_command(query, context)
         yield (msg, True)
-        logger.info(f"handle_daemon_command {query} completed")
+        logger.info("handle_daemon_command %s completed", query)
         return
 
     # Conversation path: lightweight memory + CommandHandler

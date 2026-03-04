@@ -221,7 +221,9 @@ async def lifespan(
     async def _do_restart_services(
         restart_requester_task: asyncio.Task | None = None,
     ) -> None:
-        """Start new stack first, then stop old and swap; rollback on fail."""
+        """Cancel in-flight agent requests first (so they can send error to
+        channel), then stop old stack, then start new stack and swap.
+        """
         # pylint: disable=too-many-statements
         try:
             config = load_config(get_config_path())
@@ -229,6 +231,64 @@ async def lifespan(
             logger.exception("restart_services: load_config failed")
             return
 
+        # 1) Cancel in-flight agent requests. Do not wait for them so the
+        # console restart task never blocks (avoid deadlock when cancelled
+        # task is slow to exit).
+        local_tasks = getattr(agent_app, "_local_tasks", None)
+        if local_tasks:
+            to_cancel = [
+                t
+                for t in list(local_tasks.values())
+                if t is not restart_requester_task and not t.done()
+            ]
+            for t in to_cancel:
+                t.cancel()
+            if to_cancel:
+                logger.info(
+                    "restart: cancelled %s in-flight task(s), not waiting",
+                    len(to_cancel),
+                )
+
+        # 2) Stop old stack
+        cfg_w = app.state.config_watcher
+        mcp_w = getattr(app.state, "mcp_watcher", None)
+        cron_mgr = app.state.cron_manager
+        ch_mgr = app.state.channel_manager
+        mcp_mgr = app.state.mcp_manager
+        try:
+            await cfg_w.stop()
+        except Exception:
+            logger.exception(
+                "restart_services: old config_watcher.stop failed",
+            )
+        if mcp_w is not None:
+            try:
+                await mcp_w.stop()
+            except Exception:
+                logger.exception(
+                    "restart_services: old mcp_watcher.stop failed",
+                )
+        try:
+            await cron_mgr.stop()
+        except Exception:
+            logger.exception(
+                "restart_services: old cron_manager.stop failed",
+            )
+        try:
+            await ch_mgr.stop_all()
+        except Exception:
+            logger.exception(
+                "restart_services: old channel_manager.stop_all failed",
+            )
+        if mcp_mgr is not None:
+            try:
+                await mcp_mgr.close_all()
+            except Exception:
+                logger.exception(
+                    "restart_services: old mcp_manager.close_all failed",
+                )
+
+        # 3) Build and start new stack
         new_mcp_manager = MCPClientManager()
         if hasattr(config, "mcp"):
             try:
@@ -309,57 +369,6 @@ async def lifespan(
                     mcp_mgr=new_mcp_manager,
                 )
                 return
-
-        # New stack is up; cancel in-flight agent requests via runtime
-        # InterruptMixin._local_tasks, then stop old stack. Exclude the
-        # task that triggered restart so it can yield "Restart completed".
-        local_tasks = getattr(agent_app, "_local_tasks", None)
-        if local_tasks:
-            to_cancel = [
-                t
-                for t in list(local_tasks.values())
-                if t is not restart_requester_task and not t.done()
-            ]
-            for t in to_cancel:
-                t.cancel()
-
-        cfg_w = app.state.config_watcher
-        mcp_w = getattr(app.state, "mcp_watcher", None)
-        cron_mgr = app.state.cron_manager
-        ch_mgr = app.state.channel_manager
-        mcp_mgr = app.state.mcp_manager
-        try:
-            await cfg_w.stop()
-        except Exception:
-            logger.exception(
-                "restart_services: old config_watcher.stop failed",
-            )
-        if mcp_w is not None:
-            try:
-                await mcp_w.stop()
-            except Exception:
-                logger.exception(
-                    "restart_services: old mcp_watcher.stop failed",
-                )
-        try:
-            await cron_mgr.stop()
-        except Exception:
-            logger.exception(
-                "restart_services: old cron_manager.stop failed",
-            )
-        try:
-            await ch_mgr.stop_all()
-        except Exception:
-            logger.exception(
-                "restart_services: old channel_manager.stop_all failed",
-            )
-        if mcp_mgr is not None:
-            try:
-                await mcp_mgr.close_all()
-            except Exception:
-                logger.exception(
-                    "restart_services: old mcp_manager.close_all failed",
-                )
 
         if hasattr(config, "mcp"):
             runner.set_mcp_manager(new_mcp_manager)
