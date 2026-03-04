@@ -323,6 +323,46 @@ class TelegramChannel(BaseChannel):
             else:
                 logger.warning("telegram: _enqueue not set, message dropped")
 
+        async def handle_callback_query(
+            update: "Update",
+            context: ContextTypes.DEFAULT_TYPE,
+        ) -> None:
+            """Handle inline keyboard button presses."""
+            query = update.callback_query
+            if not query:
+                return
+            await query.answer()
+            data = query.data or ""
+            # Map callback data to bot commands
+            if data in ("/new", "/clear", "/compact", "/history"):
+                # Simulate the command as a text message
+                chat = query.message.chat if query.message else None
+                chat_id = str(chat.id) if chat else ""
+                user = query.from_user
+                sender_id = str(user.id) if user else chat_id
+                content_parts = [
+                    TextContent(type=ContentType.TEXT, text=data),
+                ]
+                meta = {
+                    "chat_id": chat_id,
+                    "user_id": sender_id,
+                    "username": (user.username or "") if user else "",
+                    "message_id": "",
+                    "is_group": False,
+                    "has_bot_command": True,
+                }
+                native = {
+                    "channel_id": self.channel,
+                    "sender_id": sender_id,
+                    "content_parts": content_parts,
+                    "meta": meta,
+                }
+                if self._enqueue is not None:
+                    self._enqueue(native)
+
+        from telegram.ext import CallbackQueryHandler
+
+        app.add_handler(CallbackQueryHandler(handle_callback_query))
         app.add_handler(MessageHandler(filters.ALL, handle_message))
         return app
 
@@ -432,6 +472,32 @@ class TelegramChannel(BaseChannel):
                 chat_id,
             )
 
+    def _build_menu_keyboard(self) -> Any:
+        """Build inline keyboard with common actions."""
+        try:
+            from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+            return InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "New Chat", callback_data="/new",
+                    ),
+                    InlineKeyboardButton(
+                        "History", callback_data="/history",
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
+                        "Compact Memory", callback_data="/compact",
+                    ),
+                    InlineKeyboardButton(
+                        "Clear All", callback_data="/clear",
+                    ),
+                ],
+            ])
+        except ImportError:
+            return None
+
     async def send(
         self,
         to_handle: str,
@@ -453,9 +519,17 @@ class TelegramChannel(BaseChannel):
         if self._show_typing:
             asyncio.create_task(self._send_chat_action(chat_id, "typing"))
         chunks = self._chunk_text(text)
-        for chunk in chunks:
+        for i, chunk in enumerate(chunks):
             try:
-                await bot.send_message(chat_id=chat_id, text=chunk)
+                # Add inline keyboard to the last chunk of /start responses
+                reply_markup = None
+                if i == len(chunks) - 1 and meta.get("has_bot_command"):
+                    reply_markup = self._build_menu_keyboard()
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text=chunk,
+                    reply_markup=reply_markup,
+                )
             except Exception:
                 logger.exception("telegram send_message failed")
                 return
@@ -565,7 +639,11 @@ class TelegramChannel(BaseChannel):
                 )
 
             await self._application.updater.start_polling(
-                allowed_updates=["message", "edited_message"],
+                allowed_updates=[
+                    "message",
+                    "edited_message",
+                    "callback_query",
+                ],
                 error_callback=_on_poll_error,
             )
             await self._application.start()

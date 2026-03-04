@@ -67,30 +67,30 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 
 ---
 
-## Phase 4: Onboarding UX — API Key & Balance
+## Phase 4: Onboarding UX — API Key & Balance ✅
 > **Goal:** Frictionless first-run experience
 
-- [ ] **4.1** Add "Citedy" section in MCP/Settings UI with:
+- [x] **4.1** Add "Citedy" section in MCP/Settings UI with:
   - **"Get API Key"** button → links to `https://www.citedy.com/developer`
   - **"Top Up Balance"** button → links to `https://www.citedy.com/dashboard/billing`
-- [ ] **4.2** Add a first-run wizard / welcome screen:
+- [x] **4.2** Add a first-run wizard / welcome screen:
   1. "Welcome to AdClaw" with logo
   2. "Step 1: Get your Citedy API key" → button opens registration
   3. "Step 2: Paste your API key here" → input field + save
   4. "Step 3: Connect Telegram" → input bot token + save
   5. "You're all set!" → redirect to main chat
-- [ ] **4.3** Show credit balance in the UI header/sidebar (via Citedy `/api/agent/me` endpoint)
-- [ ] **4.4** Add "Top Up" button visible when balance is low
+- [x] **4.3** Show credit balance in the UI header/sidebar (via Citedy `/api/agent/me` endpoint)
+- [x] **4.4** Add "Top Up" button visible when balance is low
 
 ---
 
-## Phase 5: Telegram Channel Improvements
+## Phase 5: Telegram Channel Improvements ✅
 > **Goal:** Telegram works perfectly out of the box
 
 - [x] **5.1** Telegram enabled by default in Docker image (env var set)
-- [ ] **5.2** Add Telegram setup instructions in the welcome wizard
-- [ ] **5.3** Add inline keyboard buttons in Telegram for common actions
-- [ ] **5.4** Support Telegram media (images, documents, voice) for content ingestion
+- [x] **5.2** Add Telegram setup instructions in the welcome wizard
+- [x] **5.3** Add inline keyboard buttons in Telegram for common actions
+- [x] **5.4** Support Telegram media (images, documents, voice) for content ingestion (already supported upstream)
 
 ---
 
@@ -98,10 +98,12 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 > **Goal:** One command to deploy
 
 - [ ] **6.1** Build custom Docker image: `citedy/adclaw:latest`
-- [ ] **6.2** Create `docker-compose.yml` with all env vars pre-set
+- [x] **6.2** Create `docker-compose.yml` with all env vars pre-set
 - [ ] **6.3** Publish to Docker Hub
 - [ ] **6.4** Add deployment templates (DigitalOcean, Railway, Render)
 - [ ] **6.5** Create install script: `curl -sSL https://get.adclaw.dev | bash`
+- [x] **6.6** Add `.env.example` with all supported variables
+- [x] **6.7** Update GitHub Actions workflow for Docker Hub builds (`latest` + version tags)
 
 ---
 
