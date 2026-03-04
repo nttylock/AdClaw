@@ -1,10 +1,13 @@
-# Build AdClaw multi-arch Docker image and push to Docker Hub on release.
+# Build AdClaw Docker image and push to Docker Hub on release or version tag.
 # Tags: <version>, latest
 name: Docker Build and Push
 
 on:
   release:
     types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       version:
@@ -13,7 +16,7 @@ on:
         type: string
 
 env:
-  IMAGE: citedy/adclaw
+  IMAGE: nttylock/adclaw
 
 jobs:
   build-and-push:
@@ -36,19 +39,25 @@ jobs:
 
       - name: Determine version tag
         id: version
-        run: echo "tag=${GITHUB_EVENT_RELEASE_TAG_NAME:-${{ inputs.version }}}" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_EVENT_RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "tag=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Build and push multi-arch
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: deploy/Dockerfile
-          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             docker.io/${{ env.IMAGE }}:${{ steps.version.outputs.tag }}
             docker.io/${{ env.IMAGE }}:latest
           build-args: |
             ADCLAW_ENABLED_CHANNELS=discord,dingtalk,feishu,qq,console,telegram
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

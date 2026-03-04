@@ -100,8 +100,8 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 - [x] **6.1** Build custom Docker image: `nttylock/adclaw:latest`
 - [x] **6.2** Create `docker-compose.yml` with all env vars pre-set
 - [x] **6.3** Publish to Docker Hub — `nttylock/adclaw:latest`
-- [ ] **6.4** Add deployment templates (DigitalOcean, Railway, Render)
-- [ ] **6.5** Create install script: `curl -sSL https://get.adclaw.dev | bash`
+- [x] **6.4** Add deployment templates (DigitalOcean, Railway, Render)
+- [x] **6.5** Create install script: `curl -sSL https://...install.sh | bash`
 - [x] **6.6** Add `.env.example` with all supported variables
 - [x] **6.7** Update GitHub Actions workflow for Docker Hub builds (`latest` + version tags)
 
@@ -110,11 +110,11 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 ## Phase 7: Documentation & Launch
 > **Goal:** Ready for public launch
 
-- [ ] **7.1** Write docs: Getting Started, Configuration, Skills Guide, API Reference
+- [x] **7.1** Write docs: Getting Started, Configuration, Skills Guide, API Reference
 - [ ] **7.2** Create landing page (GitHub Pages or separate)
 - [ ] **7.3** Record demo video (Telegram bot in action with Citedy skills)
 - [ ] **7.4** Publish announcement (GitHub, Twitter/X, Reddit, Product Hunt)
-- [ ] **7.5** Add GitHub Actions CI/CD for automated Docker builds on release
+- [x] **7.5** Add GitHub Actions CI/CD for automated Docker builds on release/tag push
 
 ---
 
