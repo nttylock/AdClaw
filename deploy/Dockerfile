@@ -4,6 +4,7 @@
 FROM agentscope-registry.ap-southeast-1.cr.aliyuncs.com/agentscope/node:slim AS console-builder
 WORKDIR /app
 COPY console /app/console
+COPY src/adclaw/console /app/src/adclaw/console
 RUN cd /app/console && npm ci --include=dev && NODE_OPTIONS="--max-old-space-size=3072" npm run build
 
 # -----------------------------------------------------------------------------
@@ -81,8 +82,8 @@ ENV PATH="/app/venv/bin:$PATH"
 
 COPY pyproject.toml setup.py README.md ./
 COPY src ./src
-# Inject console dist from build stage (repo does not commit dist).
-COPY --from=console-builder /app/console/dist/ ./src/adclaw/console/
+# Inject console dist from build stage (vite outputs to ../src/adclaw/console/).
+COPY --from=console-builder /app/src/adclaw/console/ ./src/adclaw/console/
 RUN pip install --no-cache-dir .
 
 # Init working dir with default config.json and HEARTBEAT.md (build time).
