@@ -7,7 +7,7 @@ following the docs.
 
 ## What is AdClaw?
 
-CoPAW is a **personal assistant** that runs in your own environment.
+AdClaw is a **personal assistant** that runs in your own environment.
 
 - **Multi-channel chat** — Talk to you via DingTalk, Feishu, QQ, Discord, iMessage, and more.
 - **Scheduled execution** — Run tasks automatically on your configured schedule.
@@ -64,7 +64,7 @@ Each term is explained in detail in its chapter.
 1. **[Quick start](./quickstart)** — Get the server running in three commands.
 2. **[Console](./console)** — Once the server is running, **before configuring
    channels**, you can use the Console (open the root URL in your browser) to
-   chat with CoPAW and configure the agent. This helps you see how CoPAW works.
+   chat with AdClaw and configure the agent. This helps you see how AdClaw works.
 3. **Configure and use as needed**:
    - [Channels](./channels) — Connect DingTalk / Feishu / QQ / Discord / iMessage to
      chat with AdClaw in those apps;
