@@ -180,7 +180,7 @@ export default function WelcomePage() {
       <div className={styles.welcomeContent}>
         <div className={styles.heroSection}>
           <img
-            src="/adclaw-symbol.svg"
+            src="/logo.png"
             alt="AdClaw"
             className={styles.logo}
           />
