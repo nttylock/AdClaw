@@ -46,6 +46,7 @@ async def citedy_status():
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
+                "User-Agent": "AdClaw/1.0",
             },
         )
         with urlopen(req, timeout=10) as resp:
