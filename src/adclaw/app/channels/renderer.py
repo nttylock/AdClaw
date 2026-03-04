@@ -38,11 +38,11 @@ _OutgoingPart = Union[
 class RenderStyle:
     """Channel capabilities for rendering (no hardcoded markdown/emoji)."""
 
-    show_tool_details: bool = True
+    show_tool_details: bool = False
     supports_markdown: bool = True
     supports_code_fence: bool = True
     use_emoji: bool = True
-    filter_tool_messages: bool = False
+    filter_tool_messages: bool = True
 
 
 def _fmt_tool_call(
@@ -231,6 +231,10 @@ class MessageRenderer:
                         ),
                     )
             return out
+
+        # Skip reasoning/thinking messages entirely
+        if msg_type == MessageType.REASONING:
+            return []
 
         if msg_type in (
             MessageType.FUNCTION_CALL,
