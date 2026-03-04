@@ -88,16 +88,36 @@ async def citedy_status():
 
 @router.post("/save-api-key")
 async def save_citedy_api_key(body: dict):
-    """Save Citedy API key to environment variables."""
+    """Save Citedy API key to environment variables and enable Citedy MCP."""
     api_key = body.get("api_key", "").strip()
     if not api_key:
         raise HTTPException(status_code=400, detail="API key is required")
 
+    # Save to env vars
     envs = load_envs()
     envs["CITEDY_API_KEY"] = api_key
-
     from ...envs.store import save_envs
     save_envs(envs)
     os.environ["CITEDY_API_KEY"] = api_key
+
+    # Enable Citedy MCP client in config.json
+    try:
+        from ...config.utils import load_config, save_config
+        from ...config.config import MCPClientConfig
+
+        config = load_config()
+        config.mcp.clients["citedy"] = MCPClientConfig(
+            name="citedy_mcp",
+            description="Citedy SEO & Marketing Tools (52 tools)",
+            enabled=True,
+            transport="streamable_http",
+            url="https://mcp.citedy.com/mcp",
+            headers={},
+            env={"CITEDY_API_KEY": api_key},
+        )
+        save_config(config)
+        logger.info("Citedy MCP client enabled in config.json")
+    except Exception as e:
+        logger.warning("Failed to update MCP config: %s", e)
 
     return {"saved": True, "api_key_prefix": api_key[:20] + "..."}

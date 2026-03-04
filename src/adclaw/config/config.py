@@ -225,6 +225,21 @@ class MCPClientConfig(BaseModel):
             raise ValueError(
                 f"{self.transport} MCP client requires non-empty url",
             )
+
+        # Auto-inject Authorization header from CITEDY_API_KEY for Citedy MCP
+        if (
+            self.url.startswith("https://mcp.citedy.com")
+            and "Authorization" not in self.headers
+        ):
+            api_key = self.env.get("CITEDY_API_KEY") or os.getenv(
+                "CITEDY_API_KEY", ""
+            )
+            if api_key:
+                self.headers["Authorization"] = f"Bearer {api_key}"
+                self.headers.setdefault(
+                    "Accept", "application/json, text/event-stream"
+                )
+
         return self
 
 
