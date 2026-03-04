@@ -4,7 +4,7 @@
 FROM agentscope-registry.ap-southeast-1.cr.aliyuncs.com/agentscope/node:slim AS console-builder
 WORKDIR /app
 COPY console /app/console
-RUN cd /app/console && npm ci --include=dev && npm run build
+RUN cd /app/console && npm ci --include=dev && NODE_OPTIONS="--max-old-space-size=1536" npm run build
 
 # -----------------------------------------------------------------------------
 # Stage 2: runtime image with Python, Chromium, and app.
