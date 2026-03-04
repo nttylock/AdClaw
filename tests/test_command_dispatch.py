@@ -110,3 +110,23 @@ def test_run_daemon_logs_missing_file() -> None:
     out = run_daemon_logs(ctx, lines=5)
     assert "last" in out.lower() or "log" in out.lower()
     assert "not found" in out or "empty" in out or "(" in out
+
+
+async def test_daemon_restart_with_callback_returns_completed() -> None:
+    """run_daemon_restart with a no-op callback returns completion text.
+
+    When _do_restart_services excludes the restart-requester task (via
+    restart_requester_task), the callback runs to completion and
+    run_daemon_restart returns \"Restart completed\". This test verifies
+    the daemon layer; full flow (run_command_path hint then completion)
+    is covered by integration when the requester task is not cancelled.
+    """
+
+    async def noop_restart() -> None:
+        await asyncio.sleep(0)
+
+    ctx = DaemonContext(restart_callback=noop_restart)
+    out = await run_daemon_restart(ctx)
+    assert (
+        "completed" in out.lower() or "完成" in out
+    ), f"Expected completion message, got: {out[:200]}"

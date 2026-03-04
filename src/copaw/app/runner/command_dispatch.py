@@ -9,11 +9,13 @@ import logging
 from typing import AsyncIterator
 
 from reme.memory.file_based_copaw import CoPawInMemoryMemory
+from agentscope.message import Msg, TextBlock
 
 from ...agents.command_handler import CommandHandler
 from ...agents.model_factory import create_model_and_formatter
 from ...agents.utils.token_counting import _get_token_counter
 from ...config import load_config
+
 from .daemon_commands import (
     DaemonContext,
     DaemonCommandHandlerMixin,
@@ -95,15 +97,39 @@ async def run_command_path(
     user_id = getattr(request, "user_id", "") or ""
 
     # Daemon path
-    if parse_daemon_query(query) is not None:
+    parsed = parse_daemon_query(query)
+    if parsed is not None:
         handler = DaemonCommandHandlerMixin()
+        restart_cb = getattr(runner, "_restart_callback", None)
+        if parsed[0] == "restart":
+            logger.info(
+                "run_command_path: daemon restart, callback=%s",
+                "set" if restart_cb is not None else "None",
+            )
+            # Yield hint first so user sees it before restart runs.
+            hint = Msg(
+                name="Friday",
+                role="assistant",
+                content=[
+                    TextBlock(
+                        type="text",
+                        text=(
+                            "**Restart in progress**\n\n"
+                            "- The service may be unresponsive for a while. "
+                            "Please wait."
+                        ),
+                    ),
+                ],
+            )
+            yield (hint, True)
         context = DaemonContext(
             load_config_fn=load_config,
             memory_manager=runner.memory_manager,
-            restart_callback=getattr(runner, "_restart_callback", None),
+            restart_callback=restart_cb,
         )
         msg = await handler.handle_daemon_command(query, context)
         yield (msg, True)
+        logger.info(f"handle_daemon_command {query} completed")
         return
 
     # Conversation path: lightweight memory + CommandHandler
@@ -133,8 +159,6 @@ async def run_command_path(
     try:
         response_msg = await conv_handler.handle_conversation_command(query)
     except RuntimeError as e:
-        from agentscope.message import Msg, TextBlock
-
         response_msg = Msg(
             name="Friday",
             role="assistant",

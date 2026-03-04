@@ -40,7 +40,6 @@ class AgentRunner(Runner):
         self.framework_type = "agentscope"
         self._chat_manager = None  # Store chat_manager reference
         self._mcp_manager = None  # MCP client manager for hot-reload
-
         self.memory_manager: MemoryManager | None = None
 
     def set_chat_manager(self, chat_manager):
@@ -79,7 +78,6 @@ class AgentRunner(Runner):
         agent = None
         chat = None
         session_state_loaded = False
-
         try:
             session_id = request.session_id
             user_id = request.user_id
@@ -164,10 +162,11 @@ class AgentRunner(Runner):
             ):
                 yield msg, last
 
-        except asyncio.CancelledError:
+        except asyncio.CancelledError as exc:
+            logger.info(f"query_handler: {session_id} cancelled!")
             if agent is not None:
                 await agent.interrupt()
-            raise
+            raise RuntimeError("Task has been cancelled!") from exc
         except Exception as e:
             debug_dump_path = write_query_error_dump(
                 request=request,

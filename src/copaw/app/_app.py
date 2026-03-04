@@ -13,7 +13,6 @@ from fastapi.responses import FileResponse
 from agentscope_runtime.engine.app import AgentApp
 
 from .runner import AgentRunner
-from .runner.daemon_commands import RestartInProgressError
 from ..config import (  # pylint: disable=no-name-in-module
     load_config,
     update_last_dispatch,
@@ -131,23 +130,44 @@ async def lifespan(
     app.state.mcp_manager = mcp_manager
     app.state.mcp_watcher = mcp_watcher
 
-    restart_lock = asyncio.Lock()
+    _restart_task: asyncio.Task | None = None
 
     async def _restart_services() -> None:
         """Stop all managers, then rebuild from config (no exit).
 
-        Single-flight: only one restart runs at a time. Concurrent requests
-        get RestartInProgressError so the caller can return a clear message.
+        Single-flight: only one restart runs at a time. Concurrent or
+        duplicate callers wait for the in-progress restart and return
+        successfully. Uses asyncio.shield() so that when the caller
+        (e.g. channel request) is cancelled, the restart task keeps
+        running and does not propagate cancellation into deep task
+        trees (avoids RecursionError on cancel).
         """
         # pylint: disable=too-many-statements
-        try:
-            await asyncio.wait_for(restart_lock.acquire(), timeout=0)
-        except asyncio.TimeoutError as exc:
-            raise RestartInProgressError() from exc
-        try:
-            await _do_restart_services()
-        finally:
-            restart_lock.release()
+        nonlocal _restart_task
+        # Caller task (in _local_tasks) must not be cancelled so it can
+        # yield the final "Restart completed" message.
+        restart_requester_task = asyncio.current_task()
+
+        async def _run_then_clear() -> None:
+            try:
+                await _do_restart_services(
+                    restart_requester_task=restart_requester_task,
+                )
+            finally:
+                nonlocal _restart_task
+                _restart_task = None
+
+        if _restart_task is not None and not _restart_task.done():
+            logger.info(
+                "_restart_services: waiting for in-progress restart to finish",
+            )
+            await asyncio.shield(_restart_task)
+            return
+        if _restart_task is not None and _restart_task.done():
+            _restart_task = None
+        logger.info("_restart_services: starting restart")
+        _restart_task = asyncio.create_task(_run_then_clear())
+        await asyncio.shield(_restart_task)
 
     async def _teardown_new_stack(
         mcp_watcher=None,
@@ -198,7 +218,9 @@ async def lifespan(
                     exc_info=True,
                 )
 
-    async def _do_restart_services() -> None:
+    async def _do_restart_services(
+        restart_requester_task: asyncio.Task | None = None,
+    ) -> None:
         """Start new stack first, then stop old and swap; rollback on fail."""
         # pylint: disable=too-many-statements
         try:
@@ -288,7 +310,19 @@ async def lifespan(
                 )
                 return
 
-        # New stack is up; stop old stack then swap
+        # New stack is up; cancel in-flight agent requests via runtime
+        # InterruptMixin._local_tasks, then stop old stack. Exclude the
+        # task that triggered restart so it can yield "Restart completed".
+        local_tasks = getattr(agent_app, "_local_tasks", None)
+        if local_tasks:
+            to_cancel = [
+                t
+                for t in list(local_tasks.values())
+                if t is not restart_requester_task and not t.done()
+            ]
+            for t in to_cancel:
+                t.cancel()
+
         cfg_w = app.state.config_watcher
         mcp_w = getattr(app.state, "mcp_watcher", None)
         cron_mgr = app.state.cron_manager
