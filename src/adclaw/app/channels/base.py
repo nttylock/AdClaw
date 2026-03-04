@@ -634,6 +634,8 @@ class BaseChannel(ABC):
             ):
                 media_parts.append(p)
         body = "\n".join(text_parts) if text_parts else ""
+        # Strip <think>...</think> and plain-text reasoning prefixes
+        body = self._THINK_RE.sub("", body)
         prefix = (meta or {}).get("bot_prefix", "") or ""
         if prefix and body:
             body = prefix + body

@@ -153,8 +153,9 @@ class MessageRenderer:
                                     filename=b.get("filename"),
                                 ),
                             )
-                if btype == "thinking" and b.get("thinking"):
-                    result.append(TextContent(text=b["thinking"]))
+                if btype == "thinking":
+                    # Skip thinking blocks — internal reasoning, not for user
+                    pass
             return result
 
         def _parts_for_tool_output(content_list: list) -> List[_OutgoingPart]:
