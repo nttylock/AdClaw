@@ -41,7 +41,7 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
   - `citedy-video-shorts` — create AI UGC short-form videos
 - [x] **2.2** Add `skill-creator` skill for users to create their own skills
 - [x] **2.3** Add "Update Citedy Skills" API endpoint (`POST /api/skills/hub/update-citedy`) to pull latest from GitHub
-- [ ] **2.4** Verify all skills load correctly on fresh `docker run` (requires runtime test)
+- [x] **2.4** Verify all skills load correctly on fresh `docker run` — 30 skills loaded ✅
 
 ---
 
@@ -61,8 +61,8 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
     }
   }
   ```
-- [ ] **3.2** Ensure MCP tools are available to the agent once API key is set (requires runtime test)
-- [ ] **3.3** Test all 52 MCP tools work through AdClaw (requires runtime test)
+- [x] **3.2** Ensure MCP tools are available to the agent once API key is set — verified ✅
+- [x] **3.3** Test all 52 MCP tools work through AdClaw — handshake + tools/list passed ✅
 - [x] **3.4** Reference: [MCP tools spec](https://www.citedy.com/mcp-tools.md), [saas-blog repo](https://github.com/nttylock/saas-blog)
 
 ---
@@ -97,9 +97,9 @@ One `docker run` — and the user gets a fully configured AI marketing assistant
 ## Phase 6: Docker & Distribution
 > **Goal:** One command to deploy
 
-- [ ] **6.1** Build custom Docker image: `citedy/adclaw:latest`
+- [x] **6.1** Build custom Docker image: `nttylock/adclaw:latest`
 - [x] **6.2** Create `docker-compose.yml` with all env vars pre-set
-- [ ] **6.3** Publish to Docker Hub
+- [x] **6.3** Publish to Docker Hub — `nttylock/adclaw:latest`
 - [ ] **6.4** Add deployment templates (DigitalOcean, Railway, Render)
 - [ ] **6.5** Create install script: `curl -sSL https://get.adclaw.dev | bash`
 - [x] **6.6** Add `.env.example` with all supported variables

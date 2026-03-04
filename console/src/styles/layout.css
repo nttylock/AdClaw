@@ -57,12 +57,12 @@ body {
   padding: 0;
 }
 
-/* Welcome avatar: full tall SVG. Class is AdClaw-avatar (no "ant"). */
+/* Welcome avatar: fit wide logo. */
 [class*="chat-anywhere-welcome-default"] [class*="-avatar"],
 [class*="message-list-welcome"] [class*="welcome-default"] [class*="-avatar"] {
-  width: 36px !important;
+  width: 48px !important;
   height: 48px !important;
-  min-width: 36px !important;
+  min-width: 48px !important;
   min-height: 48px !important;
   overflow: visible !important;
 }
