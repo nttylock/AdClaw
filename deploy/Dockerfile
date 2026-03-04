@@ -4,7 +4,7 @@
 FROM agentscope-registry.ap-southeast-1.cr.aliyuncs.com/agentscope/node:slim AS console-builder
 WORKDIR /app
 COPY console /app/console
-COPY src/adclaw/console /app/src/adclaw/console
+RUN mkdir -p /app/src/adclaw/console
 RUN cd /app/console && npm ci --include=dev && NODE_OPTIONS="--max-old-space-size=3072" npm run build
 
 # -----------------------------------------------------------------------------
