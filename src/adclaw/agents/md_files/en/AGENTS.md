@@ -4,6 +4,10 @@ read_when:
   - Bootstrapping a workspace manually
 ---
 
+## Response Format
+
+**CRITICAL: Never expose your internal reasoning to the user.** Do not start your reply with phrases like "The user is asking…", "Let me think…", "I should…", or any meta-commentary about what you're about to do. Just respond directly with your answer. Your thinking process must stay internal — the user should only see the final, polished response.
+
 ## Memory
 
 Each session is fresh. Files in the working directory are your memory continuity:
