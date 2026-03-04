@@ -15,10 +15,12 @@ import WorkspacePage from "../../pages/Agent/Workspace";
 import MCPPage from "../../pages/Agent/MCP";
 import ModelsPage from "../../pages/Settings/Models";
 import EnvironmentsPage from "../../pages/Settings/Environments";
+import WelcomePage from "../../pages/Welcome";
 
 const { Content } = Layout;
 
 const pathToKey: Record<string, string> = {
+  "/welcome": "welcome",
   "/chat": "chat",
   "/channels": "channels",
   "/sessions": "sessions",
@@ -41,9 +43,20 @@ export default function MainLayout() {
 
   useEffect(() => {
     if (currentPath === "/") {
-      navigate("/chat", { replace: true });
+      const welcomeSeen = localStorage.getItem("adclaw_welcome_seen");
+      navigate(welcomeSeen ? "/chat" : "/welcome", { replace: true });
     }
   }, [currentPath, navigate]);
+
+  const isWelcomePage = currentPath === "/welcome";
+
+  if (isWelcomePage) {
+    return (
+      <Routes>
+        <Route path="/welcome" element={<WelcomePage />} />
+      </Routes>
+    );
+  }
 
   return (
     <Layout style={{ height: "100vh" }}>

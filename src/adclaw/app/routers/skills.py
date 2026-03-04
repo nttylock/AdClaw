@@ -160,6 +160,42 @@ async def install_from_hub(request: HubInstallRequest):
     }
 
 
+CITEDY_SKILLS_REPO = "https://github.com/Citedy/citedy-seo-agent"
+CITEDY_SKILL_NAMES = [
+    "citedy-seo-agent",
+    "citedy-content-writer",
+    "citedy-content-ingestion",
+    "citedy-trend-scout",
+    "citedy-lead-magnets",
+    "citedy-video-shorts",
+]
+
+
+@router.post("/hub/update-citedy")
+async def update_citedy_skills():
+    """Update all Citedy skills from GitHub to the latest version."""
+    results = []
+    errors = []
+    for skill_name in CITEDY_SKILL_NAMES:
+        url = f"{CITEDY_SKILLS_REPO}/tree/main/skills/{skill_name}"
+        try:
+            result = install_skill_from_hub(
+                bundle_url=url,
+                enable=True,
+                overwrite=True,
+            )
+            results.append({"name": result.name, "updated": True})
+        except Exception as e:
+            logger.warning("Failed to update skill %s: %s", skill_name, e)
+            errors.append({"name": skill_name, "error": str(e)})
+    return {
+        "updated": results,
+        "errors": errors,
+        "total": len(results),
+        "failed": len(errors),
+    }
+
+
 @router.post("/batch-disable")
 async def batch_disable_skills(skill_name: list[str]) -> None:
     for skill in skill_name:

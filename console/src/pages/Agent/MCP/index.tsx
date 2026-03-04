@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Button, Empty, Modal } from "@agentscope-ai/design";
+import { useState, useEffect } from "react";
+import { Button, Empty, Modal, Card } from "@agentscope-ai/design";
 import type { MCPClientInfo } from "../../../api/types";
 import { MCPClientCard } from "./components";
 import { useMCP } from "./useMCP";
 import { useTranslation } from "react-i18next";
+import { request } from "../../../api/request";
 
 type MCPTransport = "stdio" | "streamable_http" | "sse";
 
@@ -60,6 +61,13 @@ function MCPPage() {
   } = useMCP();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [citedyStatus, setCitedyStatus] = useState<any>(null);
+
+  useEffect(() => {
+    request<any>("/citedy/status")
+      .then(setCitedyStatus)
+      .catch(() => {});
+  }, []);
   const [newClientJson, setNewClientJson] = useState(`{
   "mcpServers": {
     "example-client": {
@@ -179,6 +187,63 @@ function MCPPage() {
           {t("mcp.create")}
         </Button>
       </div>
+
+      {citedyStatus && (
+        <Card
+          style={{
+            marginBottom: 20,
+            borderRadius: 8,
+            background: citedyStatus.configured
+              ? "linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)"
+              : "linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%)",
+            border: citedyStatus.configured
+              ? "1px solid #bbf7d0"
+              : "1px solid #fde68a",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
+                Citedy SEO & Marketing Tools
+              </h3>
+              <p style={{ margin: "4px 0 0", color: "#666", fontSize: 13 }}>
+                {citedyStatus.configured
+                  ? `API Key: ${citedyStatus.api_key_prefix || "configured"}`
+                  : "API key not configured — get a free key to unlock 52 marketing tools"}
+                {citedyStatus.balance &&
+                  ` | Balance: ${citedyStatus.balance.credits} credits`}
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              {!citedyStatus.configured && (
+                <Button
+                  type="primary"
+                  onClick={() =>
+                    window.open(citedyStatus.developer_url, "_blank")
+                  }
+                >
+                  Get API Key
+                </Button>
+              )}
+              {citedyStatus.configured && (
+                <Button
+                  onClick={() =>
+                    window.open(citedyStatus.billing_url, "_blank")
+                  }
+                >
+                  Top Up Balance
+                </Button>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
 
       {loading ? (
         <div style={{ textAlign: "center", padding: 60 }}>

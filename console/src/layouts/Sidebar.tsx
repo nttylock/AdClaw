@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "../api";
+import { request } from "../api/request";
 import {
   MessageSquare,
   Radio,
@@ -21,6 +22,8 @@ import {
   Plug,
   PanelLeftClose,
   PanelLeftOpen,
+  Wallet,
+  ExternalLink,
 } from "lucide-react";
 
 const { Sider } = Layout;
@@ -54,11 +57,26 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
     "settings-group",
   ]);
   const [version, setVersion] = useState<string>("");
+  const [citedyBalance, setCitedyBalance] = useState<{
+    configured: boolean;
+    credits?: number;
+    billing_url?: string;
+  } | null>(null);
 
   useEffect(() => {
     api
       .getVersion()
       .then((res) => setVersion(res?.version ?? ""))
+      .catch(() => {});
+    // Fetch Citedy status
+    request<any>("/citedy/status")
+      .then((res) => {
+        setCitedyBalance({
+          configured: res.configured,
+          credits: res.balance?.credits,
+          billing_url: res.billing_url,
+        });
+      })
       .catch(() => {});
   }, []);
 
@@ -220,6 +238,46 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
         }}
         items={menuItems}
       />
+      {!collapsed && citedyBalance?.configured && (
+        <div
+          style={{
+            padding: "12px 16px",
+            borderTop: "1px solid #f0f0f0",
+            fontSize: 12,
+            color: "#666",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <Wallet size={14} />
+              {citedyBalance.credits != null
+                ? `${citedyBalance.credits} credits`
+                : "Citedy"}
+            </span>
+            <Button
+              type="link"
+              size="small"
+              style={{ padding: 0, fontSize: 12 }}
+              icon={<ExternalLink size={12} />}
+              onClick={() =>
+                window.open(
+                  citedyBalance.billing_url ||
+                    "https://www.citedy.com/dashboard/billing",
+                  "_blank"
+                )
+              }
+            >
+              Top Up
+            </Button>
+          </div>
+        </div>
+      )}
     </Sider>
   );
 }
