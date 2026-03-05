@@ -498,6 +498,86 @@ class TelegramChannel(BaseChannel):
         except ImportError:
             return None
 
+    # ------------------------------------------------------------------
+    # Streaming via sendMessageDraft (Bot API 9.5+)
+    # ------------------------------------------------------------------
+
+    async def _run_process_loop(
+        self,
+        request: Any,
+        to_handle: str,
+        send_meta: dict,
+    ) -> None:
+        """Override base loop to stream partial text via sendMessageDraft."""
+        from agentscope_runtime.engine.schemas.agent_schemas import (
+            RunStatus,
+            MessageType,
+        )
+
+        bot = self._application.bot if self._application else None
+        chat_id = send_meta.get("chat_id") or to_handle
+
+        # Check if bot supports sendMessageDraft
+        can_stream = bot is not None and hasattr(bot, "send_message_draft")
+        draft_text = ""
+        last_response = None
+
+        try:
+            async for event in self._process(request):
+                obj = getattr(event, "object", None)
+                status = getattr(event, "status", None)
+
+                if obj == "message" and status == RunStatus.InProgress:
+                    # Extract partial text from in-progress message
+                    msg_type = getattr(event, "type", None)
+                    if msg_type == MessageType.REASONING:
+                        continue  # Skip reasoning
+                    content = getattr(event, "content", None) or []
+                    parts = []
+                    for c in content:
+                        ct = getattr(c, "type", None)
+                        if ct == ContentType.TEXT and getattr(c, "text", None):
+                            parts.append(c.text)
+                    partial = "".join(parts)
+                    # Strip <think> tags
+                    partial = self._THINK_RE.sub("", partial).strip()
+                    if can_stream and partial and partial != draft_text:
+                        draft_text = partial
+                        try:
+                            await bot.send_message_draft(
+                                chat_id=chat_id,
+                                text=draft_text,
+                            )
+                        except Exception:
+                            logger.debug("sendMessageDraft failed, skipping")
+                            can_stream = False
+
+                elif obj == "message" and status == RunStatus.Completed:
+                    draft_text = ""  # Reset draft
+                    await self.on_event_message_completed(
+                        request, to_handle, event, send_meta,
+                    )
+
+                elif obj == "response":
+                    last_response = event
+                    await self.on_event_response(request, event)
+
+            if last_response and getattr(last_response, "error", None):
+                err = getattr(
+                    last_response.error, "message",
+                    str(last_response.error),
+                )
+                await self._on_consume_error(request, to_handle, f"Error: {err}")
+            if self._on_reply_sent:
+                args = self.get_on_reply_sent_args(request, to_handle)
+                self._on_reply_sent(self.channel, *args)
+        except Exception:
+            logger.exception("telegram consume_one failed")
+            await self._on_consume_error(
+                request, to_handle,
+                "An error occurred while processing your request.",
+            )
+
     async def send(
         self,
         to_handle: str,
