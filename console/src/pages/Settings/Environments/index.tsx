@@ -1,8 +1,9 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Button, Modal, message } from "@agentscope-ai/design";
 import { useTranslation } from "react-i18next";
 
 import api from "../../../api";
+import type { EnvKeyRef } from "../../../api/modules/env";
 import { useEnvVars } from "./useEnvVars";
 import {
   PageHeader,
@@ -39,6 +40,42 @@ function EnvironmentsPage() {
   const [saving, setSaving] = useState(false);
   const [keyErrors, setKeyErrors] = useState<Record<number, string>>({});
   const [selected, setSelected] = useState<Set<number>>(new Set());
+
+  /* ---- key reference ---- */
+  const [keyRefs, setKeyRefs] = useState<EnvKeyRef[]>([]);
+  const [bulkText, setBulkText] = useState("");
+  const [importing, setImporting] = useState(false);
+
+  useEffect(() => {
+    api.listKeyRefs().then(setKeyRefs).catch(() => {});
+  }, [envVars]);
+
+  const bulkLineCount = useMemo(() => {
+    if (!bulkText.trim()) return 0;
+    return bulkText
+      .split("\n")
+      .filter((l: string) => {
+        const s = l.trim();
+        return s && !s.startsWith("#") && s.includes("=");
+      }).length;
+  }, [bulkText]);
+
+  const handleBulkImport = useCallback(async () => {
+    if (!bulkText.trim()) return;
+    setImporting(true);
+    try {
+      await api.bulkImport(bulkText, true);
+      message.success(`Imported ${bulkLineCount} variables`);
+      setBulkText("");
+      setRows(null);
+      fetchAll();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Import failed";
+      message.error(msg);
+    } finally {
+      setImporting(false);
+    }
+  }, [bulkText, bulkLineCount, fetchAll]);
 
   /* ---- derived state ---- */
 
@@ -281,6 +318,82 @@ function EnvironmentsPage() {
 
           {/* ---- Add button ---- */}
           <AddButton onClick={addRow} />
+        </div>
+      )}
+
+      {/* ---- Bulk Import ---- */}
+      <div className={styles.bulkSection}>
+        <div className={styles.refTitle}>Bulk Import</div>
+        <div className={styles.refDesc}>
+          Paste your .env file contents below. Supports KEY=VALUE, KEY="VALUE",
+          export KEY=VALUE, and # comments.
+        </div>
+        <textarea
+          className={styles.bulkTextarea}
+          value={bulkText}
+          onChange={(e) => setBulkText(e.target.value)}
+          placeholder={
+            "# Paste your .env file here\nTAVILY_API_KEY=tvly-...\nCITEDY_API_KEY=citedy_...\nGOOGLE_ADS_DEVELOPER_TOKEN=...\nSENDGRID_API_KEY=SG...."
+          }
+        />
+        <div className={styles.bulkActions}>
+          <Button
+            type="primary"
+            size="small"
+            loading={importing}
+            disabled={bulkLineCount === 0}
+            onClick={handleBulkImport}
+          >
+            Import & Merge
+          </Button>
+          {bulkLineCount > 0 && (
+            <span className={styles.bulkCount}>
+              {bulkLineCount} variable{bulkLineCount !== 1 ? "s" : ""} found
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ---- API Keys Reference ---- */}
+      {keyRefs.length > 0 && (
+        <div className={styles.refSection}>
+          <div className={styles.refTitle}>API Keys Reference</div>
+          <div className={styles.refDesc}>
+            All API keys used by built-in plugins. Green = configured, orange =
+            not set.
+          </div>
+          <table className={styles.refTable}>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Key</th>
+                <th>Plugin</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {keyRefs.map((ref) => (
+                <tr key={ref.key}>
+                  <td>
+                    <span
+                      className={`${styles.refBadge} ${
+                        ref.configured
+                          ? styles.refBadgeOk
+                          : styles.refBadgeMissing
+                      }`}
+                    >
+                      {ref.configured ? "OK" : "Missing"}
+                    </span>
+                  </td>
+                  <td>{ref.key}</td>
+                  <td style={{ fontFamily: "inherit" }}>{ref.plugin}</td>
+                  <td style={{ fontFamily: "inherit", color: "#666" }}>
+                    {ref.description}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
