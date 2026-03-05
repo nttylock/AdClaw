@@ -269,6 +269,60 @@ class MCPConfig(BaseModel):
                 headers={},
                 env={"CITEDY_API_KEY": os.getenv("CITEDY_API_KEY", "")},
             ),
+            # --- Browser & Web Scraping MCP Servers ---
+            "playwright": MCPClientConfig(
+                name="playwright_mcp",
+                description="Playwright browser automation (Microsoft)",
+                enabled=False,
+                command="npx",
+                args=["-y", "@playwright/mcp@latest", "--headless"],
+            ),
+            "puppeteer": MCPClientConfig(
+                name="puppeteer_mcp",
+                description="Puppeteer headless Chrome automation",
+                enabled=False,
+                command="npx",
+                args=["-y", "@modelcontextprotocol/server-puppeteer"],
+                env={
+                    "PUPPETEER_LAUNCH_OPTIONS": '{"headless":true,"args":["--no-sandbox"]}',
+                },
+            ),
+            "browser_use": MCPClientConfig(
+                name="browser_use_mcp",
+                description="AI-driven browser automation agent",
+                enabled=False,
+                command="uvx",
+                args=["--from", "browser-use[cli]", "browser-use", "--mcp"],
+                env={"BROWSER_USE_HEADLESS": "true"},
+            ),
+            "browserbase": MCPClientConfig(
+                name="browserbase_mcp",
+                description="Stagehand/Browserbase AI-first browser (cloud)",
+                enabled=bool(os.getenv("BROWSERBASE_API_KEY")),
+                command="npx",
+                args=["-y", "@browserbasehq/mcp-server-browserbase"],
+                env={
+                    "BROWSERBASE_API_KEY": os.getenv("BROWSERBASE_API_KEY", ""),
+                    "BROWSERBASE_PROJECT_ID": os.getenv("BROWSERBASE_PROJECT_ID", ""),
+                },
+            ),
+            "firecrawl": MCPClientConfig(
+                name="firecrawl_mcp",
+                description="Firecrawl web scraping & crawling",
+                enabled=bool(os.getenv("FIRECRAWL_API_KEY")),
+                command="npx",
+                args=["-y", "firecrawl-mcp"],
+                env={
+                    "FIRECRAWL_API_KEY": os.getenv("FIRECRAWL_API_KEY", ""),
+                },
+            ),
+            "crawl4ai": MCPClientConfig(
+                name="crawl4ai_mcp",
+                description="Crawl4AI open-source web crawler for AI",
+                enabled=False,
+                transport="sse",
+                url="http://localhost:11235/mcp/sse",
+            ),
         },
     )
 
