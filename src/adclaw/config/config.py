@@ -323,6 +323,128 @@ class MCPConfig(BaseModel):
                 transport="sse",
                 url="http://localhost:11235/mcp/sse",
             ),
+            # --- SEO & Search ---
+            "ahrefs": MCPClientConfig(
+                name="ahrefs_mcp",
+                description="Ahrefs SEO: backlinks, keywords, traffic (official)",
+                enabled=bool(os.getenv("AHREFS_API_KEY")),
+                command="npx",
+                args=["-y", "ahrefs-mcp-server"],
+                env={"AHREFS_API_KEY": os.getenv("AHREFS_API_KEY", "")},
+            ),
+            "dataforseo": MCPClientConfig(
+                name="dataforseo_mcp",
+                description="DataForSEO: SERP, keywords, domains (official)",
+                enabled=bool(os.getenv("DATAFORSEO_LOGIN")),
+                command="npx",
+                args=["-y", "@dataforseo/mcp-server"],
+                env={
+                    "DATAFORSEO_LOGIN": os.getenv("DATAFORSEO_LOGIN", ""),
+                    "DATAFORSEO_PASSWORD": os.getenv("DATAFORSEO_PASSWORD", ""),
+                },
+            ),
+            "seo_mcp": MCPClientConfig(
+                name="seo_mcp",
+                description="Free SEO research powered by Ahrefs data",
+                enabled=False,
+                command="npx",
+                args=["-y", "seo-mcp"],
+            ),
+            "google_search_console": MCPClientConfig(
+                name="gsc_mcp",
+                description="Google Search Console SEO insights",
+                enabled=False,
+                command="npx",
+                args=["-y", "mcp-gsc"],
+            ),
+            # --- Analytics ---
+            "google_analytics": MCPClientConfig(
+                name="ga4_mcp",
+                description="Google Analytics GA4 (official, 200+ metrics)",
+                enabled=False,
+                command="npx",
+                args=["-y", "@google-analytics/mcp"],
+            ),
+            # --- Advertising ---
+            "google_ads": MCPClientConfig(
+                name="google_ads_mcp",
+                description="Google Ads campaigns & reporting (official)",
+                enabled=bool(os.getenv("GOOGLE_ADS_DEVELOPER_TOKEN")),
+                command="npx",
+                args=["-y", "@googleads/mcp-server"],
+                env={
+                    "GOOGLE_ADS_DEVELOPER_TOKEN": os.getenv("GOOGLE_ADS_DEVELOPER_TOKEN", ""),
+                },
+            ),
+            "meta_ads": MCPClientConfig(
+                name="meta_ads_mcp",
+                description="Meta/Facebook & Instagram Ads management",
+                enabled=bool(os.getenv("META_ADS_ACCESS_TOKEN")),
+                command="npx",
+                args=["-y", "meta-ads-mcp"],
+                env={
+                    "META_ADS_ACCESS_TOKEN": os.getenv("META_ADS_ACCESS_TOKEN", ""),
+                },
+            ),
+            # --- Social Media ---
+            "twitter": MCPClientConfig(
+                name="twitter_mcp",
+                description="Twitter/X: posts, search, threads, followers",
+                enabled=bool(os.getenv("TWITTER_API_KEY")),
+                command="npx",
+                args=["-y", "twitter-mcp"],
+                env={
+                    "TWITTER_API_KEY": os.getenv("TWITTER_API_KEY", ""),
+                    "TWITTER_API_SECRET": os.getenv("TWITTER_API_SECRET", ""),
+                    "TWITTER_ACCESS_TOKEN": os.getenv("TWITTER_ACCESS_TOKEN", ""),
+                    "TWITTER_ACCESS_SECRET": os.getenv("TWITTER_ACCESS_SECRET", ""),
+                },
+            ),
+            "youtube": MCPClientConfig(
+                name="youtube_mcp",
+                description="YouTube: videos, analytics, Shorts",
+                enabled=bool(os.getenv("YOUTUBE_API_KEY")),
+                command="npx",
+                args=["-y", "youtube-mcp-server"],
+                env={"YOUTUBE_API_KEY": os.getenv("YOUTUBE_API_KEY", "")},
+            ),
+            "instagram": MCPClientConfig(
+                name="instagram_mcp",
+                description="Instagram: insights, publish photos & videos",
+                enabled=bool(os.getenv("INSTAGRAM_ACCESS_TOKEN")),
+                command="npx",
+                args=["-y", "ig-mcp"],
+                env={
+                    "INSTAGRAM_ACCESS_TOKEN": os.getenv("INSTAGRAM_ACCESS_TOKEN", ""),
+                },
+            ),
+            "linkedin": MCPClientConfig(
+                name="linkedin_mcp",
+                description="LinkedIn: posts, profiles, companies, scraping",
+                enabled=False,
+                command="npx",
+                args=["-y", "linkedin-mcp-server"],
+            ),
+            # --- Email Marketing ---
+            "sendgrid": MCPClientConfig(
+                name="sendgrid_mcp",
+                description="SendGrid email: contacts, templates, campaigns",
+                enabled=bool(os.getenv("SENDGRID_API_KEY")),
+                command="npx",
+                args=["-y", "sendgrid-mcp"],
+                env={"SENDGRID_API_KEY": os.getenv("SENDGRID_API_KEY", "")},
+            ),
+            # --- CRM ---
+            "hubspot": MCPClientConfig(
+                name="hubspot_mcp",
+                description="HubSpot CRM: contacts, deals, companies",
+                enabled=bool(os.getenv("HUBSPOT_ACCESS_TOKEN")),
+                command="npx",
+                args=["-y", "mcp-hubspot"],
+                env={
+                    "HUBSPOT_ACCESS_TOKEN": os.getenv("HUBSPOT_ACCESS_TOKEN", ""),
+                },
+            ),
         },
     )
 
