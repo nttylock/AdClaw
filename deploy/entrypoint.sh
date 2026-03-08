@@ -11,6 +11,32 @@ if [ ! -f "$CONFIG" ] || [ ! -s "$CONFIG" ]; then
   adclaw init --defaults --accept-security 2>/dev/null || true
 fi
 
+# Migrate config.json — apply new defaults to existing config without overwriting user data
+python3 -c "
+import json, os, sys
+cfg_path = os.environ.get('ADCLAW_WORKING_DIR', '/app/working') + '/config.json'
+if not os.path.isfile(cfg_path):
+    sys.exit(0)
+with open(cfg_path) as f:
+    cfg = json.load(f)
+changed = False
+# Force correct defaults that should never be True in production
+if cfg.get('show_tool_details') is not False:
+    cfg['show_tool_details'] = False
+    changed = True
+# Ensure filter_tool_messages=True on all channels
+for ch_name, ch_cfg in cfg.get('channels', {}).items():
+    if isinstance(ch_cfg, dict) and ch_cfg.get('filter_tool_messages') is not True:
+        ch_cfg['filter_tool_messages'] = True
+        changed = True
+if changed:
+    with open(cfg_path, 'w') as f:
+        json.dump(cfg, f, indent=2, ensure_ascii=False)
+    print('entrypoint: config.json migrated (applied new defaults)')
+else:
+    print('entrypoint: config.json OK (no migration needed)')
+" 2>/dev/null || true
+
 # Enable Citedy MCP client if API key is provided at runtime
 if [ -n "$CITEDY_API_KEY" ]; then
   CONFIG="${ADCLAW_WORKING_DIR:-/app/working}/config.json"
