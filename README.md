@@ -19,7 +19,7 @@
 One `docker run` — and you get a fully configured AI marketing assistant with:
 
 - **Telegram bot** working out of the box
-- **6 Citedy SEO/marketing skills** pre-installed
+- **96 built-in skills** — SEO, ads, content, social media, analytics, growth hacking, and more
 - **52 marketing tools** via Citedy MCP server
 - **Welcome wizard** — paste your API key and start
 - **Multi-channel** — Telegram, Discord, DingTalk, Feishu, QQ, Console
