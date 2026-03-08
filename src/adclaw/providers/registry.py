@@ -93,6 +93,17 @@ ANTHROPIC_MODELS: List[ModelInfo] = [
     ModelInfo(id="claude-haiku-4-5-20251001", name="Claude Haiku 4.5"),
 ]
 
+XAI_MODELS: List[ModelInfo] = [
+    ModelInfo(
+        id="grok-4-1-fast-non-reasoning",
+        name="Grok 4.1 Fast (non-reasoning)",
+    ),
+    ModelInfo(
+        id="grok-4-1-fast-reasoning",
+        name="Grok 4.1 Fast (reasoning)",
+    ),
+]
+
 PROVIDER_MODELSCOPE = ProviderDefinition(
     id="modelscope",
     name="ModelScope",
@@ -175,6 +186,14 @@ PROVIDER_ANTHROPIC = ProviderDefinition(
     models=ANTHROPIC_MODELS,
 )
 
+PROVIDER_XAI = ProviderDefinition(
+    id="xai",
+    name="xAI (Grok)",
+    default_base_url="https://api.x.ai/v1",
+    api_key_prefix="xai-",
+    models=XAI_MODELS,
+)
+
 PROVIDER_OLLAMA = ProviderDefinition(
     id="ollama",
     name="Ollama",
@@ -196,6 +215,7 @@ _BUILTIN_IDS: frozenset[str] = frozenset(
         "openrouter",
         "anthropic",
         "azure-openai",
+        "xai",
         "ollama",
         "llamacpp",
         "mlx",
@@ -210,6 +230,7 @@ PROVIDERS: dict[str, ProviderDefinition] = {
     PROVIDER_ALIYUN_CODINGPLAN.id: PROVIDER_ALIYUN_CODINGPLAN,
     PROVIDER_MODELSCOPE.id: PROVIDER_MODELSCOPE,
     PROVIDER_DASHSCOPE.id: PROVIDER_DASHSCOPE,
+    PROVIDER_XAI.id: PROVIDER_XAI,
     PROVIDER_AZURE_OPENAI.id: PROVIDER_AZURE_OPENAI,
     PROVIDER_OLLAMA.id: PROVIDER_OLLAMA,
     PROVIDER_LLAMACPP.id: PROVIDER_LLAMACPP,

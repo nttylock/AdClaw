@@ -37,6 +37,8 @@ from .tools import (
     write_file,
     create_memory_search_tool,
 )
+from .tools.aom_query import create_aom_query_tool
+from .tools.skill_patcher import patch_skill_script, TOOL_SPEC as _PATCHER_TOOL_SPEC
 from .utils import process_file_and_media_blocks_in_message
 from ..agents.memory import MemoryManager
 from ..config import load_config
@@ -79,6 +81,7 @@ class AdClawAgent(ReActAgent):
         enable_memory_manager: bool = True,
         mcp_clients: Optional[List[Any]] = None,
         memory_manager: MemoryManager | None = None,
+        aom_manager: Optional[Any] = None,
         max_iters: int = 50,
         max_input_length: int = 128 * 1024,  # 128K = 131072 tokens
         namesake_strategy: NamesakeStrategy = "skip",
@@ -104,6 +107,8 @@ class AdClawAgent(ReActAgent):
         self._max_input_length = max_input_length
         self._mcp_clients = mcp_clients or []
         self._namesake_strategy = namesake_strategy
+        self._aom_manager = aom_manager
+        self._aom_capture_hook = None
 
         # Memory compaction threshold: configurable ratio of max_input_length
         self._memory_compact_threshold = int(
@@ -139,6 +144,9 @@ class AdClawAgent(ReActAgent):
             memory_manager,
             namesake_strategy,
         )
+
+        # Setup AOM integration
+        self._setup_aom(namesake_strategy)
 
         # Setup command handler
         self.command_handler = CommandHandler(
@@ -198,6 +206,10 @@ class AdClawAgent(ReActAgent):
         )
         toolkit.register_tool_function(
             get_current_time,
+            namesake_strategy=namesake_strategy,
+        )
+        toolkit.register_tool_function(
+            patch_skill_script,
             namesake_strategy=namesake_strategy,
         )
 
@@ -289,6 +301,39 @@ class AdClawAgent(ReActAgent):
                 namesake_strategy=namesake_strategy,
             )
             logger.debug("Registered memory_search tool")
+
+    def _setup_aom(self, namesake_strategy: NamesakeStrategy) -> None:
+        """Setup Always-On Memory integration if AOM manager is available."""
+        if self._aom_manager is None or not self._aom_manager.is_running:
+            return
+
+        # Register query_long_term_memory tool
+        if self._aom_manager.query_agent is not None:
+            try:
+                tool_fn = create_aom_query_tool(self._aom_manager.query_agent)
+                self.toolkit.register_tool_function(
+                    tool_fn,
+                    namesake_strategy=namesake_strategy,
+                )
+                logger.debug("Registered query_long_term_memory tool")
+            except Exception as exc:
+                logger.warning("Failed to register AOM query tool: %s", exc)
+
+        # Setup capture hook for auto-ingesting tool results
+        if self._aom_manager.ingest_agent is not None:
+            try:
+                from .hooks.aom_capture import AOMCaptureHook
+
+                config = load_config()
+                aom_config = config.agents.always_on_memory
+                self._aom_capture_hook = AOMCaptureHook(
+                    ingest_agent=self._aom_manager.ingest_agent,
+                    capture_mcp=aom_config.auto_capture_mcp,
+                    capture_skills=aom_config.auto_capture_skills,
+                )
+                logger.debug("AOM capture hook configured")
+            except Exception as exc:
+                logger.warning("Failed to setup AOM capture hook: %s", exc)
 
     def _register_hooks(self) -> None:
         """Register pre-reasoning hooks for bootstrap and memory compaction."""

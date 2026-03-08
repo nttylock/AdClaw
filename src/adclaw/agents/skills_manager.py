@@ -9,8 +9,11 @@ from pydantic import BaseModel
 import frontmatter
 
 from ..constant import ACTIVE_SKILLS_DIR, CUSTOMIZED_SKILLS_DIR
+from .skill_scanner import SkillSecurityScanner
 
 logger = logging.getLogger(__name__)
+
+_scanner = SkillSecurityScanner()
 
 
 class SkillInfo(BaseModel):
@@ -591,6 +594,34 @@ class SkillService:
                 e,
             )
             return False
+
+        # Security scan before writing
+        try:
+            scan = _scanner.scan_content(content, name)
+            if scripts:
+                script_scan = _scanner.scan_scripts_content(scripts, name)
+                scan.findings.extend(script_scan.findings)
+                scan.files_scanned += script_scan.files_scanned
+                if script_scan.critical_count > 0:
+                    scan.safe = False
+            if not scan.safe:
+                logger.warning(
+                    "Skill '%s' BLOCKED by security scanner: %d critical finding(s)",
+                    name,
+                    scan.critical_count,
+                )
+                for f in scan.findings:
+                    if f.severity == "critical":
+                        logger.warning("  %s", f)
+                return False
+            if scan.findings:
+                logger.info(
+                    "Skill '%s' passed scan with %d warning(s)",
+                    name,
+                    len(scan.findings),
+                )
+        except Exception as e:
+            logger.warning("Security scan failed for '%s': %s (allowing)", name, e)
 
         customized_dir = get_customized_skills_dir()
         customized_dir.mkdir(parents=True, exist_ok=True)

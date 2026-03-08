@@ -18,6 +18,7 @@ import {
   CheckCircle,
   ExternalLink,
   Cpu,
+  Search,
 } from "lucide-react";
 import { request } from "../../api/request";
 import styles from "./index.module.less";
@@ -51,11 +52,17 @@ interface ActiveModels {
   active_llm: { provider_id: string; model: string } | null;
 }
 
+interface SearchStatus {
+  exa: { configured: boolean; api_key_prefix?: string | null };
+  xai: { configured: boolean; api_key_prefix?: string | null };
+}
+
 // Recommended providers for the wizard (order matters)
 const WIZARD_PROVIDERS = [
   "openrouter",
   "openai",
   "anthropic",
+  "xai",
   "aliyun-intl",
   "aliyun-codingplan",
   "ollama",
@@ -76,22 +83,29 @@ export default function WelcomePage() {
   const [savingLlm, setSavingLlm] = useState(false);
   const [llmConfigured, setLlmConfigured] = useState(false);
 
+  // Search state
+  const [exaKey, setExaKey] = useState("");
+  const [xaiKey, setXaiKey] = useState("");
+  const [savingSearch, setSavingSearch] = useState(false);
+  const [searchStatus, setSearchStatus] = useState<SearchStatus | null>(null);
+
   useEffect(() => {
     request<CitedyStatus>("/citedy/status").then((res) => {
       setCitedyStatus(res);
       if (res.configured) setCurrentStep(1);
     });
-    // Load providers
     request<ProviderInfo[]>("/models").then((res) => {
       setProviders(res);
     });
-    // Check if LLM is already configured
     request<ActiveModels>("/models/active").then((res) => {
       if (res.active_llm?.provider_id) {
         setLlmConfigured(true);
         setSelectedProvider(res.active_llm.provider_id);
         setSelectedModel(res.active_llm.model);
       }
+    });
+    request<SearchStatus>("/search/status").then((res) => {
+      setSearchStatus(res);
     });
   }, []);
 
@@ -134,7 +148,6 @@ export default function WelcomePage() {
     }
     setSavingLlm(true);
     try {
-      // Save API key if provided
       if (llmApiKey.trim()) {
         await request(`/models/${selectedProvider}/config`, {
           method: "PUT",
@@ -142,7 +155,6 @@ export default function WelcomePage() {
           headers: { "Content-Type": "application/json" },
         });
       }
-      // Set active model
       await request("/models/active", {
         method: "PUT",
         body: JSON.stringify({
@@ -161,6 +173,31 @@ export default function WelcomePage() {
     }
   };
 
+  const handleSaveSearch = async () => {
+    if (!exaKey.trim() && !xaiKey.trim()) {
+      message.warning("Enter at least one search API key");
+      return;
+    }
+    setSavingSearch(true);
+    try {
+      const body: Record<string, string> = {};
+      if (exaKey.trim()) body.exa_api_key = exaKey.trim();
+      if (xaiKey.trim()) body.xai_api_key = xaiKey.trim();
+      const res = await request<SearchStatus>("/search/save-keys", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: { "Content-Type": "application/json" },
+      });
+      setSearchStatus(res);
+      message.success("Search keys saved!");
+      setCurrentStep(3);
+    } catch {
+      message.error("Failed to save search keys");
+    } finally {
+      setSavingSearch(false);
+    }
+  };
+
   const handleFinish = () => {
     localStorage.setItem("adclaw_welcome_seen", "true");
     navigate("/chat", { replace: true });
@@ -170,10 +207,14 @@ export default function WelcomePage() {
     openrouter: "One key for all models — Claude, GPT, Gemini, Llama, etc. Get key at openrouter.ai",
     openai: "Direct access to GPT-5, o3, GPT-4o. Get key at platform.openai.com",
     anthropic: "Claude Opus, Sonnet, Haiku. Get key at console.anthropic.com",
+    xai: "Grok 4.1 Fast — $0.20/1M input. Get key at console.x.ai",
     "aliyun-intl": "Qwen3.5, GLM-5, Kimi, MiniMax — international endpoint. Free trial available.",
     "aliyun-codingplan": "Same models as Aliyun Intl but China endpoint.",
     ollama: "Run models locally. No API key needed. Install at ollama.com",
   };
+
+  const searchConfigured =
+    searchStatus?.exa?.configured || searchStatus?.xai?.configured;
 
   return (
     <div className={styles.welcomeContainer}>
@@ -201,6 +242,7 @@ export default function WelcomePage() {
           items={[
             { title: "Citedy API Key", icon: <Key size={18} /> },
             { title: "Choose LLM", icon: <Cpu size={18} /> },
+            { title: "Web Search", icon: <Search size={18} /> },
             { title: "Connect & Start", icon: <CheckCircle size={18} /> },
           ]}
         />
@@ -361,7 +403,12 @@ export default function WelcomePage() {
 
           {currentStep === 2 && (
             <Card className={styles.stepCard}>
-              <Title level={4}>Step 3: Connect & Start</Title>
+              <Title level={4}>Step 3: Enable Web Search</Title>
+              <Paragraph>
+                Without search, your AI agent is blind to the internet.
+                Add at least one search key so AdClaw can find real-time
+                information, research competitors, and discover trends.
+              </Paragraph>
 
               {llmConfigured && (
                 <Alert
@@ -369,6 +416,125 @@ export default function WelcomePage() {
                   showIcon
                   icon={<CheckCircle size={16} />}
                   message={`LLM configured: ${selectedModel || "ready"}`}
+                  style={{ marginBottom: 16 }}
+                />
+              )}
+
+              <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+                <div>
+                  <Text strong>Exa Search</Text>
+                  <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
+                    AI-powered web, code & people search
+                  </Text>
+                  <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                    <Input.Password
+                      size="large"
+                      placeholder="Exa API key"
+                      value={exaKey}
+                      onChange={(e) => setExaKey(e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <Button
+                      size="large"
+                      icon={<ExternalLink size={14} />}
+                      onClick={() =>
+                        window.open("https://dashboard.exa.ai/api-keys", "_blank")
+                      }
+                    >
+                      Get Key
+                    </Button>
+                  </div>
+                  {searchStatus?.exa?.configured && (
+                    <Text type="success" style={{ fontSize: 12 }}>
+                      <CheckCircle size={12} style={{ marginRight: 4 }} />
+                      Configured ({searchStatus.exa.api_key_prefix})
+                    </Text>
+                  )}
+                </div>
+
+                <div>
+                  <Text strong>xAI (Grok)</Text>
+                  <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
+                    Web search + X/Twitter search (via Grok)
+                  </Text>
+                  <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                    <Input.Password
+                      size="large"
+                      placeholder="xAI API key (xai-...)"
+                      value={xaiKey}
+                      onChange={(e) => setXaiKey(e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <Button
+                      size="large"
+                      icon={<ExternalLink size={14} />}
+                      onClick={() =>
+                        window.open("https://console.x.ai", "_blank")
+                      }
+                    >
+                      Get Key
+                    </Button>
+                  </div>
+                  {searchStatus?.xai?.configured && (
+                    <Text type="success" style={{ fontSize: 12 }}>
+                      <CheckCircle size={12} style={{ marginRight: 4 }} />
+                      Configured ({searchStatus.xai.api_key_prefix})
+                    </Text>
+                  )}
+                </div>
+
+                <Space>
+                  <Button
+                    type="primary"
+                    size="large"
+                    loading={savingSearch}
+                    onClick={handleSaveSearch}
+                    disabled={!exaKey.trim() && !xaiKey.trim()}
+                  >
+                    Save & Continue
+                  </Button>
+                  <Button size="large" onClick={() => setCurrentStep(3)}>
+                    {searchConfigured ? "Continue" : "Skip"}
+                  </Button>
+                </Space>
+
+                {!searchConfigured && (
+                  <Alert
+                    type="warning"
+                    message="Without search keys, AdClaw cannot look up real-time information from the web."
+                    style={{ fontSize: 13 }}
+                  />
+                )}
+              </Space>
+            </Card>
+          )}
+
+          {currentStep === 3 && (
+            <Card className={styles.stepCard}>
+              <Title level={4}>Step 4: Connect & Start</Title>
+
+              {llmConfigured && (
+                <Alert
+                  type="success"
+                  showIcon
+                  icon={<CheckCircle size={16} />}
+                  message={`LLM configured: ${selectedModel || "ready"}`}
+                  style={{ marginBottom: 8 }}
+                />
+              )}
+              {searchConfigured && (
+                <Alert
+                  type="success"
+                  showIcon
+                  icon={<CheckCircle size={16} />}
+                  message={
+                    [
+                      searchStatus?.exa?.configured && "Exa search",
+                      searchStatus?.xai?.configured && "xAI search",
+                    ]
+                      .filter(Boolean)
+                      .join(" + ") + " enabled"
+                  }
                   style={{ marginBottom: 16 }}
                 />
               )}
@@ -394,7 +560,7 @@ export default function WelcomePage() {
           )}
         </div>
 
-        {currentStep < 2 && (
+        {currentStep < 3 && (
           <div className={styles.skipSection}>
             <Button type="link" onClick={handleFinish}>
               Skip setup — go to chat

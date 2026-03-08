@@ -7,11 +7,15 @@ from ...agents.skills_manager import (
     SkillService,
     SkillInfo,
     list_available_skills,
+    get_customized_skills_dir,
+    get_active_skills_dir,
 )
 from ...agents.skills_hub import (
     search_hub_skills,
     install_skill_from_hub,
 )
+from ...agents.skill_scanner import SkillSecurityScanner
+from ...agents.tools.skill_patcher import get_patch_history
 
 
 logger = logging.getLogger(__name__)
@@ -269,3 +273,22 @@ async def load_skill_file(
         source=source,
     )
     return {"content": content}
+
+
+@router.post("/{skill_name}/scan")
+async def scan_skill(skill_name: str):
+    """Run security scan on a skill."""
+    # Find skill directory
+    for base in (get_customized_skills_dir(), get_active_skills_dir()):
+        skill_dir = base / skill_name
+        if skill_dir.exists():
+            scanner = SkillSecurityScanner()
+            result = scanner.scan_skill(skill_dir, skill_name)
+            return result.to_dict()
+    raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
+
+
+@router.get("/{skill_name}/patches")
+async def skill_patches(skill_name: str):
+    """Get patch history for a skill."""
+    return {"skill_name": skill_name, "patches": get_patch_history(skill_name)}

@@ -14,7 +14,7 @@ class BaseChannelConfig(BaseModel):
 
     enabled: bool = False
     bot_prefix: str = ""
-    filter_tool_messages: bool = False
+    filter_tool_messages: bool = True
 
 
 class IMessageChannelConfig(BaseChannelConfig):
@@ -131,6 +131,29 @@ class AgentsRunningConfig(BaseModel):
     )
 
 
+class AOMConfig(BaseModel):
+    """Always-On Memory Agent configuration."""
+
+    enabled: bool = False
+    embedding_backend: Literal["local", "api"] = "local"
+    embedding_model: str = "all-MiniLM-L6-v2"
+    embedding_api_url: str = ""
+    embedding_dimensions: int = 384
+    consolidation_interval_minutes: int = 60
+    consolidation_enabled: bool = True
+    auto_capture_mcp: bool = True
+    auto_capture_skills: bool = True
+    auto_capture_chat: bool = False
+    file_inbox_enabled: bool = False
+    importance_threshold: float = 0.3
+    max_memories: int = 100_000
+    # Advanced multimodal mode
+    multimodal_provider: Literal["gemini", "openai", "anthropic"] = "gemini"
+    multimodal_api_key: str = ""
+    multimodal_model: str = ""
+    multimodal_api_url: str = ""
+
+
 class AgentsConfig(BaseModel):
     defaults: AgentsDefaultsConfig = Field(
         default_factory=AgentsDefaultsConfig,
@@ -145,6 +168,10 @@ class AgentsConfig(BaseModel):
     installed_md_files_language: Optional[str] = Field(
         default=None,
         description="Language of currently installed md files",
+    )
+    always_on_memory: AOMConfig = Field(
+        default_factory=AOMConfig,
+        description="Always-On Memory Agent configuration",
     )
 
 
@@ -270,6 +297,23 @@ class MCPConfig(BaseModel):
                 env={"CITEDY_API_KEY": os.getenv("CITEDY_API_KEY", "")},
             ),
             # --- Browser & Web Scraping MCP Servers ---
+            "agent_browser": MCPClientConfig(
+                name="agent_browser_mcp",
+                description="Agent Browser: headless browser for AI agents (Vercel)",
+                enabled=True,
+                command="npx",
+                args=[
+                    "-y",
+                    "@agent-infra/mcp-server-browser@latest",
+                    "--headless",
+                ],
+                env={
+                    "AGENT_BROWSER_EXECUTABLE_PATH": os.getenv(
+                        "AGENT_BROWSER_EXECUTABLE_PATH",
+                        os.getenv("PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH", ""),
+                    ),
+                },
+            ),
             "playwright": MCPClientConfig(
                 name="playwright_mcp",
                 description="Playwright browser automation (Microsoft)",
@@ -322,6 +366,23 @@ class MCPConfig(BaseModel):
                 enabled=False,
                 transport="sse",
                 url="http://localhost:11235/mcp/sse",
+            ),
+            # --- AI-Powered Search ---
+            "xai_search": MCPClientConfig(
+                name="xai_search_mcp",
+                description="xAI Grok: web search + X/Twitter search",
+                enabled=bool(os.getenv("XAI_API_KEY")),
+                command="python3",
+                args=["-m", "adclaw.tools.xai_search_mcp"],
+                env={"XAI_API_KEY": os.getenv("XAI_API_KEY", "")},
+            ),
+            "exa": MCPClientConfig(
+                name="exa_mcp",
+                description="Exa AI search: web, code, people, companies",
+                enabled=bool(os.getenv("EXA_API_KEY")),
+                command="npx",
+                args=["-y", "exa-mcp-server"],
+                env={"EXA_API_KEY": os.getenv("EXA_API_KEY", "")},
             ),
             # --- SEO & Search ---
             "ahrefs": MCPClientConfig(
@@ -458,7 +519,7 @@ class Config(BaseModel):
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     last_dispatch: Optional[LastDispatchConfig] = None
     # When False, channel output hides tool call/result details (show "...").
-    show_tool_details: bool = True
+    show_tool_details: bool = False
 
 
 ChannelConfigUnion = Union[

@@ -24,6 +24,8 @@ from ..utils.logging import setup_logger
 from .channels import ChannelManager  # pylint: disable=no-name-in-module
 from .channels.utils import make_process_from_runner
 from .mcp import MCPClientManager, MCPConfigWatcher  # MCP hot-reload support
+from ..memory_agent.manager import AOMManager
+from ..memory_agent.models import AOMConfig as AOMConfigModel
 from .runner.repo.json_repo import JsonChatRepository
 from .crons.repo.json_repo import JsonJobRepository
 from .crons.manager import CronManager
@@ -69,6 +71,32 @@ async def lifespan(app: FastAPI):  # pylint: disable=too-many-statements
             logger.debug("MCP client manager initialized")
         except Exception:
             logger.exception("Failed to initialize MCP manager")
+
+    # --- Always-On Memory Agent init ---
+    aom_manager = None
+    aom_config = getattr(config.agents, "always_on_memory", None)
+    if aom_config and aom_config.enabled:
+        try:
+            from ..constant import WORKING_DIR as _wd
+
+            async def _aom_llm_caller(prompt: str) -> str:
+                from ..agents.model_factory import create_model_and_formatter
+                model, _fmt = create_model_and_formatter()
+                from agentscope.message import Msg
+                resp = model(Msg(role="user", content=prompt, name="aom"))
+                return resp.content if hasattr(resp, "content") else str(resp)
+
+            aom_manager = AOMManager(
+                working_dir=_wd,
+                config=AOMConfigModel(**aom_config.model_dump()),
+                llm_caller=_aom_llm_caller,
+            )
+            await aom_manager.start()
+            runner.set_aom_manager(aom_manager)
+            logger.info("AOM Manager started")
+        except Exception:
+            logger.exception("Failed to start AOM Manager")
+            aom_manager = None
 
     # --- channel connector init/start (from config.json) ---
     channel_manager = ChannelManager.from_config(
@@ -125,6 +153,7 @@ async def lifespan(app: FastAPI):  # pylint: disable=too-many-statements
     app.state.config_watcher = config_watcher
     app.state.mcp_manager = mcp_manager
     app.state.mcp_watcher = mcp_watcher
+    app.state.aom_manager = aom_manager
 
     try:
         yield
@@ -146,6 +175,11 @@ async def lifespan(app: FastAPI):  # pylint: disable=too-many-statements
             if mcp_manager:
                 try:
                     await mcp_manager.close_all()
+                except Exception:
+                    pass
+            if aom_manager:
+                try:
+                    await aom_manager.stop()
                 except Exception:
                     pass
             await runner.stop()

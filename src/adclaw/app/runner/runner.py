@@ -35,6 +35,7 @@ class AgentRunner(Runner):
         self.framework_type = "agentscope"
         self._chat_manager = None  # Store chat_manager reference
         self._mcp_manager = None  # MCP client manager for hot-reload
+        self._aom_manager = None  # Always-On Memory manager
 
         self.memory_manager: MemoryManager | None = None
 
@@ -53,6 +54,14 @@ class AgentRunner(Runner):
             mcp_manager: MCPClientManager instance
         """
         self._mcp_manager = mcp_manager
+
+    def set_aom_manager(self, aom_manager):
+        """Set AOM manager for long-term memory support.
+
+        Args:
+            aom_manager: AOMManager instance
+        """
+        self._aom_manager = aom_manager
 
     async def query_handler(
         self,
@@ -108,6 +117,7 @@ class AgentRunner(Runner):
                 env_context=env_context,
                 mcp_clients=mcp_clients,
                 memory_manager=self.memory_manager,
+                aom_manager=self._aom_manager,
                 max_iters=max_iters,
                 max_input_length=max_input_length,
             )

@@ -28,8 +28,10 @@ Example:
 
 from .bootstrap import BootstrapHook
 from .memory_compaction import MemoryCompactionHook
+from .aom_capture import AOMCaptureHook
 
 __all__ = [
+    "AOMCaptureHook",
     "BootstrapHook",
     "MemoryCompactionHook",
 ]

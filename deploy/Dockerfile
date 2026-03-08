@@ -68,6 +68,10 @@ RUN apt-get update && apt-get install -y --fix-missing \
 
 RUN sed -i 's/^CHROMIUM_FLAGS=""/CHROMIUM_FLAGS="--no-sandbox"/' /usr/bin/chromium
 
+# agent-browser: install CLI globally, use system Chromium (skip download).
+ENV AGENT_BROWSER_EXECUTABLE_PATH=/usr/bin/chromium
+RUN npm install -g agent-browser sitefetch
+
 # Playwright: use system Chromium (already installed above).
 ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
 # Avoid Playwright downloading its own browser when executable_path is used.
@@ -86,8 +90,8 @@ COPY src ./src
 COPY --from=console-builder /app/src/adclaw/console/ ./src/adclaw/console/
 RUN pip install --no-cache-dir .
 
-# Init working dir with default config.json and HEARTBEAT.md (build time).
-RUN adclaw init --defaults --accept-security
+# Config.json is generated at runtime by entrypoint.sh (only if missing),
+# so it persists user settings across container restarts.
 
 # AdClaw app port (default 8088). Override at runtime with -e ADCLAW_PORT=3000.
 ENV ADCLAW_PORT=8088
