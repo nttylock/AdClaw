@@ -399,10 +399,20 @@ class AdClawAgent(ReActAgent):
         if self._frozen_prompt is not None and current_hash == self._frozen_hash:
             # Source files unchanged — reuse frozen prompt
             self._sys_prompt = self._frozen_prompt
+            logger.debug(
+                "Frozen prompt HIT (hash=%s, len=%d)",
+                current_hash[:8], len(self._frozen_prompt),
+            )
         else:
             self._sys_prompt = self._build_sys_prompt()
+            old_hash = self._frozen_hash
             self._frozen_prompt = self._sys_prompt
             self._frozen_hash = current_hash
+            logger.info(
+                "Frozen prompt REBUILT (hash=%s→%s, len=%d)",
+                (old_hash or "none")[:8], current_hash[:8],
+                len(self._sys_prompt),
+            )
 
         for msg, _marks in self.memory.content:
             if msg.role == "system":
