@@ -364,16 +364,45 @@ class AdClawAgent(ReActAgent):
             )
             logger.debug("Registered memory compaction hook")
 
+    # --- Frozen Memory Snapshots ---
+    # Cache the system prompt and only rebuild when source files change.
+    # This enables prompt caching on providers that support it
+    # (Anthropic 5-min TTL, OpenAI).
+    _frozen_prompt: str | None = None
+    _frozen_hash: str | None = None
+
+    @staticmethod
+    def _prompt_source_hash() -> str:
+        """Hash the source files that feed into the system prompt."""
+        import hashlib
+
+        from ..constant import WORKING_DIR
+
+        h = hashlib.md5(usedforsecurity=False)
+        for name in ("AGENTS.md", "SOUL.md", "PROFILE.md"):
+            p = Path(WORKING_DIR) / name
+            if p.exists():
+                try:
+                    h.update(p.read_bytes())
+                except OSError:
+                    pass
+        return h.hexdigest()
+
     def rebuild_sys_prompt(self) -> None:
-        """Rebuild and replace the system prompt.
+        """Rebuild the system prompt only if source files changed.
 
-        Useful after load_session_state to ensure the prompt reflects
-        the latest AGENTS.md / SOUL.md / PROFILE.md on disk.
-
-        Updates both self._sys_prompt and the first system-role
-        message stored in self.memory.content (if one exists).
+        Uses a frozen snapshot: if the hash of AGENTS.md + SOUL.md +
+        PROFILE.md hasn't changed, the cached prompt is reused.
+        This enables prompt caching on providers that support it.
         """
-        self._sys_prompt = self._build_sys_prompt()
+        current_hash = self._prompt_source_hash()
+        if self._frozen_prompt is not None and current_hash == self._frozen_hash:
+            # Source files unchanged — reuse frozen prompt
+            self._sys_prompt = self._frozen_prompt
+        else:
+            self._sys_prompt = self._build_sys_prompt()
+            self._frozen_prompt = self._sys_prompt
+            self._frozen_hash = current_hash
 
         for msg, _marks in self.memory.content:
             if msg.role == "system":

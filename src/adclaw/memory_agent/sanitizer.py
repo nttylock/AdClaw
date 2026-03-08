@@ -64,6 +64,97 @@ _INJECTION_PATTERNS: list[tuple[str, str, str]] = [
     ),
 ]
 
+# Exfiltration via tool/command instructions
+_EXFIL_PATTERNS: list[tuple[str, str, str]] = [
+    (
+        r"(?i)curl\s+-X\s*POST\s",
+        "EXFILTRATION",
+        "curl POST exfiltration attempt",
+    ),
+    (
+        r"(?i)curl\s+[^\n]*--data|curl\s+[^\n]*-d\s",
+        "EXFILTRATION",
+        "curl data exfiltration attempt",
+    ),
+    (
+        r"(?i)wget\s+--post",
+        "EXFILTRATION",
+        "wget POST exfiltration attempt",
+    ),
+    (
+        r"(?i)\bscp\s+",
+        "EXFILTRATION",
+        "scp file transfer attempt",
+    ),
+    (
+        r"(?i)ssh-keygen|authorized_keys|id_rsa",
+        "SSH_BACKDOOR",
+        "SSH key/backdoor manipulation",
+    ),
+    (
+        r"(?i)reverse\s*shell|bind\s*shell|nc\s+-[el]",
+        "EXFILTRATION",
+        "Reverse/bind shell attempt",
+    ),
+]
+
+# SQL injection patterns
+_SQL_PATTERNS: list[tuple[str, str, str]] = [
+    (
+        r"(?i)(DROP|DELETE|TRUNCATE|ALTER)\s+(TABLE|DATABASE|INDEX)",
+        "SQL_INJECTION",
+        "Destructive SQL statement",
+    ),
+    (
+        r"(?i)UNION\s+(ALL\s+)?SELECT",
+        "SQL_INJECTION",
+        "SQL UNION injection",
+    ),
+    (
+        r"(?i);\s*(DROP|DELETE|INSERT|UPDATE|EXEC)\s",
+        "SQL_INJECTION",
+        "SQL injection chain",
+    ),
+]
+
+# Path traversal
+_TRAVERSAL_PATTERNS: list[tuple[str, str, str]] = [
+    (
+        r"\.\./\.\./",
+        "PATH_TRAVERSAL",
+        "Directory traversal attempt",
+    ),
+    (
+        r"(?i)/etc/(passwd|shadow|hosts)",
+        "PATH_TRAVERSAL",
+        "Access to sensitive system files",
+    ),
+    (
+        r"(?i)~/.ssh/|~/.aws/|~/.kube/",
+        "PATH_TRAVERSAL",
+        "Access to sensitive user config",
+    ),
+]
+
+# Context/memory exfiltration
+_CONTEXT_EXFIL_PATTERNS: list[tuple[str, str, str]] = [
+    (
+        r"(?i)reveal\s+(your|the)\s+(system\s+prompt|instructions|context|internal)",
+        "CONTEXT_EXFIL",
+        "Attempt to extract system prompt/context",
+    ),
+    (
+        r"(?i)output\s+(your|the)\s+(entire|full|complete)\s+(prompt|instructions|memory)",
+        "CONTEXT_EXFIL",
+        "Attempt to dump full prompt/memory",
+    ),
+    (
+        r"(?i)what\s+(are|is)\s+your\s+(system|initial|original)\s+(prompt|instructions)",
+        "CONTEXT_EXFIL",
+        "Attempt to read system prompt",
+    ),
+]
+
 # LLM role/format markers that shouldn't appear in memory content
 _ROLE_MARKER_PATTERNS: list[tuple[str, str, str]] = [
     (
@@ -146,7 +237,10 @@ class SanitizeResult:
 
 
 # Threat IDs that are always critical (block)
-_CRITICAL_THREATS = {"PROMPT_OVERRIDE", "JAILBREAK", "ROLE_MARKER", "ROLE_HIJACK"}
+_CRITICAL_THREATS = {
+    "PROMPT_OVERRIDE", "JAILBREAK", "ROLE_MARKER", "ROLE_HIJACK",
+    "EXFILTRATION", "SSH_BACKDOOR", "SQL_INJECTION", "CONTEXT_EXFIL",
+}
 
 
 class MemorySanitizer:
@@ -165,6 +259,8 @@ class MemorySanitizer:
         self._compiled_patterns: list[tuple[re.Pattern, str, str]] = []
         for pattern, tid, desc in (
             _INJECTION_PATTERNS + _ROLE_MARKER_PATTERNS + _OBFUSCATION_PATTERNS
+            + _EXFIL_PATTERNS + _SQL_PATTERNS + _TRAVERSAL_PATTERNS
+            + _CONTEXT_EXFIL_PATTERNS
         ):
             self._compiled_patterns.append((re.compile(pattern), tid, desc))
 

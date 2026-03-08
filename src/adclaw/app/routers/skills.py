@@ -288,6 +288,26 @@ async def scan_skill(skill_name: str):
     raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
 
 
+@router.post("/{skill_name}/llm-audit")
+async def llm_audit_skill(skill_name: str):
+    """Run LLM-based security audit on a skill (requires active LLM)."""
+    from ...app.runner import runner as app_runner
+
+    for base in (get_customized_skills_dir(), get_active_skills_dir()):
+        skill_dir = base / skill_name
+        if skill_dir.exists():
+            scanner = SkillSecurityScanner()
+            # Try to get LLM caller from runner
+            llm_caller = None
+            if app_runner and hasattr(app_runner, "get_llm_caller"):
+                llm_caller = app_runner.get_llm_caller()
+            result = await scanner.llm_audit_skill(
+                skill_dir, llm_caller=llm_caller, skill_name=skill_name
+            )
+            return result.to_dict()
+    raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
+
+
 @router.get("/{skill_name}/patches")
 async def skill_patches(skill_name: str):
     """Get patch history for a skill."""
