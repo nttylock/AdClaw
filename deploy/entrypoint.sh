@@ -109,6 +109,16 @@ print('entrypoint: Telegram channel enabled')
   fi
 fi
 
+# Sync new built-in skills to active_skills (non-destructive: skip existing)
+python3 -c "
+from adclaw.agents.skills_manager import sync_skills_to_working_dir
+synced, skipped = sync_skills_to_working_dir(skill_names=None, force=False)
+if synced:
+    print(f'entrypoint: synced {synced} new skill(s) to active_skills')
+else:
+    print(f'entrypoint: all skills up to date ({skipped} existing)')
+" 2>/dev/null || true
+
 envsubst '${ADCLAW_PORT}' \
   < /etc/supervisor/conf.d/supervisord.conf.template \
   > /etc/supervisor/conf.d/supervisord.conf
