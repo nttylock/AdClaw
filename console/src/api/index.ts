@@ -18,6 +18,7 @@ import { localModelApi } from "./modules/localModel";
 import { ollamaModelApi } from "./modules/ollamaModel";
 import { mcpApi } from "./modules/mcp";
 import { diagnosticsApi } from "./modules/diagnostics";
+import { personaApi } from "./modules/persona";
 
 export const api = {
   // Root
@@ -64,6 +65,9 @@ export const api = {
 
   // Diagnostics
   ...diagnosticsApi,
+
+  // Personas
+  ...personaApi,
 };
 
 export default api;

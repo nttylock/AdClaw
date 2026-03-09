@@ -35,7 +35,8 @@
     "agentConfig": "Configuration",
     "settings": "Settings",
     "models": "Models",
-    "environments": "Environments"
+    "environments": "Environments",
+    "personas": "Personas"
   },
   "workspace": {
     "title": "WorkSpace",
@@ -418,6 +419,13 @@
     "saveSuccess": "Configuration saved successfully",
     "saveFailed": "Failed to save configuration",
     "loadFailed": "Failed to load configuration"
+  },
+  "personas": {
+    "title": "Agent Personas",
+    "description": "Create and manage agent personas with custom identities, skills, and schedules.",
+    "createAgent": "Create Agent",
+    "fromTemplate": "From Template",
+    "emptyState": "No agent personas configured yet. Create one or use a template to get started."
   },
   "modelConfig": {
     "promptTitle": "LLM Model Required",
