@@ -156,6 +156,18 @@ class TestFullOrchestration:
         assert "a.md" in result
         assert "b.md" in result
 
+    def test_shared_read_agent_id_traversal(self):
+        shared_root = os.path.join(self.tmpdir, "shared")
+        read = make_read_shared_file(shared_root)
+        result = read(agent_id="../../etc", filename="passwd")
+        assert "error" in result.lower()
+
+    def test_shared_list_agent_id_traversal(self):
+        shared_root = os.path.join(self.tmpdir, "shared")
+        list_fn = make_list_shared_files(shared_root)
+        result = list_fn(agent_id="../../../etc")
+        assert "error" in result.lower()
+
     def test_shared_list_all_agents(self):
         shared_root = os.path.join(self.tmpdir, "shared")
         list_fn = make_list_shared_files(shared_root)
@@ -268,6 +280,11 @@ class TestFullOrchestration:
         t2 = get_template("researcher")
         t1["name"] = "Modified"
         assert t2["name"] == "Researcher"
+        # Verify deep copy — nested lists are independent
+        t1["mcp_clients"].append("test_mcp")
+        assert "test_mcp" not in t2["mcp_clients"]
+        t1["skills"].append("test_skill")
+        assert "test_skill" not in t2["skills"]
 
     # --- Backward compat (3 tests) ---
 

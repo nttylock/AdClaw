@@ -1,8 +1,14 @@
 import os
+import re
 import logging
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def _is_safe_agent_id(agent_id: str) -> bool:
+    """Validate agent_id contains only safe characters."""
+    return bool(re.match(r'^[a-z0-9_-]+$', agent_id))
 
 
 def _is_safe_path(base: str, requested: str) -> bool:
@@ -45,6 +51,8 @@ def make_read_shared_file(shared_root: str):
         Returns:
             File content or error message.
         """
+        if not _is_safe_agent_id(agent_id):
+            return "Error: Invalid agent_id — path traversal not allowed."
         agent_dir = os.path.join(shared_root, agent_id)
         if not _is_safe_path(agent_dir, filename):
             return "Error: Invalid path — path traversal not allowed."
@@ -68,6 +76,8 @@ def make_list_shared_files(shared_root: str):
             Formatted list of shared files.
         """
         if agent_id:
+            if not _is_safe_agent_id(agent_id):
+                return "Error: Invalid agent_id — path traversal not allowed."
             agent_dir = os.path.join(shared_root, agent_id)
             if not os.path.isdir(agent_dir):
                 return f"No shared directory for agent '{agent_id}'."

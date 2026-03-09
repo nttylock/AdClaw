@@ -1,3 +1,5 @@
+import copy
+
 TEMPLATES = [
     {
         "id": "researcher",
@@ -110,5 +112,5 @@ You are a social media strategist. You create platform-native content and track 
 def get_template(template_id: str) -> dict | None:
     for t in TEMPLATES:
         if t["id"] == template_id:
-            return t.copy()
+            return copy.deepcopy(t)
     return None

@@ -68,7 +68,7 @@ def update_persona(persona_id: str, req: PersonaUpdateRequest):
     for i, p in enumerate(config.agents.personas):
         if p.id == persona_id:
             data = p.model_dump()
-            updates = req.model_dump(exclude_none=True)
+            updates = req.model_dump(exclude_unset=True)
             if "is_coordinator" in updates and updates["is_coordinator"]:
                 others = [pp for pp in config.agents.personas if pp.is_coordinator and pp.id != persona_id]
                 if others:
@@ -87,5 +87,5 @@ def delete_persona(persona_id: str):
         if p.id == persona_id:
             config.agents.personas.pop(i)
             save_config(config)
-            return {"status": "deleted", "id": persona_id}
+            return {"deleted": True, "id": persona_id}
     raise HTTPException(404, f"Persona '{persona_id}' not found")

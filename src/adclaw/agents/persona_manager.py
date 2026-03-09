@@ -40,7 +40,7 @@ class PersonaManager:
 
     def resolve_tag(self, text: str) -> Optional[str]:
         """Extract @persona_id from message start. Returns None if no valid tag."""
-        match = re.match(r'^@([a-z0-9_-]+)\s', text)
+        match = re.match(r'^@([a-z0-9_-]+)\s+', text)
         if match:
             tag = match.group(1)
             if tag in self._personas:

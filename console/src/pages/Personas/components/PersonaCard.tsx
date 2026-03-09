@@ -90,6 +90,7 @@ export function PersonaCard({
           icon={<DeleteOutlined />}
           className={styles.deleteButton}
           onClick={handleDeleteClick}
+          aria-label={`Delete persona ${persona.name}`}
         />
       </div>
     </Card>

@@ -39,6 +39,7 @@ class AgentRunner(Runner):
         self._aom_manager = None  # Always-On Memory manager
 
         self.memory_manager: MemoryManager | None = None
+        self._session_persona_map: dict[str, str] = {}  # sticky persona routing
 
     def set_chat_manager(self, chat_manager):
         """Set chat manager for auto-registration.
@@ -136,13 +137,17 @@ class AgentRunner(Runner):
                     original_text = msgs[0].get_text_content() or ""
                     stripped = persona_mgr.strip_tag(original_text)
                     msgs[0].content = stripped
+            elif request.session_id in self._session_persona_map:
+                # Sticky routing: reuse last persona for this session
+                persona = persona_mgr.get_persona(self._session_persona_map[request.session_id])
             elif persona_mgr.get_coordinator():
                 persona = persona_mgr.get_coordinator()
             # else: no personas configured, use default behavior
 
             # Scope session_id per persona
             if persona:
-                session_id = f"{persona.id}_{session_id}"
+                self._session_persona_map[request.session_id] = persona.id
+                session_id = f"{persona.id}::{session_id}"
 
             agent = AdClawAgent(
                 env_context=env_context,

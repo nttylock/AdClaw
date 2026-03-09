@@ -210,6 +210,13 @@ class AgentsConfig(BaseModel):
     )
     personas: list[PersonaConfig] = []
 
+    @model_validator(mode='after')
+    def _validate_single_coordinator(self):
+        coordinators = [p for p in self.personas if p.is_coordinator]
+        if len(coordinators) > 1:
+            raise ValueError(f"Only one coordinator allowed, found: {[c.id for c in coordinators]}")
+        return self
+
 
 class LastDispatchConfig(BaseModel):
     """Last channel/user/session that received a user-originated reply."""

@@ -23,27 +23,27 @@ export function usePersonas() {
     }
   };
 
-  const fetchTemplates = async () => {
-    try {
-      const data = await api.listPersonaTemplates();
-      if (data) {
-        setTemplates(data);
-      }
-    } catch (error) {
-      console.error("Failed to load templates", error);
-    }
-  };
-
   useEffect(() => {
     let mounted = true;
 
     const load = async () => {
-      if (mounted) {
-        await fetchPersonas();
-        await fetchTemplates();
+      const [personasData, templatesData] = await Promise.allSettled([
+        api.listPersonas(),
+        api.listPersonaTemplates(),
+      ]);
+
+      if (!mounted) return;
+
+      if (personasData.status === "fulfilled" && personasData.value) {
+        setPersonas(personasData.value);
       }
+      if (templatesData.status === "fulfilled" && templatesData.value) {
+        setTemplates(templatesData.value);
+      }
+      setLoading(false);
     };
 
+    setLoading(true);
     load();
 
     return () => {
