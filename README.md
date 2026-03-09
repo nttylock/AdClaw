@@ -2,7 +2,7 @@
 
 # AdClaw
 
-**AI Marketing Assistant powered by [Citedy](https://www.citedy.com)**
+**AI Marketing Agent Team powered by [Citedy](https://www.citedy.com)**
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-black.svg?logo=github)](https://github.com/nttylock/AdClaw)
 [![License](https://img.shields.io/badge/license-Apache%202.0-red.svg?logo=apache&label=License)](LICENSE)
@@ -16,25 +16,55 @@
 
 ## What is AdClaw?
 
-One `docker run` — and you get a fully configured AI marketing assistant with:
+One `docker run` — and you get a **multi-agent AI marketing team** with:
 
-- **Telegram bot** working out of the box
-- **96 built-in skills** — SEO, ads, content, social media, analytics, growth hacking, and more
+- **Multi-agent personas** — create specialized agents (researcher, writer, SEO, ads), each with its own identity (SOUL.md), LLM, skills, and schedule
+- **@tag routing** in Telegram — `@researcher find AI trends` sends the message to the right agent
+- **Coordinator delegation** — one agent orchestrates the rest, delegating tasks automatically
+- **Shared memory** — agents read each other's output files for seamless collaboration
+- **96 built-in skills** — SEO, ads, content, social media, analytics, growth hacking
 - **52 marketing tools** via Citedy MCP server
-- **Welcome wizard** — paste your API key and start
 - **Multi-channel** — Telegram, Discord, DingTalk, Feishu, QQ, Console
+- **Web UI** — manage personas, skills, models, and channels from the browser
+
+```
+                         +-------------------+
+                         |    Telegram /      |
+                         |  Discord / Web UI  |
+                         +--------+----------+
+                                  |
+                     @tag routing | no tag
+                    +-------------+-------------+
+                    |                           |
+              +-----v------+          +---------v--------+
+              |  @researcher|          |   Coordinator    |
+              |  SOUL.md    |          |   (default agent)|
+              |  LLM: grok  |          |   delegates to   |
+              |  MCP: exa   |          |   specialists    |
+              +-----+------+          +---------+--------+
+                    |                           |
+                    |     +-----------+---------+---------+
+                    |     |           |                   |
+              +-----v--+  +--v------+ +---v--------+ +---v-------+
+              | Shared  |  |@content | |@seo        | |@ads       |
+              | Memory  |  | Writer  | | Specialist | | Manager   |
+              | (files) |  +---------+ +------------+ +-----------+
+              +---------+
+```
 
 ### What can it do?
 
 | Feature | Description |
 |---------|-------------|
-| SEO Articles | Generate 55-language SEO articles (500–8,000 words) |
+| Multi-Agent Team | Create unlimited specialized agents with custom identities |
+| SEO Articles | Generate 55-language SEO articles (500-8,000 words) |
 | Trend Scouting | Scout X/Twitter and Reddit for trending topics |
 | Competitor Analysis | Discover and analyze competitors |
 | Lead Magnets | Generate checklists, frameworks, swipe files |
 | AI Video Shorts | Create UGC short-form videos with subtitles |
 | Content Ingestion | Ingest YouTube, PDFs, web pages, audio |
 | Social Publishing | Adapt content for LinkedIn, X, Facebook, Reddit |
+| Scheduled Tasks | Each agent can run on its own cron schedule |
 
 ---
 
@@ -46,6 +76,7 @@ One `docker run` — and you get a fully configured AI marketing assistant with:
 docker run -d --name adclaw --restart unless-stopped \
   -p 8088:8088 \
   -v adclaw-data:/app/working \
+  -v adclaw-secret:/app/working.secret \
   -e CITEDY_API_KEY=your_key_here \
   nttylock/adclaw:latest
 ```
@@ -73,6 +104,29 @@ adclaw app
 
 ---
 
+## Multi-Agent Personas
+
+Create a team of specialized AI agents, each with its own personality, LLM, skills, and MCP tools. See **[docs/PERSONAS.md](docs/PERSONAS.md)** for the full guide.
+
+### 5 Built-in Templates
+
+| Template | Role | Suggested MCP |
+|----------|------|---------------|
+| Researcher | Facts-only intel gathering, structured reports | brave_search, xai_search, exa |
+| Content Writer | Brand-voice content, hooks, structure | citedy |
+| SEO Specialist | Data-driven audits, actionable recommendations | citedy |
+| Ads Manager | ROI-focused campaign management | - |
+| Social Media | Platform-native content, trend tracking | xai_search |
+
+### Quick Example
+
+1. Open Web UI -> Agents page
+2. Click **"From Template"** -> select **Researcher**
+3. Edit SOUL.md, pick an LLM, toggle Coordinator
+4. Save. In Telegram, type: `@researcher find AI trends this week`
+
+---
+
 ## Configuration
 
 ### Get a Citedy API Key
@@ -86,18 +140,18 @@ adclaw app
 
 1. Create a bot via [@BotFather](https://t.me/BotFather)
 2. Copy the bot token
-3. Go to AdClaw → Channels → Telegram → paste token → enable
+3. Go to AdClaw -> Channels -> Telegram -> paste token -> enable
 
 ### Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `CITEDY_API_KEY` | Citedy API key for MCP tools and skills | — |
+| `CITEDY_API_KEY` | Citedy API key for MCP tools and skills | - |
 | `ADCLAW_ENABLED_CHANNELS` | Enabled messaging channels | `discord,dingtalk,feishu,qq,console,telegram` |
 | `ADCLAW_PORT` | Web UI port | `8088` |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token | — |
-| `TAVILY_API_KEY` | Tavily search API key | — |
-| `GITHUB_TOKEN` | GitHub token for skill hub | — |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token | - |
+| `TAVILY_API_KEY` | Tavily search API key | - |
+| `GITHUB_TOKEN` | GitHub token for skill hub | - |
 | `LOG_LEVEL` | Logging level | `INFO` |
 
 ---
@@ -121,10 +175,30 @@ Skills auto-update from [Citedy/citedy-seo-agent](https://github.com/Citedy/cite
 ## Architecture
 
 ```
-User → [Telegram/Discord/Console] → AdClaw Agent → [LLM Provider]
-                                          ↓
-                                    [Citedy MCP Server (52 tools)]
-                                    [Built-in Skills (7 packs)]
+User --> [Telegram / Discord / Console / Web UI]
+               |
+               v
+         +-----+------+
+         |   Router    |  <-- @tag resolution
+         +--+--+--+---+
+            |  |  |
+   +--------+  |  +--------+
+   v            v           v
+ Agent A    Coordinator   Agent C
+ (SOUL A)   (SOUL coord)  (SOUL C)
+ (LLM A)   (LLM default)  (LLM C)
+   |            |           |
+   v            v           v
+ [MCP Tools] [Delegation] [MCP Tools]
+              Tool
+   |            |           |
+   +----+-------+-----+----+
+        |              |
+   +----v----+   +-----v------+
+   | Shared  |   | Dual Memory|
+   | Memory  |   | ReMe + AOM |
+   | (files) |   | (per-agent)|
+   +---------+   +------------+
 ```
 
 AdClaw is built on [AgentScope](https://github.com/agentscope-ai/AgentScope) and uses:
@@ -132,6 +206,7 @@ AdClaw is built on [AgentScope](https://github.com/agentscope-ai/AgentScope) and
 - **React + Ant Design** web console
 - **MCP** (Model Context Protocol) for tool integration
 - **Multi-channel** messaging (Telegram, Discord, DingTalk, etc.)
+- **Dual memory** — ReMe (file-based, per-agent) + AOM (vector/embeddings, shared)
 
 ---
 
@@ -144,10 +219,10 @@ Citedy uses a credit-based system (1 credit = $0.01 USD):
 | Turbo article (500 words) | 2 |
 | Standard article (2,500 words) | 20 |
 | Pillar article (8,000 words) | 48 |
-| X/Twitter scout | 35–70 |
+| X/Twitter scout | 35-70 |
 | Reddit scout | 30 |
-| Lead magnet | 30–100 |
-| AI video short | 60–185 |
+| Lead magnet | 30-100 |
+| AI video short | 60-185 |
 
 Free registration includes 100 credits. [Top up here](https://www.citedy.com/dashboard/billing).
 
