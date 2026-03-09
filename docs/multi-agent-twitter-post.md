@@ -38,20 +38,25 @@ Untagged messages? They go to the coordinator. The coordinator decides who handl
 
 Once you start talking to an agent, follow-up messages stay with them. No need to tag every message. The session remembers which persona you were talking to. Switch agents anytime with a new @tag.
 
-### Per-Agent Memory
+### Three-Layer Team Memory
 
-Each agent has its own working directory and memory. Mira doesn't see the researcher's drafts unless they explicitly share. This prevents context pollution — the #1 killer of multi-agent quality.
+Most multi-agent systems have no memory — or one shared blob that turns into noise. We built three layers that work together:
 
-### Shared Memory
+**Layer 1 — ReMe (Session Memory).** Each conversation gets compacted and summarized automatically. Long dialogues don't overflow the context window — ReMe compresses them while preserving key facts. Semantic search lets agents pull relevant context from past sessions.
 
-Agents can write files to a shared directory that others can read. The researcher drops a brief, the content writer picks it up. Simple, explicit, no magic.
+**Layer 2 — AOM (Always-On Memory).** A persistent long-term memory that captures tool results automatically. When the researcher calls a search API, that knowledge lands in AOM. When Mira asks "what did we learn about competitors?" — she gets answers synthesized from the researcher's findings. No manual handoff needed.
+
+The key design decision: AOM is **shared across the entire team**. Every agent contributes to and queries from the same knowledge base. The researcher's discoveries become the content writer's source material — automatically.
+
+**Layer 3 — Shared Files.** Explicit file exchange between agents. The researcher writes `shared/researcher/competitor-brief.md`, the content writer reads it. Simple, intentional, auditable.
 
 ```
-shared/researcher/competitor-analysis.md
-shared/content-writer/draft-v2.md
+Layer 1: ReMe     — session context, auto-compaction, semantic search
+Layer 2: AOM      — long-term team knowledge, auto-captured from tools
+Layer 3: Shared   — explicit file exchange between agents
 ```
 
-Path traversal protection built in — agents can't escape their sandbox.
+Three layers, one team brain. Implicit knowledge flows up through AOM, explicit handoffs go through shared files, and sessions stay manageable through ReMe. Path traversal protection built in — agents can't escape their sandbox.
 
 ### Coordinator Delegation
 
