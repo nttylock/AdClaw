@@ -25,6 +25,7 @@ import {
   Wallet,
   ExternalLink,
   HeartPulse,
+  Users,
 } from "lucide-react";
 
 const { Sider } = Layout;
@@ -38,6 +39,7 @@ const keyToPath: Record<string, string> = {
   skills: "/skills",
   mcp: "/mcp",
   workspace: "/workspace",
+  personas: "/personas",
   models: "/models",
   environments: "/environments",
   "agent-config": "/agent-config",
@@ -146,6 +148,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           key: "mcp",
           label: t("nav.mcp"),
           icon: <Plug size={16} />,
+        },
+        {
+          key: "personas",
+          label: t("nav.personas"),
+          icon: <Users size={16} />,
         },
         {
           key: "agent-config",

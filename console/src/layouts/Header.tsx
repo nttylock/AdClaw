@@ -12,6 +12,7 @@ const keyToLabel: Record<string, string> = {
   heartbeat: "nav.heartbeat",
   skills: "nav.skills",
   mcp: "nav.mcp",
+  personas: "nav.personas",
   "agent-config": "nav.agentConfig",
   workspace: "nav.workspace",
   models: "nav.models",

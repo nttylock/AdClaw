@@ -86,6 +86,8 @@ class AdClawAgent(ReActAgent):
         max_iters: int = 50,
         max_input_length: int = 128 * 1024,  # 128K = 131072 tokens
         namesake_strategy: NamesakeStrategy = "skip",
+        persona=None,
+        team_summary: str = "",
     ):
         """Initialize AdClawAgent.
 
@@ -103,7 +105,11 @@ class AdClawAgent(ReActAgent):
             namesake_strategy: Strategy to handle namesake tool functions.
                 Options: "override", "skip", "raise", "rename"
                 (default: "skip")
+            persona: Optional PersonaConfig with soul_md override
+            team_summary: Optional team summary for multi-agent awareness
         """
+        self._persona = persona
+        self._team_summary = team_summary
         self._env_context = env_context
         self._max_input_length = max_input_length
         self._mcp_clients = mcp_clients or []
@@ -247,7 +253,10 @@ class AdClawAgent(ReActAgent):
         Returns:
             Complete system prompt string
         """
-        sys_prompt = build_system_prompt_from_working_dir()
+        sys_prompt = build_system_prompt_from_working_dir(
+            persona=self._persona,
+            team_summary=self._team_summary,
+        )
         if self._env_context is not None:
             sys_prompt = self._env_context + "\n\n" + sys_prompt
         return sys_prompt
@@ -372,9 +381,8 @@ class AdClawAgent(ReActAgent):
     _frozen_prompt: str | None = None
     _frozen_hash: str | None = None
 
-    @staticmethod
-    def _prompt_source_hash() -> str:
-        """Hash the source files that feed into the system prompt."""
+    def _prompt_source_hash(self) -> str:
+        """Hash the source files and persona config that feed into the system prompt."""
         import hashlib
 
         from ..constant import WORKING_DIR
@@ -387,6 +395,15 @@ class AdClawAgent(ReActAgent):
                     h.update(p.read_bytes())
                 except OSError:
                     pass
+        # Include persona and team_summary in hash so cache invalidates
+        # when a different persona is active or team changes.
+        if self._persona is not None:
+            h.update(self._persona.id.encode())
+            h.update(self._persona.soul_md.encode())
+        if self._team_summary:
+            h.update(self._team_summary.encode())
+        if self._env_context:
+            h.update(self._env_context.encode())
         return h.hexdigest()
 
     def rebuild_sys_prompt(self) -> None:
