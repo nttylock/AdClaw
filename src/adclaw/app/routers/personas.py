@@ -53,6 +53,33 @@ def create_persona(req: PersonaCreateRequest):
     return persona.model_dump()
 
 
+@router.get("/agents/personas/templates")
+def list_templates():
+    from ...agents.persona_templates import TEMPLATES
+    return TEMPLATES
+
+
+@router.post("/agents/personas/templates/{template_id}", status_code=201)
+def create_from_template(template_id: str):
+    from ...agents.persona_templates import get_template
+    config = load_config()
+    tmpl = get_template(template_id)
+    if not tmpl:
+        raise HTTPException(404, f"Template '{template_id}' not found")
+    existing_ids = {p.id for p in config.agents.personas}
+    base_id = tmpl["id"]
+    pid = base_id
+    counter = 2
+    while pid in existing_ids:
+        pid = f"{base_id}-{counter}"
+        counter += 1
+    tmpl["id"] = pid
+    persona = PersonaConfig(**tmpl)
+    config.agents.personas.append(persona)
+    save_config(config)
+    return persona.model_dump()
+
+
 @router.get("/agents/personas/{persona_id}")
 def get_persona(persona_id: str):
     config = load_config()

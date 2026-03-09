@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Drawer,
   Form,
@@ -8,9 +8,28 @@ import {
   Switch,
 } from "@agentscope-ai/design";
 import { useTranslation } from "react-i18next";
+import api from "../../../api";
 import type { Persona } from "../../../api/types";
 
 const { TextArea } = Input;
+
+interface ProviderInfo {
+  id: string;
+  name: string;
+  models: { name: string }[];
+}
+
+interface SkillInfo {
+  name: string;
+  type?: string;
+}
+
+interface MCPClientInfo {
+  key: string;
+  name: string;
+  description?: string;
+  enabled: boolean;
+}
 
 interface PersonaDrawerProps {
   open: boolean;
@@ -36,6 +55,51 @@ export function PersonaDrawer({
   const [form] = Form.useForm();
   const isEditing = !!editingPersona;
 
+  const [providers, setProviders] = useState<ProviderInfo[]>([]);
+  const [skills, setSkills] = useState<SkillInfo[]>([]);
+  const [mcpClients, setMcpClients] = useState<MCPClientInfo[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState<string>("");
+
+  // Load providers, skills, MCP clients when drawer opens
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    const load = async () => {
+      const [provRes, skillRes, mcpRes] = await Promise.allSettled([
+        api.listProviders(),
+        api.listSkills(),
+        api.listMCPClients(),
+      ]);
+
+      if (cancelled) return;
+
+      if (provRes.status === "fulfilled" && Array.isArray(provRes.value)) {
+        setProviders(provRes.value);
+      }
+      if (skillRes.status === "fulfilled" && Array.isArray(skillRes.value)) {
+        setSkills(skillRes.value);
+      }
+      if (mcpRes.status === "fulfilled") {
+        // MCP API returns dict {key: config} or array
+        const raw = mcpRes.value;
+        if (Array.isArray(raw)) {
+          setMcpClients(raw);
+        } else if (raw && typeof raw === "object") {
+          const list = Object.entries(raw).map(([key, val]) => ({
+            key,
+            ...(typeof val === "object" && val !== null ? val : {}),
+          })) as MCPClientInfo[];
+          setMcpClients(list);
+        }
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
+  }, [open]);
+
+  // Set form values
   useEffect(() => {
     if (open) {
       if (editingPersona) {
@@ -48,16 +112,65 @@ export function PersonaDrawer({
           cron_prompt: editingPersona.cron?.prompt ?? "",
           cron_output: editingPersona.cron?.output ?? "chat",
         });
+        setSelectedProvider(editingPersona.model_provider || "");
       } else {
         form.resetFields();
+        setSelectedProvider("");
       }
     }
   }, [open, editingPersona, form]);
+
+  // Models for selected provider
+  const modelOptions = useMemo(() => {
+    if (!selectedProvider) return [];
+    const prov = providers.find((p) => p.id === selectedProvider);
+    if (!prov) return [];
+    return prov.models.map((m) => ({
+      label: m.name,
+      value: m.name,
+    }));
+  }, [selectedProvider, providers]);
+
+  // Skill options grouped by type
+  const skillOptions = useMemo(() => {
+    const byType: Record<string, SkillInfo[]> = {};
+    for (const s of skills) {
+      const type = s.type || "other";
+      if (!byType[type]) byType[type] = [];
+      byType[type].push(s);
+    }
+    // If few types, just flat list
+    const types = Object.keys(byType).sort();
+    if (types.length <= 1) {
+      return skills.map((s) => ({ label: s.name, value: s.name }));
+    }
+    // Grouped options
+    return types.map((type) => ({
+      label: type.charAt(0).toUpperCase() + type.slice(1),
+      options: byType[type].map((s) => ({
+        label: s.name,
+        value: s.name,
+      })),
+    }));
+  }, [skills]);
+
+  // MCP options
+  const mcpOptions = useMemo(() => {
+    return mcpClients.map((c) => ({
+      label: `${c.name || c.key}${c.description ? ` — ${c.description}` : ""}${c.enabled ? "" : " (disabled)"}`,
+      value: c.key,
+    }));
+  }, [mcpClients]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isEditing) {
       form.setFieldsValue({ id: nameToId(e.target.value) });
     }
+  };
+
+  const handleProviderChange = (value: string) => {
+    setSelectedProvider(value);
+    form.setFieldsValue({ model_name: undefined });
   };
 
   const handleFinish = (values: Record<string, unknown>) => {
@@ -138,26 +251,51 @@ export function PersonaDrawer({
         </Form.Item>
 
         <Form.Item name="model_provider" label="Model Provider">
-          <Input placeholder="Leave empty to use default" />
+          <Select
+            placeholder="Default (use system LLM)"
+            allowClear
+            showSearch
+            onChange={handleProviderChange}
+            options={providers.map((p) => ({
+              label: p.name,
+              value: p.id,
+            }))}
+          />
         </Form.Item>
 
         <Form.Item name="model_name" label="Model Name">
-          <Input placeholder="Leave empty to use default" />
+          <Select
+            placeholder={selectedProvider ? "Select a model" : "Select provider first"}
+            allowClear
+            showSearch
+            disabled={!selectedProvider}
+            options={modelOptions}
+          />
         </Form.Item>
 
         <Form.Item name="skills" label="Skills">
           <Select
-            mode="tags"
-            placeholder="Type skill names and press Enter"
-            tokenSeparators={[","]}
+            mode="multiple"
+            placeholder="Search and select skills..."
+            showSearch
+            allowClear
+            filterOption={(input, option) =>
+              (option?.label as string ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={skillOptions as any}
           />
         </Form.Item>
 
         <Form.Item name="mcp_clients" label="MCP Clients">
           <Select
-            mode="tags"
-            placeholder="Type MCP client names and press Enter"
-            tokenSeparators={[","]}
+            mode="multiple"
+            placeholder="Select MCP clients..."
+            showSearch
+            allowClear
+            filterOption={(input, option) =>
+              (option?.label as string ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={mcpOptions}
           />
         </Form.Item>
 

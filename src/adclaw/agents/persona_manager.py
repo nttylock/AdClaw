@@ -39,17 +39,23 @@ class PersonaManager:
         return str(self.working_dir / "shared" / persona_id)
 
     def resolve_tag(self, text: str) -> Optional[str]:
-        """Extract @persona_id from message start. Returns None if no valid tag."""
-        match = re.match(r'^@([a-z0-9_-]+)\s+', text)
-        if match:
-            tag = match.group(1)
-            if tag in self._personas:
-                return tag
+        """Extract @tag from message start, match by ID or name. Returns persona ID or None."""
+        match = re.match(r'^@(\S+)\s+', text, re.IGNORECASE)
+        if not match:
+            return None
+        tag = match.group(1).lower()
+        # Direct ID match
+        if tag in self._personas:
+            return tag
+        # Match by name (case-insensitive)
+        for pid, p in self._personas.items():
+            if p.name.lower() == tag:
+                return pid
         return None
 
     def strip_tag(self, text: str) -> str:
         """Remove @tag from message start."""
-        return re.sub(r'^@[a-z0-9_-]+\s+', '', text)
+        return re.sub(r'^@\S+\s+', '', text)
 
     def get_team_summary(self) -> str:
         """Generate team summary for prompt injection."""

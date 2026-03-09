@@ -1,4 +1,4 @@
-import { Card, Button, Modal, Tooltip } from "@agentscope-ai/design";
+import { Card, Button, Modal, Tooltip, Input } from "@agentscope-ai/design";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Server } from "lucide-react";
 import type { MCPClientInfo } from "../../../../api/types";
@@ -29,6 +29,7 @@ export function MCPClientCard({
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editedJson, setEditedJson] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   // Determine if MCP client is remote or local based on command
@@ -52,8 +53,10 @@ export function MCPClientCard({
   };
 
   const handleCardClick = () => {
-    const jsonStr = JSON.stringify(client, null, 2);
+    const { description, ...rest } = client;
+    const jsonStr = JSON.stringify(rest, null, 2);
     setEditedJson(jsonStr);
+    setEditedDescription(description || "");
     setIsEditing(false);
     setJsonModalOpen(true);
   };
@@ -62,8 +65,8 @@ export function MCPClientCard({
     try {
       const parsed = JSON.parse(editedJson);
       const { key, ...updates } = parsed;
+      updates.description = editedDescription;
 
-      // Send all updates directly to backend, let backend handle env masking check
       const success = await onUpdate(client.key, updates);
       if (success) {
         setJsonModalOpen(false);
@@ -74,7 +77,8 @@ export function MCPClientCard({
     }
   };
 
-  const clientJson = JSON.stringify(client, null, 2);
+  const { description: _desc, ...clientWithoutDesc } = client;
+  const clientJson = JSON.stringify(clientWithoutDesc, null, 2);
 
   return (
     <>
@@ -182,6 +186,16 @@ export function MCPClientCard({
         }
         width={700}
       >
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: "block", marginBottom: 4, fontWeight: 500 }}>Description</label>
+          <Input.TextArea
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            disabled={!isEditing}
+            rows={2}
+            placeholder="Short description of this MCP client..."
+          />
+        </div>
         {isEditing ? (
           <textarea
             value={editedJson}

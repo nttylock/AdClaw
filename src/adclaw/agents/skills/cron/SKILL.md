@@ -1,6 +1,6 @@
 ---
 name: cron
-description: 通过 adclaw 命令管理定时任务 - 创建、查询、暂停、恢复、删除任务
+description: Manage scheduled cron jobs via the adclaw CLI — create, list, pause, resume, and delete tasks.
 metadata: { "adclaw": { "emoji": "⏰" } }
 ---
 

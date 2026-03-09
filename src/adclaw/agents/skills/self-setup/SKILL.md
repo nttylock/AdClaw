@@ -1,3 +1,9 @@
+---
+name: self-setup
+description: Configure LLM providers and models through conversation — add API keys, switch models, list available options.
+metadata: { "adclaw": { "emoji": "⚙️" } }
+---
+
 # Self-Setup — Provider & Model Configuration
 
 This skill lets you configure LLM providers and models through conversation.
