@@ -86,6 +86,8 @@ class AdClawAgent(ReActAgent):
         max_iters: int = 50,
         max_input_length: int = 128 * 1024,  # 128K = 131072 tokens
         namesake_strategy: NamesakeStrategy = "skip",
+        persona=None,
+        team_summary: str = "",
     ):
         """Initialize AdClawAgent.
 
@@ -103,7 +105,11 @@ class AdClawAgent(ReActAgent):
             namesake_strategy: Strategy to handle namesake tool functions.
                 Options: "override", "skip", "raise", "rename"
                 (default: "skip")
+            persona: Optional PersonaConfig with soul_md override
+            team_summary: Optional team summary for multi-agent awareness
         """
+        self._persona = persona
+        self._team_summary = team_summary
         self._env_context = env_context
         self._max_input_length = max_input_length
         self._mcp_clients = mcp_clients or []
@@ -247,7 +253,10 @@ class AdClawAgent(ReActAgent):
         Returns:
             Complete system prompt string
         """
-        sys_prompt = build_system_prompt_from_working_dir()
+        sys_prompt = build_system_prompt_from_working_dir(
+            persona=self._persona,
+            team_summary=self._team_summary,
+        )
         if self._env_context is not None:
             sys_prompt = self._env_context + "\n\n" + sys_prompt
         return sys_prompt

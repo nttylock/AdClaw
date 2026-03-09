@@ -17,6 +17,7 @@ from .utils import build_env_context
 from ..channels.schema import DEFAULT_CHANNEL
 from ...agents.memory import MemoryManager
 from ...agents.model_factory import create_model_and_formatter
+from ...agents.persona_manager import PersonaManager
 from ...agents.react_agent import AdClawAgent
 from ...agents.tools import read_file, write_file, edit_file
 from ...agents.utils.token_counting import _get_token_counter
@@ -113,6 +114,36 @@ class AgentRunner(Runner):
             max_iters = config.agents.running.max_iters
             max_input_length = config.agents.running.max_input_length
 
+            # --- Persona routing ---
+            persona_mgr = PersonaManager(
+                working_dir=str(WORKING_DIR),
+                personas=getattr(config.agents, "personas", []),
+            )
+            persona_mgr.ensure_dirs()
+
+            # Resolve persona from first message text
+            msg_text = ""
+            if msgs and len(msgs) > 0:
+                msg_text = msgs[0].get_text_content() or ""
+
+            persona_id = persona_mgr.resolve_tag(msg_text)
+            persona = None
+
+            if persona_id:
+                persona = persona_mgr.get_persona(persona_id)
+                # Strip @tag from message text
+                if msgs and len(msgs) > 0:
+                    original_text = msgs[0].get_text_content() or ""
+                    stripped = persona_mgr.strip_tag(original_text)
+                    msgs[0].content = stripped
+            elif persona_mgr.get_coordinator():
+                persona = persona_mgr.get_coordinator()
+            # else: no personas configured, use default behavior
+
+            # Scope session_id per persona
+            if persona:
+                session_id = f"{persona.id}_{session_id}"
+
             agent = AdClawAgent(
                 env_context=env_context,
                 mcp_clients=mcp_clients,
@@ -120,6 +151,8 @@ class AgentRunner(Runner):
                 aom_manager=self._aom_manager,
                 max_iters=max_iters,
                 max_input_length=max_input_length,
+                persona=persona,
+                team_summary=persona_mgr.get_team_summary() if persona_mgr.all_personas else "",
             )
             await agent.register_mcp_clients()
             agent.set_console_output_enabled(enabled=False)

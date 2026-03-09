@@ -17,6 +17,7 @@ from .console import router as console_router
 from .memory import router as memory_router
 from .search import router as search_router
 from .diagnostics import router as diagnostics_router
+from .personas import router as personas_router
 
 
 router = APIRouter()
@@ -37,5 +38,6 @@ router.include_router(envs_router)
 router.include_router(memory_router)
 router.include_router(search_router)
 router.include_router(diagnostics_router)
+router.include_router(personas_router)
 
 __all__ = ["router"]
