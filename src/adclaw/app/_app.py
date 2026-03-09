@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=redefined-outer-name,unused-argument
+import asyncio
 import mimetypes
 import os
 from contextlib import asynccontextmanager
@@ -155,9 +156,17 @@ async def lifespan(app: FastAPI):  # pylint: disable=too-many-statements
     app.state.mcp_watcher = mcp_watcher
     app.state.aom_manager = aom_manager
 
+    # --- Agent watchdog (auto-restart on crash) ---
+    from .watchdog import AgentWatchdog
+    watchdog = AgentWatchdog(runner=runner, check_interval=60, max_restarts=5)
+    watchdog_task = asyncio.create_task(watchdog.start())
+    app.state.watchdog = watchdog
+
     try:
         yield
     finally:
+        if hasattr(app.state, "watchdog"):
+            app.state.watchdog.stop()
         # stop order: watchers -> cron -> channels -> mcp -> runner
         try:
             await config_watcher.stop()
