@@ -33,13 +33,17 @@ class PromptConfig:
 class PromptBuilder:
     """Builder for constructing system prompts from markdown files."""
 
-    def __init__(self, working_dir: Path):
+    def __init__(self, working_dir: Path, persona=None, team_summary: str = ""):
         """Initialize prompt builder.
 
         Args:
             working_dir: Directory containing markdown configuration files
+            persona: Optional PersonaConfig with soul_md override
+            team_summary: Optional team summary to append at the end
         """
         self.working_dir = working_dir
+        self.persona = persona
+        self.team_summary = team_summary
         self.prompt_parts = []
         self.loaded_count = 0
 
@@ -114,9 +118,21 @@ class PromptBuilder:
             Constructed system prompt string
         """
         for filename, required in PromptConfig.FILE_ORDER:
+            if filename == "SOUL.md" and self.persona and self.persona.soul_md:
+                if self.prompt_parts:
+                    self.prompt_parts.append("")
+                self.prompt_parts.append(f"# SOUL.md ({self.persona.name})")
+                self.prompt_parts.append("")
+                self.prompt_parts.append(self.persona.soul_md)
+                self.loaded_count += 1
+                continue
             if not self._load_file(filename, required):
                 # Required file failed to load
                 return DEFAULT_SYS_PROMPT
+
+        if self.team_summary:
+            self.prompt_parts.append("")
+            self.prompt_parts.append(self.team_summary)
 
         if not self.prompt_parts:
             logger.warning("No content loaded from working directory")
@@ -134,7 +150,7 @@ class PromptBuilder:
         return final_prompt
 
 
-def build_system_prompt_from_working_dir() -> str:
+def build_system_prompt_from_working_dir(persona=None, team_summary: str = "") -> str:
     """
     Build system prompt by reading markdown files from working directory.
 
@@ -147,6 +163,10 @@ def build_system_prompt_from_working_dir() -> str:
     2. SOUL.md (required) - Core identity and behavioral principles
     3. PROFILE.md (optional) - Agent identity and user profile
 
+    Args:
+        persona: Optional PersonaConfig with soul_md override
+        team_summary: Optional team summary to append at the end
+
     Returns:
         str: Constructed system prompt from markdown files.
              If required files don't exist, returns the default prompt.
@@ -157,7 +177,7 @@ def build_system_prompt_from_working_dir() -> str:
     """
     from ..constant import WORKING_DIR
 
-    builder = PromptBuilder(working_dir=Path(WORKING_DIR))
+    builder = PromptBuilder(working_dir=Path(WORKING_DIR), persona=persona, team_summary=team_summary)
     return builder.build()
 
 
