@@ -68,6 +68,10 @@ RUN apt-get update && apt-get install -y --fix-missing \
 
 RUN sed -i 's/^CHROMIUM_FLAGS=""/CHROMIUM_FLAGS="--no-sandbox"/' /usr/bin/chromium
 
+# PinchTab: token-efficient browser control for AI agents (12MB Go binary).
+RUN curl -fsSL https://pinchtab.com/install.sh | bash
+ENV PINCHTAB_PORT=9867
+
 # agent-browser: install CLI globally, use system Chromium (skip download).
 ENV AGENT_BROWSER_EXECUTABLE_PATH=/usr/bin/chromium
 RUN npm install -g agent-browser sitefetch

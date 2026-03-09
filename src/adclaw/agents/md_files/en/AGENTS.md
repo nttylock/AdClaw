@@ -96,6 +96,29 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in the "Tool Setup" section of `MEMORY.md`. Identity and user profile go in `PROFILE.md`.
 
+### Tool Selection Strategy
+
+When a task involves the web, search, or data extraction, pick the right tool:
+
+**Search & Research (no browser needed):**
+- `exa` MCP — semantic search, find articles/pages by meaning. Best for "find articles about X", research queries. Cheapest option.
+- `xai_search` / X.AI — real-time web search + X/Twitter content. Best for trending topics, news, social signals.
+- `brave_search` MCP — privacy-focused web search. Good general-purpose alternative.
+
+**Browser (when you need to interact with a page):**
+- `pinchtab` — DEFAULT for reading web pages. ~800 tokens/page (5-13x cheaper than screenshots). Use for text extraction, SERP scraping, price checks, competitor content. HTTP API at localhost:9867.
+- `agent-browser` — for complex multi-step workflows (login → navigate → fill → submit), QA/dogfooding, Slack automation, Electron apps. Use when pinchtab can't handle the interaction.
+- `browser-use` — for persistent authenticated sessions, simple form filling. Use when you need login state to survive between runs.
+- `browser_visible` — only when user explicitly asks to SEE the browser window.
+
+**Decision flow:**
+1. Can a search tool answer it? → Use exa/xai_search/brave (no browser overhead)
+2. Need to read a webpage? → PinchTab text extraction (cheapest)
+3. Need to click/fill/submit? → PinchTab actions (if simple) or agent-browser (if complex)
+4. Need persistent login? → browser-use
+5. Need screenshots as proof? → agent-browser
+6. User wants to watch? → browser_visible
+
 
 ## 💓 Heartbeats - Be Proactive!
 

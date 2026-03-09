@@ -20,6 +20,15 @@ stderr_logfile=/var/log/app.err.log
 stdout_logfile=/var/log/app.out.log
 environment=DISPLAY=":1",PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/usr/bin/chromium",ADCLAW_RUNNING_IN_CONTAINER="1"
 
+[program:pinchtab]
+command=/bin/sh -c "sleep 2; exec pinchtab"
+autostart=true
+autorestart=true
+priority=25
+stderr_logfile=/var/log/pinchtab.err.log
+stdout_logfile=/var/log/pinchtab.out.log
+environment=DISPLAY=":1"
+
 [program:xvfb]
 command=/bin/sh -c "rm -f /tmp/.X1-lock /tmp/.X11-unix/X1; mkdir -p /tmp/.X11-unix; exec /usr/bin/Xvfb :1 -screen 0 1280x800x24"
 autostart=true
