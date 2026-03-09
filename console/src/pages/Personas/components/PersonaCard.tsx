@@ -1,5 +1,6 @@
 import { Card, Button, Tag } from "@agentscope-ai/design";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import type { Persona } from "../../../api/types";
 import styles from "../index.module.less";
 
@@ -20,6 +21,8 @@ export function PersonaCard({
   onMouseLeave,
   onDelete,
 }: PersonaCardProps) {
+  const { t } = useTranslation();
+
   const soulPreview = persona.soul_md
     ? persona.soul_md.split("\n").slice(0, 2).join("\n")
     : "";
@@ -27,7 +30,7 @@ export function PersonaCard({
   const modelLabel =
     persona.model_provider && persona.model_name
       ? `${persona.model_provider}/${persona.model_name}`
-      : "Default";
+      : t("personas.defaultModel");
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,7 +50,7 @@ export function PersonaCard({
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <h3 className={styles.personaTitle}>{persona.name}</h3>
             {persona.is_coordinator && (
-              <Tag color="purple">Coordinator</Tag>
+              <Tag color="purple">{t("personas.coordinator")}</Tag>
             )}
           </div>
         </div>
@@ -60,11 +63,11 @@ export function PersonaCard({
 
         <div className={styles.badges}>
           <Tag color="blue">{modelLabel}</Tag>
-          <Tag>{persona.skills.length} skills</Tag>
+          <Tag>{persona.skills.length} {t("personas.skills")}</Tag>
           <Tag>{persona.mcp_clients.length} MCP</Tag>
           {persona.cron && (
             <Tag color={persona.cron.enabled ? "green" : "default"}>
-              {persona.cron.enabled ? "Cron: ON" : "Cron: OFF"}
+              {persona.cron.enabled ? t("personas.cronOn") : t("personas.cronOff")}
             </Tag>
           )}
         </div>
@@ -81,7 +84,7 @@ export function PersonaCard({
           }}
           className={styles.actionButton}
         >
-          Edit
+          {t("personas.edit")}
         </Button>
         <Button
           type="text"

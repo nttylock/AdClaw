@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 from adclaw.config.config import PersonaConfig, PersonaCronConfig, AgentsConfig, Config, validate_single_coordinator
 
 
@@ -46,7 +47,7 @@ class TestPersonaConfig:
         assert cfg2.agents.personas[0].soul_md == "Be helpful."
 
     def test_persona_id_validation(self):
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             PersonaConfig(id="bad id!", name="Bad")
 
     def test_persona_id_valid_chars(self):

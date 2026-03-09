@@ -381,9 +381,8 @@ class AdClawAgent(ReActAgent):
     _frozen_prompt: str | None = None
     _frozen_hash: str | None = None
 
-    @staticmethod
-    def _prompt_source_hash() -> str:
-        """Hash the source files that feed into the system prompt."""
+    def _prompt_source_hash(self) -> str:
+        """Hash the source files and persona config that feed into the system prompt."""
         import hashlib
 
         from ..constant import WORKING_DIR
@@ -396,6 +395,15 @@ class AdClawAgent(ReActAgent):
                     h.update(p.read_bytes())
                 except OSError:
                     pass
+        # Include persona and team_summary in hash so cache invalidates
+        # when a different persona is active or team changes.
+        if self._persona is not None:
+            h.update(self._persona.id.encode())
+            h.update(self._persona.soul_md.encode())
+        if self._team_summary:
+            h.update(self._team_summary.encode())
+        if self._env_context:
+            h.update(self._env_context.encode())
         return h.hexdigest()
 
     def rebuild_sys_prompt(self) -> None:

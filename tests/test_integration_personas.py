@@ -280,11 +280,14 @@ class TestFullOrchestration:
         t2 = get_template("researcher")
         t1["name"] = "Modified"
         assert t2["name"] == "Researcher"
-        # Verify deep copy — nested lists are independent
+        # Verify deep copy — nested mutable lists are independent
         t1["mcp_clients"].append("test_mcp")
         assert "test_mcp" not in t2["mcp_clients"]
         t1["skills"].append("test_skill")
         assert "test_skill" not in t2["skills"]
+        # Verify suggested_mcp_clients (mutable list) is also independent
+        t1["suggested_mcp_clients"].append("extra")
+        assert "extra" not in t2["suggested_mcp_clients"]
 
     # --- Backward compat (3 tests) ---
 

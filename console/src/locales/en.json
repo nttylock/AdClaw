@@ -425,7 +425,13 @@
     "description": "Create and manage agent personas with custom identities, skills, and schedules.",
     "createAgent": "Create Agent",
     "fromTemplate": "From Template",
-    "emptyState": "No agent personas configured yet. Create one or use a template to get started."
+    "emptyState": "No agent personas configured yet. Create one or use a template to get started.",
+    "coordinator": "Coordinator",
+    "defaultModel": "Default",
+    "skills": "skills",
+    "cronOn": "Cron: ON",
+    "cronOff": "Cron: OFF",
+    "edit": "Edit"
   },
   "modelConfig": {
     "promptTitle": "LLM Model Required",

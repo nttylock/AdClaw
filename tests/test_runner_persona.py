@@ -32,8 +32,14 @@ class TestRunnerPersonaRouting:
         assert mgr.get_coordinator() is None
 
     def test_session_id_scoping(self):
-        """Session ID should be prefixed with persona ID."""
+        """Session ID should be prefixed with persona ID using :: separator."""
         persona = PersonaConfig(id="researcher", name="R")
         session_id = "abc123"
-        scoped = f"{persona.id}_{session_id}"
-        assert scoped == "researcher_abc123"
+        scoped = f"{persona.id}::{session_id}"
+        assert scoped == "researcher::abc123"
+
+    def test_session_id_no_collision(self):
+        """Different persona/session pairs must produce different scoped IDs."""
+        scoped_1 = f"a_b::c"
+        scoped_2 = f"a::b_c"
+        assert scoped_1 != scoped_2

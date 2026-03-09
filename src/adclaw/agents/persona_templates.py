@@ -20,7 +20,8 @@ You are a research specialist. Your job is to find, verify, and summarize inform
         "model_provider": "",
         "model_name": "",
         "skills": [],
-        "mcp_clients": ["brave_search", "xai_search", "exa"],
+        "mcp_clients": [],
+        "suggested_mcp_clients": ["brave_search", "xai_search", "exa"],
     },
     {
         "id": "content-writer",
@@ -41,7 +42,8 @@ You are a content specialist. You create engaging, original content adapted to t
         "model_provider": "",
         "model_name": "",
         "skills": [],
-        "mcp_clients": ["citedy"],
+        "mcp_clients": [],
+        "suggested_mcp_clients": ["citedy"],
     },
     {
         "id": "seo-specialist",
@@ -62,7 +64,8 @@ You are a technical SEO expert. You analyze, audit, and optimize for search engi
         "model_provider": "",
         "model_name": "",
         "skills": [],
-        "mcp_clients": ["citedy"],
+        "mcp_clients": [],
+        "suggested_mcp_clients": ["citedy"],
     },
     {
         "id": "ads-manager",
@@ -104,7 +107,8 @@ You are a social media strategist. You create platform-native content and track 
         "model_provider": "",
         "model_name": "",
         "skills": [],
-        "mcp_clients": ["xai_search"],
+        "mcp_clients": [],
+        "suggested_mcp_clients": ["xai_search"],
     },
 ]
 

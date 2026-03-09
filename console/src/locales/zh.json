@@ -425,7 +425,13 @@
     "description": "创建和管理具有自定义身份、技能和定时任务的代理角色。",
     "createAgent": "创建代理",
     "fromTemplate": "从模板创建",
-    "emptyState": "尚未配置代理角色。创建一个或使用模板开始。"
+    "emptyState": "尚未配置代理角色。创建一个或使用模板开始。",
+    "coordinator": "协调者",
+    "defaultModel": "默认",
+    "skills": "技能",
+    "cronOn": "定时: 开",
+    "cronOff": "定时: 关",
+    "edit": "编辑"
   },
   "modelConfig": {
     "promptTitle": "需要配置 LLM 模型",
