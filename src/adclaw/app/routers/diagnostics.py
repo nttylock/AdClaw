@@ -128,6 +128,18 @@ async def health(request: Request) -> HealthResponse:
     except Exception as exc:
         subsystems["aom"] = SubsystemStatus(status="error", detail=str(exc))
 
+    # --- Watchdog ---
+    wd = getattr(request.app.state, "watchdog", None)
+    if wd:
+        wd_status = wd.get_status()
+        subsystems["watchdog"] = SubsystemStatus(
+            status="ok" if wd_status["healthy"] else "warning",
+            detail={
+                "restarts": wd_status["restart_count"],
+                "max_restarts": wd_status["max_restarts"],
+            },
+        )
+
     # --- Overall ---
     statuses = {s.status for s in subsystems.values()}
     if "error" in statuses:
