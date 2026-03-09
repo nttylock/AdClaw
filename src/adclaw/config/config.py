@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from typing import Optional, Union, Dict, List, Literal
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+from pydantic import BaseModel, Field, ConfigDict, model_validator, field_validator
 
 from ..constant import (
     HEARTBEAT_DEFAULT_EVERY,
@@ -154,6 +155,40 @@ class AOMConfig(BaseModel):
     multimodal_api_url: str = ""
 
 
+class PersonaCronConfig(BaseModel):
+    """Cron configuration for a persona."""
+    enabled: bool = False
+    schedule: str = ""
+    prompt: str = ""
+    output: str = "chat"  # "chat" | "file" | "both"
+
+
+class PersonaConfig(BaseModel):
+    """Configuration for a single agent persona."""
+    id: str
+    name: str
+    soul_md: str = ""
+    model_provider: str = ""
+    model_name: str = ""
+    skills: list[str] = []
+    mcp_clients: list[str] = []
+    is_coordinator: bool = False
+    cron: PersonaCronConfig | None = None
+
+    @field_validator("id")
+    @classmethod
+    def validate_id(cls, v):
+        if not re.match(r'^[a-z0-9_-]+$', v):
+            raise ValueError(f"Persona ID must be lowercase alphanumeric, hyphens, underscores: {v}")
+        return v
+
+
+def validate_single_coordinator(personas: list[PersonaConfig]) -> None:
+    coordinators = [p for p in personas if p.is_coordinator]
+    if len(coordinators) > 1:
+        raise ValueError(f"Only one coordinator allowed, found: {[c.id for c in coordinators]}")
+
+
 class AgentsConfig(BaseModel):
     defaults: AgentsDefaultsConfig = Field(
         default_factory=AgentsDefaultsConfig,
@@ -173,6 +208,7 @@ class AgentsConfig(BaseModel):
         default_factory=AOMConfig,
         description="Always-On Memory Agent configuration",
     )
+    personas: list[PersonaConfig] = []
 
 
 class LastDispatchConfig(BaseModel):
