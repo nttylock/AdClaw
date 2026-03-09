@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Try to import reme, log warning if it fails
 try:
-    from reme.reme_adclaw import ReMeCopaw
+    from reme.reme_copaw import ReMeCopaw
 
     _REME_AVAILABLE = True
 

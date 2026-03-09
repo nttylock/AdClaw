@@ -21,12 +21,12 @@ class AgentWatchdog:
         self.last_restart: float = 0
 
     def is_healthy(self) -> bool:
-        """Return False if runner is None or runner.memory_manager is None."""
+        """Return False if runner is None or has no session handler."""
         if self.runner is None:
             return False
-        if self.runner.memory_manager is None:
-            return False
-        return True
+        # Runner is healthy if it has a session object (set by init_handler).
+        # memory_manager may be None when optional deps are missing — that's OK.
+        return hasattr(self.runner, "session") and self.runner.session is not None
 
     def get_status(self) -> dict:
         """Return current watchdog status."""
@@ -49,9 +49,10 @@ class AgentWatchdog:
         )
         try:
             # Close existing memory_manager if present
-            if self.runner.memory_manager is not None:
+            mm = getattr(self.runner, "memory_manager", None)
+            if mm is not None:
                 try:
-                    await self.runner.memory_manager.close()
+                    await mm.close()
                 except Exception:
                     pass
                 self.runner.memory_manager = None
