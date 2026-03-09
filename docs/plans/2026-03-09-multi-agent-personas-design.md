@@ -146,7 +146,30 @@ Agents can read/write to a shared directory: `/app/working/shared/`
 - Each agent has read access to ALL shared dirs
 - Each agent has write access to its own dir only
 - Built-in tools: `read_shared_file(agent_id, filename)`, `write_shared_file(filename, content)`
-- AOM (Always-On Memory) remains shared across all agents
+
+### Dual Memory per Agent
+
+Each persona uses **both** memory systems:
+
+| System | What it does | Scope |
+|--------|-------------|-------|
+| **ReMe** (file-based, ReMeCopaw) | Conversation compaction, MEMORY.md, session memory | Per-agent: `/app/working/agents/{agent_id}/` |
+| **AOM** (vector/embeddings) | Semantic search, long-term knowledge, auto-capture | Shared across all agents (single DB) |
+
+**ReMe per agent:**
+- Each persona gets its own `working_dir`: `/app/working/agents/{agent_id}/`
+- Contains: `MEMORY.md`, `memory/` dir, session compaction files
+- Agent writes only to its own ReMe; can read others via shared files
+- `MemoryManager` instance created per-agent with agent-specific working_dir
+
+**AOM shared:**
+- Single AOM database for all agents (existing behavior)
+- Memories tagged with `agent_id` metadata for filtering
+- Query: agent sees all AOM memories, but can filter by `agent_id`
+- Capture: each agent's conversations auto-captured with its `agent_id` tag
+
+**Why dual:** ReMe handles conversation flow and compaction (per-agent context).
+AOM handles cross-agent knowledge discovery (semantic search across everything).
 
 ## Prompt Building Changes
 
@@ -222,7 +245,7 @@ GET    /api/agents/shared/{id}           — list shared files for persona
 ## Non-Goals (MVP)
 
 - Agent-to-agent direct messaging (beyond coordinator delegation)
-- Per-agent AOM instances (shared AOM is fine for MVP)
+- Per-agent AOM instances (shared AOM with agent_id tags is sufficient)
 - Agent marketplace / import-export
 - Voice/personality for different channels (same persona everywhere)
 - Custom avatars upload (auto-generated only)
