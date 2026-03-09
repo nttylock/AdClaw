@@ -87,7 +87,7 @@ async def health(request: Request) -> HealthResponse:
     # --- Channels ---
     try:
         channels = request.app.state.channel_manager.channels
-        names = [getattr(ch, "name", str(ch)) for ch in channels]
+        names = [getattr(ch, "channel", getattr(ch, "name", "?")) for ch in channels]
         st = "ok" if len(channels) > 0 else "warning"
         subsystems["channels"] = SubsystemStatus(
             status=st, detail={"count": len(channels), "names": names}
