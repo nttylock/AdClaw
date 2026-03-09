@@ -24,6 +24,7 @@ import {
   PanelLeftOpen,
   Wallet,
   ExternalLink,
+  HeartPulse,
 } from "lucide-react";
 
 const { Sider } = Layout;
@@ -40,6 +41,7 @@ const keyToPath: Record<string, string> = {
   models: "/models",
   environments: "/environments",
   "agent-config": "/agent-config",
+  diagnostics: "/diagnostics",
 };
 
 interface SidebarProps {
@@ -117,6 +119,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           key: "heartbeat",
           label: t("nav.heartbeat"),
           icon: <Activity size={16} />,
+        },
+        {
+          key: "diagnostics",
+          label: "Diagnostics",
+          icon: <HeartPulse size={16} />,
         },
       ],
     },
