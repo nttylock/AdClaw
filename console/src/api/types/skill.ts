@@ -1,9 +1,17 @@
+export interface SkillSecurity {
+  score: number;
+  pattern_scan: "pass" | "fail" | "pending";
+  llm_audit: "pass" | "fail" | "pending";
+  auto_healed: boolean;
+}
+
 export interface SkillSpec {
   name: string;
   content: string;
   source: string;
   path: string;
   enabled?: boolean;
+  security?: SkillSecurity;
 }
 
 export interface HubSkillSpec {

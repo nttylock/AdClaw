@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 import type { SkillSpec } from "../../../../api/types";
 import { useTranslation } from "react-i18next";
+import { SecurityBadges } from "./SecurityBadges";
 import styles from "../index.module.less";
 
 interface SkillCardProps {
@@ -170,6 +171,8 @@ export function SkillCard({
             {extractDescription(skill.content)}
           </span>
         </div>
+
+        <SecurityBadges security={skill.security} />
       </div>
 
       <div className={styles.cardFooter}>

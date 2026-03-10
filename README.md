@@ -65,6 +65,9 @@ One `docker run` — and you get a **multi-agent AI marketing team** with:
 | Content Ingestion | Ingest YouTube, PDFs, web pages, audio |
 | Social Publishing | Adapt content for LinkedIn, X, Facebook, Reddit |
 | Scheduled Tasks | Each agent can run on its own cron schedule |
+| Self-Healing Skills | Broken skill YAML? Auto-fixed by your LLM — no manual intervention |
+| Security Scanning | Every skill gets a security score (0-100) from 208-pattern static analysis |
+| Security Badges | Visual badges on each skill card: pattern scan, LLM audit, auto-heal status |
 
 ---
 

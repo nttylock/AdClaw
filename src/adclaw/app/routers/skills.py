@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from pathlib import Path
 from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -15,6 +16,7 @@ from ...agents.skills_hub import (
     install_skill_from_hub,
 )
 from ...agents.skill_scanner import SkillSecurityScanner
+from ...agents.skill_security import read_scan_cache, scan_and_cache
 from ...agents.tools.skill_patcher import get_patch_history
 
 
@@ -23,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class SkillSpec(SkillInfo):
     enabled: bool = False
+    security: dict | None = None
 
 
 class CreateSkillRequest(BaseModel):
@@ -70,6 +73,18 @@ async def list_skills() -> list[SkillSpec]:
     available_skills = list_available_skills()
     skills_spec = []
     for skill in all_skills:
+        # Read cached security scan if available
+        security = None
+        skill_path = Path(skill.path) if skill.path else None
+        if skill_path and skill_path.exists():
+            cached = read_scan_cache(skill_path)
+            if cached:
+                security = {
+                    "score": cached.get("score"),
+                    "pattern_scan": cached.get("pattern_scan"),
+                    "llm_audit": cached.get("llm_audit"),
+                    "auto_healed": cached.get("auto_healed", False),
+                }
         skills_spec.append(
             SkillSpec(
                 name=skill.name,
@@ -79,6 +94,7 @@ async def list_skills() -> list[SkillSpec]:
                 references=skill.references,
                 scripts=skill.scripts,
                 enabled=skill.name in available_skills,
+                security=security,
             ),
         )
     return skills_spec
@@ -220,6 +236,15 @@ async def create_skill(request: CreateSkillRequest):
         references=request.references,
         scripts=request.scripts,
     )
+    # Auto-scan newly created skill
+    for base in (get_customized_skills_dir(), get_active_skills_dir()):
+        skill_dir = base / request.name
+        if skill_dir.exists():
+            try:
+                scan_and_cache(skill_dir, request.name)
+            except Exception as e:
+                logger.warning("Auto-scan failed for '%s': %s", request.name, e)
+            break
     return {"created": result}
 
 
@@ -273,6 +298,16 @@ async def load_skill_file(
         source=source,
     )
     return {"content": content}
+
+
+@router.get("/{skill_name}/security")
+async def get_skill_security(skill_name: str):
+    """Get security scan results for a skill (runs scan if not cached)."""
+    for base in (get_customized_skills_dir(), get_active_skills_dir()):
+        skill_dir = base / skill_name
+        if skill_dir.exists():
+            return scan_and_cache(skill_dir, skill_name)
+    raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
 
 
 @router.post("/{skill_name}/scan")

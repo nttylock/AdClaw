@@ -110,6 +110,7 @@ class AdClawAgent(ReActAgent):
         """
         self._persona = persona
         self._team_summary = team_summary
+        self._heal_events: list = []
         self._env_context = env_context
         self._max_input_length = max_input_length
         self._mcp_clients = mcp_clients or []
@@ -246,6 +247,68 @@ class AdClawAgent(ReActAgent):
                         skill_name,
                         e,
                     )
+                    # Attempt self-healing via LLM
+                    if self._try_heal_skill(toolkit, skill_dir, skill_name, e):
+                        self._heal_events.append({
+                            "skill": skill_name,
+                            "error": str(e)[:100],
+                        })
+
+    def _try_heal_skill(
+        self, toolkit: Toolkit, skill_dir, skill_name: str, error: Exception
+    ) -> bool:
+        """Try to auto-heal a broken skill and retry registration."""
+        import asyncio
+        from .skill_healer import heal_skill
+
+        async def llm_caller(prompt: str) -> str:
+            """Create a one-shot LLM caller for healing."""
+            model, _ = create_model_and_formatter()
+            from agentscope.message import Msg
+            response = model([Msg(role="user", content=prompt)])
+            return response.content
+
+        try:
+            result = asyncio.get_event_loop().run_until_complete(
+                heal_skill(skill_dir, str(error), llm_caller)
+            )
+        except RuntimeError:
+            # Event loop already running — use thread
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                try:
+                    result = pool.submit(
+                        asyncio.run,
+                        heal_skill(skill_dir, str(error), llm_caller)
+                    ).result(timeout=30)
+                except Exception as heal_err:
+                    logger.warning(
+                        "Self-heal failed for '%s': %s", skill_name, heal_err
+                    )
+                    return False
+        except Exception as heal_err:
+            logger.warning(
+                "Self-heal failed for '%s': %s", skill_name, heal_err
+            )
+            return False
+
+        if not result.healed:
+            return False
+
+        # Retry registration
+        try:
+            toolkit.register_agent_skill(str(skill_dir))
+            logger.info(
+                "Self-healed and registered skill '%s': %s",
+                skill_name, result.message,
+            )
+            return True
+        except Exception as retry_err:
+            logger.error(
+                "Skill '%s' still broken after healing: %s",
+                skill_name, retry_err,
+            )
+            return False
 
     def _build_sys_prompt(self) -> str:
         """Build system prompt from working dir files and env context.
