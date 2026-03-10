@@ -453,6 +453,34 @@ class TelegramChannel(BaseChannel):
             rest = rest[len(chunk) :].lstrip("\n ")
         return chunks
 
+    async def _run_process_loop(
+        self,
+        request: Any,
+        to_handle: str,
+        send_meta: dict,
+    ) -> None:
+        """Override to send continuous typing indicator while processing."""
+        chat_id = str(
+            (send_meta or {}).get("chat_id")
+            or to_handle.removeprefix("telegram:")
+        )
+
+        async def _typing_loop() -> None:
+            """Send typing every 4s (Telegram clears it after ~5s)."""
+            while True:
+                await self._send_chat_action(chat_id, "typing")
+                await asyncio.sleep(4)
+
+        typing_task = None
+        if self._show_typing and chat_id:
+            typing_task = asyncio.create_task(_typing_loop())
+
+        try:
+            await super()._run_process_loop(request, to_handle, send_meta)
+        finally:
+            if typing_task:
+                typing_task.cancel()
+
     async def _send_chat_action(
         self,
         chat_id: str,
