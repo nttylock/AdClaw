@@ -233,7 +233,9 @@ export default function DiagnosticsPage() {
                     </Tag>
                   </div>
                   <div style={{ color: "#666", fontSize: 13 }}>
-                    {sub.detail}
+                    {typeof sub.detail === "string"
+                      ? sub.detail
+                      : JSON.stringify(sub.detail)}
                   </div>
                   {sub.count != null && (
                     <div style={{ color: "#999", fontSize: 12, marginTop: 4 }}>

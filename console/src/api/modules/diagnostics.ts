@@ -2,7 +2,7 @@ import { request } from "../request";
 
 export interface SubsystemStatus {
   status: "ok" | "warning" | "error";
-  detail: string;
+  detail: unknown;
   count?: number;
 }
 
