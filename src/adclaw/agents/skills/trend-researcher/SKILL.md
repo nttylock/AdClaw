@@ -12,7 +12,7 @@ read_when:
   - technology scouting
   - market sizing
   - trend forecasting
-metadata: {"clawdbot":{"emoji":"\ud83d\udcc8"}}
+metadata: {"clawdbot":{"emoji":"📈"}}
 ---
 
 # Trend Researcher

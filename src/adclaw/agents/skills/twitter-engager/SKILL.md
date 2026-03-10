@@ -12,7 +12,7 @@ read_when:
   - twitter crisis management
   - twitter advertising
   - thought leadership twitter
-metadata: {"clawdbot":{"emoji":"\ud83d\udc26"}}
+metadata: {"clawdbot":{"emoji":"🐦"}}
 ---
 
 # Twitter Engager

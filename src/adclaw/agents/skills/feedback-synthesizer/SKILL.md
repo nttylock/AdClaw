@@ -12,7 +12,7 @@ read_when:
   - voice of customer
   - sentiment analysis
   - churn prediction
-metadata: {"clawdbot":{"emoji":"\ud83d\udcac"}}
+metadata: {"clawdbot":{"emoji":"💬"}}
 ---
 
 # Feedback Synthesizer
