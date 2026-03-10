@@ -308,9 +308,12 @@ class TelegramChannel(BaseChannel):
 
             # Intercept menu button presses and slash commands
             msg = update.message or getattr(update, "edited_message", None)
-            text = (msg.text or "").strip() if msg else ""
+            raw_text = (msg.text or "").strip() if msg else ""
             meta = _message_meta(update)
             chat_id = meta.get("chat_id", "")
+
+            # Strip @botname from commands (e.g. /skills@tonepen_bot → /skills)
+            text = raw_text.split("@")[0] if raw_text.startswith("/") else raw_text
 
             if text in _MENU_BUTTONS or text in _DIRECT_COMMANDS:
                 await self._handle_menu_command(chat_id, text)
