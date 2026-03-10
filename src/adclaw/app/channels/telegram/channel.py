@@ -292,7 +292,9 @@ class TelegramChannel(BaseChannel):
         }
         # Slash commands handled directly (not forwarded to agent)
         _DIRECT_COMMANDS = {
+            "/start", "/new",
             "/personas", "/model", "/skills", "/status",
+            "/compact", "/clear", "/history",
         }
 
         async def handle_message(
@@ -859,6 +861,34 @@ class TelegramChannel(BaseChannel):
         if not bot:
             return False
 
+        if command == "/start":
+            await bot.send_message(
+                chat_id=chat_id,
+                text=(
+                    "👋 Welcome to AdClaw!\n\n"
+                    "Use the menu below or type a message to chat."
+                ),
+                reply_markup=self._build_persistent_keyboard(),
+            )
+            return True
+
+        if command == "/new":
+            from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+            kb = InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    "Yes, reset", callback_data="confirm_new::yes",
+                ),
+                InlineKeyboardButton(
+                    "Cancel", callback_data="confirm_new::no",
+                ),
+            ]])
+            await bot.send_message(
+                chat_id=chat_id,
+                text="🆕 Start a new chat? This will clear the current session.",
+                reply_markup=kb,
+            )
+            return True
+
         if command in ("👤 Persona", "/personas"):
             kb = await self._build_personas_keyboard(chat_id)
             if kb:
@@ -980,6 +1010,29 @@ class TelegramChannel(BaseChannel):
                 text="\n".join(lines),
                 parse_mode="Markdown",
             )
+            return True
+
+        # Forward agent-handled commands (/compact, /clear, /history)
+        if command in ("/compact", "/clear", "/history"):
+            content_parts = [
+                TextContent(type=ContentType.TEXT, text=command),
+            ]
+            meta = {
+                "chat_id": chat_id,
+                "user_id": chat_id,
+                "username": "",
+                "message_id": "",
+                "is_group": False,
+                "has_bot_command": True,
+            }
+            native = {
+                "channel_id": self.channel,
+                "sender_id": chat_id,
+                "content_parts": content_parts,
+                "meta": meta,
+            }
+            if self._enqueue is not None:
+                self._enqueue(native)
             return True
 
         return False
