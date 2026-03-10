@@ -837,14 +837,15 @@ class TelegramChannel(BaseChannel):
             if p.get("id") != provider_id:
                 continue
             for m in p.get("models", []):
-                mname = m.get("name", "") if isinstance(m, dict) else str(m)
+                mid = m.get("id", "") if isinstance(m, dict) else str(m)
+                display = m.get("name", mid) if isinstance(m, dict) else str(m)
                 mark = " ✓" if (
-                    mname == active_model and provider_id == active_provider
+                    mid == active_model and provider_id == active_provider
                 ) else ""
                 buttons.append([
                     InlineKeyboardButton(
-                        f"{mname}{mark}",
-                        callback_data=f"model::{provider_id}::{mname}",
+                        f"{display}{mark}",
+                        callback_data=f"model::{provider_id}::{mid}",
                     )
                 ])
             break
