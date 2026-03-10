@@ -241,6 +241,7 @@ class TelegramChannel(BaseChannel):
         self._show_typing = show_typing
         self._task: Optional[asyncio.Task] = None
         self._application = None
+        self._chat_persona: dict[str, str] = {}  # chat_id → persona_id
         if self.enabled and self._bot_token:
             try:
                 self._application = self._build_application()
@@ -284,6 +285,16 @@ class TelegramChannel(BaseChannel):
 
         app = builder.build()
 
+        # Menu button texts that should be intercepted
+        _MENU_BUTTONS = {
+            "👤 Persona", "⚙️ Model", "🆕 New Chat",
+            "🔧 Skills", "📊 Status",
+        }
+        # Slash commands handled directly (not forwarded to agent)
+        _DIRECT_COMMANDS = {
+            "/personas", "/model", "/skills", "/status",
+        }
+
         async def handle_message(
             update: Update,
             context: ContextTypes.DEFAULT_TYPE,
@@ -294,6 +305,17 @@ class TelegramChannel(BaseChannel):
                 None,
             ):
                 return
+
+            # Intercept menu button presses and slash commands
+            msg = update.message or getattr(update, "edited_message", None)
+            text = (msg.text or "").strip() if msg else ""
+            meta = _message_meta(update)
+            chat_id = meta.get("chat_id", "")
+
+            if text in _MENU_BUTTONS or text in _DIRECT_COMMANDS:
+                await self._handle_menu_command(chat_id, text)
+                return
+
             (
                 content_parts,
                 has_bot_command,
@@ -302,15 +324,22 @@ class TelegramChannel(BaseChannel):
                 bot=context.bot,
                 media_dir=self._media_dir,
             )
-            meta = _message_meta(update)
             if has_bot_command:
                 meta["has_bot_command"] = True
-            chat_id = meta.get("chat_id", "")
-            user = getattr(
-                update.message or getattr(update, "edited_message"),
-                "from_user",
-                None,
-            )
+
+            # Inject persona tag if chat has a selected persona
+            active_pid = self._chat_persona.get(chat_id)
+            if active_pid and content_parts:
+                first = content_parts[0]
+                if hasattr(first, "text") and first.text:
+                    # Don't re-tag if already has @mention
+                    if not first.text.startswith("@"):
+                        content_parts[0] = TextContent(
+                            type=ContentType.TEXT,
+                            text=f"@{active_pid} {first.text}",
+                        )
+
+            user = getattr(msg, "from_user", None)
             sender_id = str(getattr(user, "id", "")) if user else chat_id
             native = {
                 "channel_id": self.channel,
@@ -333,11 +362,105 @@ class TelegramChannel(BaseChannel):
                 return
             await query.answer()
             data = query.data or ""
-            # Map callback data to bot commands
+            chat = query.message.chat if query.message else None
+            chat_id = str(chat.id) if chat else ""
+            bot = context.bot
+
+            # --- Persona selection ---
+            if data.startswith("persona::"):
+                pid = data.split("::", 1)[1]
+                self._chat_persona[chat_id] = pid
+                from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+                kb = await self._build_personas_keyboard(chat_id)
+                try:
+                    await query.edit_message_text(
+                        f"✅ Switched to **{pid}**",
+                        parse_mode="Markdown",
+                        reply_markup=kb,
+                    )
+                except Exception:
+                    pass
+                return
+
+            # --- Provider selection (level 1 of model picker) ---
+            if data.startswith("provider::"):
+                provider_id = data.split("::", 1)[1]
+                kb = await self._build_models_keyboard(provider_id)
+                try:
+                    await query.edit_message_text(
+                        f"⚙️ Models for **{provider_id}**:",
+                        parse_mode="Markdown",
+                        reply_markup=kb,
+                    )
+                except Exception:
+                    pass
+                return
+
+            # --- Model selection (level 2) ---
+            if data.startswith("model::"):
+                parts = data.split("::", 2)
+                if len(parts) == 3:
+                    provider_id, model_name = parts[1], parts[2]
+                    await self._switch_model(provider_id, model_name)
+                    try:
+                        await query.edit_message_text(
+                            f"✅ Model switched to **{model_name}** ({provider_id})",
+                            parse_mode="Markdown",
+                        )
+                    except Exception:
+                        pass
+                return
+
+            # --- Back to providers list ---
+            if data == "back::providers":
+                kb = await self._build_providers_keyboard()
+                try:
+                    await query.edit_message_text(
+                        "⚙️ Select provider:",
+                        reply_markup=kb,
+                    )
+                except Exception:
+                    pass
+                return
+
+            # --- Confirm new chat ---
+            if data == "confirm_new::yes":
+                # Forward as /new command
+                user = query.from_user
+                sender_id = str(user.id) if user else chat_id
+                content_parts = [
+                    TextContent(type=ContentType.TEXT, text="/new"),
+                ]
+                meta = {
+                    "chat_id": chat_id,
+                    "user_id": sender_id,
+                    "username": (user.username or "") if user else "",
+                    "message_id": "",
+                    "is_group": False,
+                    "has_bot_command": True,
+                }
+                native = {
+                    "channel_id": self.channel,
+                    "sender_id": sender_id,
+                    "content_parts": content_parts,
+                    "meta": meta,
+                }
+                if self._enqueue is not None:
+                    self._enqueue(native)
+                try:
+                    await query.edit_message_text("🆕 Starting new chat...")
+                except Exception:
+                    pass
+                return
+            if data == "confirm_new::no":
+                try:
+                    await query.edit_message_text("Cancelled.")
+                except Exception:
+                    pass
+                return
+
+            # --- Legacy commands (/clear, /compact, /history) ---
             if data in ("/new", "/clear", "/compact", "/history"):
-                # Simulate the command as a text message
-                chat = query.message.chat if query.message else None
-                chat_id = str(chat.id) if chat else ""
                 user = query.from_user
                 sender_id = str(user.id) if user else chat_id
                 content_parts = [
@@ -359,6 +482,7 @@ class TelegramChannel(BaseChannel):
                 }
                 if self._enqueue is not None:
                     self._enqueue(native)
+                return
 
         from telegram.ext import CallbackQueryHandler
 
@@ -526,6 +650,308 @@ class TelegramChannel(BaseChannel):
         except ImportError:
             return None
 
+    def _build_persistent_keyboard(self) -> Any:
+        """Build persistent reply keyboard (always visible at bottom)."""
+        try:
+            from telegram import ReplyKeyboardMarkup, KeyboardButton
+            return ReplyKeyboardMarkup(
+                [
+                    [
+                        KeyboardButton("👤 Persona"),
+                        KeyboardButton("⚙️ Model"),
+                        KeyboardButton("🆕 New Chat"),
+                    ],
+                    [
+                        KeyboardButton("🔧 Skills"),
+                        KeyboardButton("📊 Status"),
+                    ],
+                ],
+                resize_keyboard=True,
+            )
+        except ImportError:
+            return None
+
+    async def _fetch_personas(self) -> list[dict]:
+        """Fetch personas from local API."""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    "http://localhost:8088/api/agents/personas",
+                    timeout=5,
+                )
+                if r.status_code == 200:
+                    return r.json()
+        except Exception:
+            logger.debug("telegram: failed to fetch personas")
+        return []
+
+    async def _fetch_providers(self) -> list[dict]:
+        """Fetch providers with configured API keys."""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    "http://localhost:8088/api/models",
+                    timeout=5,
+                )
+                if r.status_code == 200:
+                    return r.json()
+        except Exception:
+            logger.debug("telegram: failed to fetch providers")
+        return []
+
+    async def _fetch_active_model(self) -> dict:
+        """Fetch currently active model."""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    "http://localhost:8088/api/models/active",
+                    timeout=5,
+                )
+                if r.status_code == 200:
+                    return r.json().get("active_llm", {})
+        except Exception:
+            pass
+        return {}
+
+    async def _fetch_skills(self) -> list[dict]:
+        """Fetch skills list."""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    "http://localhost:8088/api/skills",
+                    timeout=5,
+                )
+                if r.status_code == 200:
+                    return r.json()
+        except Exception:
+            pass
+        return []
+
+    async def _fetch_health(self) -> dict:
+        """Fetch diagnostics health."""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    "http://localhost:8088/api/diagnostics/health",
+                    timeout=5,
+                )
+                if r.status_code == 200:
+                    return r.json()
+        except Exception:
+            pass
+        return {}
+
+    async def _switch_model(self, provider_id: str, model_name: str) -> bool:
+        """Switch active model via API."""
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.put(
+                    "http://localhost:8088/api/models/active",
+                    json={
+                        "provider_id": provider_id,
+                        "model": model_name,
+                    },
+                    timeout=5,
+                )
+                return r.status_code == 200
+        except Exception:
+            return False
+
+    async def _build_personas_keyboard(self, chat_id: str = "") -> Any:
+        """Build inline keyboard with personas list."""
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+        personas = await self._fetch_personas()
+        if not personas:
+            return None
+        active_pid = self._chat_persona.get(chat_id, "")
+        buttons = []
+        for p in personas:
+            pid = p.get("id", "")
+            name = p.get("name", pid)
+            is_coord = p.get("is_coordinator", False)
+            mark = " ✓" if pid == active_pid else ""
+            emoji = "🎯" if is_coord else "👤"
+            label = f"{emoji} {name}{mark}"
+            buttons.append([
+                InlineKeyboardButton(label, callback_data=f"persona::{pid}")
+            ])
+        return InlineKeyboardMarkup(buttons)
+
+    async def _build_providers_keyboard(self) -> Any:
+        """Build inline keyboard with providers (level 1)."""
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+        providers = await self._fetch_providers()
+        active = await self._fetch_active_model()
+        active_provider = active.get("provider_id", "")
+        buttons = []
+        row = []
+        for p in providers:
+            pid = p.get("id", "")
+            models = p.get("models", [])
+            if not models:
+                continue
+            mark = " ✓" if pid == active_provider else ""
+            row.append(
+                InlineKeyboardButton(
+                    f"{pid}{mark}",
+                    callback_data=f"provider::{pid}",
+                )
+            )
+            if len(row) == 2:
+                buttons.append(row)
+                row = []
+        if row:
+            buttons.append(row)
+        return InlineKeyboardMarkup(buttons) if buttons else None
+
+    async def _build_models_keyboard(self, provider_id: str) -> Any:
+        """Build inline keyboard with models for a provider (level 2)."""
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+        providers = await self._fetch_providers()
+        active = await self._fetch_active_model()
+        active_model = active.get("model", "")
+        active_provider = active.get("provider_id", "")
+        buttons = []
+        for p in providers:
+            if p.get("id") != provider_id:
+                continue
+            for m in p.get("models", []):
+                mname = m.get("name", "") if isinstance(m, dict) else str(m)
+                mark = " ✓" if (
+                    mname == active_model and provider_id == active_provider
+                ) else ""
+                buttons.append([
+                    InlineKeyboardButton(
+                        f"{mname}{mark}",
+                        callback_data=f"model::{provider_id}::{mname}",
+                    )
+                ])
+            break
+        buttons.append([
+            InlineKeyboardButton("⬅️ Back", callback_data="back::providers")
+        ])
+        return InlineKeyboardMarkup(buttons)
+
+    async def _handle_menu_command(
+        self, chat_id: str, command: str
+    ) -> bool:
+        """Handle menu button commands. Returns True if handled."""
+        bot = self._application.bot if self._application else None
+        if not bot:
+            return False
+
+        if command in ("👤 Persona", "/personas"):
+            kb = await self._build_personas_keyboard(chat_id)
+            if kb:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text="🎭 Choose a persona:",
+                    reply_markup=kb,
+                )
+            else:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text="No personas configured.",
+                )
+            return True
+
+        if command in ("⚙️ Model", "/model"):
+            kb = await self._build_providers_keyboard()
+            if kb:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text="⚙️ Select provider:",
+                    reply_markup=kb,
+                )
+            else:
+                await bot.send_message(
+                    chat_id=chat_id,
+                    text="No providers with models available.",
+                )
+            return True
+
+        if command == "🆕 New Chat":
+            from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+            kb = InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    "Yes, reset", callback_data="confirm_new::yes",
+                ),
+                InlineKeyboardButton(
+                    "Cancel", callback_data="confirm_new::no",
+                ),
+            ]])
+            await bot.send_message(
+                chat_id=chat_id,
+                text="🆕 Start a new chat? This will clear the current session.",
+                reply_markup=kb,
+            )
+            return True
+
+        if command in ("🔧 Skills", "/skills"):
+            skills = await self._fetch_skills()
+            if not skills:
+                await bot.send_message(
+                    chat_id=chat_id, text="No skills loaded.",
+                )
+                return True
+            enabled = [s for s in skills if s.get("enabled", True)]
+            lines = [f"🔧 *Active Skills* ({len(enabled)}):"]
+            for s in enabled[:30]:
+                name = s.get("name", "?")
+                sec = s.get("security")
+                score = f" ({sec['score']}/100)" if sec else ""
+                lines.append(f"  🟢 {name}{score}")
+            if len(enabled) > 30:
+                lines.append(f"  ... and {len(enabled) - 30} more")
+            await bot.send_message(
+                chat_id=chat_id,
+                text="\n".join(lines),
+                parse_mode="Markdown",
+            )
+            return True
+
+        if command in ("📊 Status", "/status"):
+            active = await self._fetch_active_model()
+            personas = await self._fetch_personas()
+            skills = await self._fetch_skills()
+            health = await self._fetch_health()
+            active_pid = self._chat_persona.get(chat_id, "coordinator")
+            persona_name = active_pid
+            for p in personas:
+                if p.get("id") == active_pid:
+                    persona_name = p.get("name", active_pid)
+                    break
+            model_name = active.get("model", "unknown")
+            provider = active.get("provider_id", "unknown")
+            enabled_skills = len(
+                [s for s in skills if s.get("enabled", True)]
+            )
+            uptime = health.get("uptime_seconds", 0)
+            h, m = int(uptime // 3600), int((uptime % 3600) // 60)
+            status = health.get("status", "unknown")
+            lines = [
+                "📊 *Current Status*",
+                f"├ Persona: {persona_name}",
+                f"├ Model: {model_name} ({provider})",
+                f"├ Skills: {enabled_skills} active",
+                f"├ Health: {status}",
+                f"└ Uptime: {h}h {m}m",
+            ]
+            await bot.send_message(
+                chat_id=chat_id,
+                text="\n".join(lines),
+                parse_mode="Markdown",
+            )
+            return True
+
+        return False
+
     async def send(
         self,
         to_handle: str,
@@ -549,10 +975,10 @@ class TelegramChannel(BaseChannel):
         chunks = self._chunk_text(text)
         for i, chunk in enumerate(chunks):
             try:
-                # Add inline keyboard to the last chunk of /start responses
+                # Attach persistent keyboard on bot command responses
                 reply_markup = None
                 if i == len(chunks) - 1 and meta.get("has_bot_command"):
-                    reply_markup = self._build_menu_keyboard()
+                    reply_markup = self._build_persistent_keyboard()
                 await bot.send_message(
                     chat_id=chat_id,
                     text=chunk,
@@ -634,26 +1060,15 @@ class TelegramChannel(BaseChannel):
             await self._application.initialize()
 
             commands = [
-                BotCommand(
-                    command="start",
-                    description="Start a new conversation",
-                ),
-                BotCommand(
-                    command="new",
-                    description="Start a new conversation (clear memory)",
-                ),
-                BotCommand(
-                    command="compact",
-                    description="Compact conversation memory",
-                ),
-                BotCommand(
-                    command="clear",
-                    description="Clear conversation history",
-                ),
-                BotCommand(
-                    command="history",
-                    description="Show conversation history",
-                ),
+                BotCommand("start", "Start a new conversation"),
+                BotCommand("personas", "Switch persona"),
+                BotCommand("model", "Switch LLM model"),
+                BotCommand("new", "New conversation (clear memory)"),
+                BotCommand("skills", "View active skills"),
+                BotCommand("status", "Current status"),
+                BotCommand("compact", "Compact conversation memory"),
+                BotCommand("clear", "Clear conversation history"),
+                BotCommand("history", "Show conversation history"),
             ]
             try:
                 await self._application.bot.set_my_commands(commands)
