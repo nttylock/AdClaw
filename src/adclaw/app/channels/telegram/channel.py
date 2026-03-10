@@ -426,6 +426,16 @@ class TelegramChannel(BaseChannel):
                     pass
                 return
 
+            # --- Skills pagination ---
+            if data.startswith("skills_page::"):
+                page = int(data.split("::")[1])
+                await self._handle_menu_command(chat_id, f"skills_page::{page}")
+                try:
+                    await query.message.delete()
+                except Exception:
+                    pass
+                return
+
             # --- Confirm new chat ---
             if data == "confirm_new::yes":
                 # Forward as /new command
@@ -896,7 +906,12 @@ class TelegramChannel(BaseChannel):
             )
             return True
 
-        if command in ("🔧 Skills", "/skills"):
+        if command in ("🔧 Skills", "/skills") or (
+            isinstance(command, str) and command.startswith("skills_page::")
+        ):
+            page = 0
+            if isinstance(command, str) and command.startswith("skills_page::"):
+                page = int(command.split("::")[1])
             skills = await self._fetch_skills()
             if not skills:
                 await bot.send_message(
@@ -904,18 +919,32 @@ class TelegramChannel(BaseChannel):
                 )
                 return True
             enabled = [s for s in skills if s.get("enabled", True)]
-            lines = [f"🔧 *Active Skills* ({len(enabled)}):"]
-            for s in enabled[:30]:
+            per_page = 10
+            total_pages = (len(enabled) + per_page - 1) // per_page
+            page = max(0, min(page, total_pages - 1))
+            start = page * per_page
+            chunk = enabled[start:start + per_page]
+            lines = [f"🔧 Skills ({start+1}-{start+len(chunk)} of {len(enabled)}):"]
+            for s in chunk:
                 name = s.get("name", "?")
                 sec = s.get("security")
                 score = f" ({sec['score']}/100)" if sec else ""
                 lines.append(f"  🟢 {name}{score}")
-            if len(enabled) > 30:
-                lines.append(f"  ... and {len(enabled) - 30} more")
+            from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+            nav = []
+            if page > 0:
+                nav.append(InlineKeyboardButton(
+                    "◀️ Prev", callback_data=f"skills_page::{page-1}",
+                ))
+            if page < total_pages - 1:
+                nav.append(InlineKeyboardButton(
+                    "Next ▶️", callback_data=f"skills_page::{page+1}",
+                ))
+            kb = InlineKeyboardMarkup([nav]) if nav else None
             await bot.send_message(
                 chat_id=chat_id,
                 text="\n".join(lines),
-                parse_mode="Markdown",
+                reply_markup=kb,
             )
             return True
 
