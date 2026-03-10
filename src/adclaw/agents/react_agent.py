@@ -235,6 +235,7 @@ class AdClawAgent(ReActAgent):
         working_skills_dir = get_working_skills_dir()
         available_skills = list_available_skills()
 
+        self._broken_skills = []
         for skill_name in available_skills:
             skill_dir = working_skills_dir / skill_name
             if skill_dir.exists():
@@ -247,68 +248,9 @@ class AdClawAgent(ReActAgent):
                         skill_name,
                         e,
                     )
-                    # Attempt self-healing via LLM
-                    if self._try_heal_skill(toolkit, skill_dir, skill_name, e):
-                        self._heal_events.append({
-                            "skill": skill_name,
-                            "error": str(e)[:100],
-                        })
-
-    def _try_heal_skill(
-        self, toolkit: Toolkit, skill_dir, skill_name: str, error: Exception
-    ) -> bool:
-        """Try to auto-heal a broken skill and retry registration."""
-        import asyncio
-        from .skill_healer import heal_skill
-
-        async def llm_caller(prompt: str) -> str:
-            """Create a one-shot LLM caller for healing."""
-            model, _ = create_model_and_formatter()
-            from agentscope.message import Msg
-            response = model([Msg(role="user", content=prompt)])
-            return response.content
-
-        try:
-            result = asyncio.get_event_loop().run_until_complete(
-                heal_skill(skill_dir, str(error), llm_caller)
-            )
-        except RuntimeError:
-            # Event loop already running — use thread
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as pool:
-                try:
-                    result = pool.submit(
-                        asyncio.run,
-                        heal_skill(skill_dir, str(error), llm_caller)
-                    ).result(timeout=30)
-                except Exception as heal_err:
-                    logger.warning(
-                        "Self-heal failed for '%s': %s", skill_name, heal_err
+                    self._broken_skills.append(
+                        (skill_name, skill_dir, str(e))
                     )
-                    return False
-        except Exception as heal_err:
-            logger.warning(
-                "Self-heal failed for '%s': %s", skill_name, heal_err
-            )
-            return False
-
-        if not result.healed:
-            return False
-
-        # Retry registration
-        try:
-            toolkit.register_agent_skill(str(skill_dir))
-            logger.info(
-                "Self-healed and registered skill '%s': %s",
-                skill_name, result.message,
-            )
-            return True
-        except Exception as retry_err:
-            logger.error(
-                "Skill '%s' still broken after healing: %s",
-                skill_name, retry_err,
-            )
-            return False
 
     def _build_sys_prompt(self) -> str:
         """Build system prompt from working dir files and env context.
@@ -564,6 +506,67 @@ class AdClawAgent(ReActAgent):
                     e,
                 )
                 raise
+
+        # Auto-heal broken skills (async context available here)
+        if getattr(self, "_broken_skills", None):
+            await self._heal_broken_skills()
+
+    async def _heal_broken_skills(self) -> None:
+        """Attempt to auto-heal broken skills using LLM."""
+        from .skill_healer import heal_skill
+
+        async def llm_caller(prompt: str) -> str:
+            model, _ = create_model_and_formatter()
+            r = await model([{"role": "user", "content": prompt}])
+            if hasattr(r, "__aiter__"):
+                last_text = ""
+                async for chunk in r:
+                    c = getattr(chunk, "content", None)
+                    if isinstance(c, list):
+                        for b in c:
+                            if isinstance(b, dict) \
+                                    and b.get("type") == "text":
+                                last_text = b.get("text", "")
+                    elif isinstance(c, str):
+                        last_text = c
+                return last_text
+            c = getattr(r, "content", str(r))
+            if isinstance(c, list):
+                return "".join(
+                    b.get("text", "") if isinstance(b, dict)
+                    else str(b) for b in c
+                )
+            return str(c)
+
+        for skill_name, skill_dir, error_msg in self._broken_skills:
+            try:
+                result = await heal_skill(skill_dir, error_msg, llm_caller)
+                if result.healed:
+                    try:
+                        self.toolkit.register_agent_skill(str(skill_dir))
+                        self._heal_events.append({
+                            "skill": skill_name,
+                            "error": error_msg[:100],
+                        })
+                        logger.info(
+                            "Self-healed skill '%s': %s",
+                            skill_name, result.message,
+                        )
+                    except Exception as retry_err:
+                        logger.error(
+                            "Skill '%s' still broken after heal: %s",
+                            skill_name, retry_err,
+                        )
+                else:
+                    logger.warning(
+                        "Could not heal skill '%s': %s",
+                        skill_name, result.message,
+                    )
+            except Exception as heal_err:
+                logger.warning(
+                    "Self-heal failed for '%s': %s",
+                    skill_name, heal_err,
+                )
 
     async def _recover_mcp_client(self, client: Any) -> Any | None:
         """Recover MCP client from broken session and return healthy client."""
