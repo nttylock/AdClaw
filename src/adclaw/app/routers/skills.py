@@ -17,6 +17,7 @@ from ...agents.skills_hub import (
 )
 from ...agents.skill_scanner import SkillSecurityScanner
 from ...agents.skill_security import read_scan_cache, scan_and_cache
+from ...agents.skill_quality import evaluate_skill_quality
 from ...agents.tools.skill_patcher import get_patch_history
 
 
@@ -236,7 +237,8 @@ async def create_skill(request: CreateSkillRequest):
         references=request.references,
         scripts=request.scripts,
     )
-    # Auto-scan newly created skill
+    # Auto-scan and quality eval
+    quality = None
     for base in (get_customized_skills_dir(), get_active_skills_dir()):
         skill_dir = base / request.name
         if skill_dir.exists():
@@ -244,8 +246,13 @@ async def create_skill(request: CreateSkillRequest):
                 scan_and_cache(skill_dir, request.name)
             except Exception as e:
                 logger.warning("Auto-scan failed for '%s': %s", request.name, e)
+            try:
+                qr = evaluate_skill_quality(skill_dir, request.name)
+                quality = qr.to_dict()
+            except Exception as e:
+                logger.warning("Quality eval failed for '%s': %s", request.name, e)
             break
-    return {"created": result}
+    return {"created": result, "quality": quality}
 
 
 @router.post("/{skill_name}/disable")
@@ -298,6 +305,17 @@ async def load_skill_file(
         source=source,
     )
     return {"content": content}
+
+
+@router.get("/{skill_name}/quality")
+async def get_skill_quality(skill_name: str):
+    """Run quality evaluation on a skill's SKILL.md."""
+    for base in (get_customized_skills_dir(), get_active_skills_dir()):
+        skill_dir = base / skill_name
+        if skill_dir.exists():
+            result = evaluate_skill_quality(skill_dir, skill_name)
+            return result.to_dict()
+    raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
 
 
 @router.get("/{skill_name}/security")

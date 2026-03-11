@@ -676,6 +676,28 @@ class SkillService:
                 )
 
             logger.debug("Created skill '%s' in customized_skills.", name)
+
+            # Quality evaluation (non-blocking)
+            try:
+                from .skill_quality import evaluate_skill_quality
+
+                quality = evaluate_skill_quality(skill_dir, name)
+                if quality.warnings:
+                    logger.info(
+                        "Skill '%s' quality score: %d/100, warnings: %s",
+                        name,
+                        quality.score,
+                        "; ".join(quality.warnings),
+                    )
+                else:
+                    logger.debug(
+                        "Skill '%s' quality score: %d/100 (no warnings)",
+                        name,
+                        quality.score,
+                    )
+            except Exception as e:
+                logger.warning("Quality eval failed for '%s': %s", name, e)
+
             return True
         except Exception as e:
             logger.error(
