@@ -9,7 +9,7 @@ and aged entries, then triggers consolidation and verifies:
 - R4: Temporal pruning cleans old entries
 
 Usage:
-    python3 scripts/test_memory_live.py [--base-url http://188.166.47.214:8088]
+    python3 scripts/test_memory_live.py [--base-url http://localhost:8088]
     python3 scripts/test_memory_live.py --cleanup   # remove all test memories
 
 Requires: requests (pip install requests)
@@ -35,7 +35,7 @@ except ImportError:
 # Config
 # ---------------------------------------------------------------------------
 
-DEFAULT_BASE = "http://188.166.47.214:8088"
+DEFAULT_BASE = "http://localhost:8088"
 API = "/api"
 TAG = "live-test"  # source_id prefix for cleanup
 

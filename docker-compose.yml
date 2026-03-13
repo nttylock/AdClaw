@@ -12,6 +12,7 @@ services:
       - "${ADCLAW_PORT:-8088}:8088"
     volumes:
       - adclaw-data:/app/working
+      - adclaw-secret:/app/working.secret
     environment:
       # Channels: all enabled by default (override to limit)
       - ADCLAW_ENABLED_CHANNELS=discord,dingtalk,feishu,qq,console,telegram
@@ -28,4 +29,6 @@ services:
 
 volumes:
   adclaw-data:
+    driver: local
+  adclaw-secret:
     driver: local

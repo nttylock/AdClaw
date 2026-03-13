@@ -7,6 +7,7 @@ Run: python tests/live_aom_test.py
 
 import asyncio
 import json
+import os
 import sys
 import time
 import tempfile
@@ -24,10 +25,10 @@ from adclaw.memory_agent.consolidate import ConsolidationEngine
 from adclaw.memory_agent.query import QueryAgent
 from adclaw.memory_agent.models import AOMConfig
 
-# --- Real LLM caller via aliyun-intl ---
-API_KEY = "sk-sp-7f611522d81c409b94dd033fa92d9c6b"
-API_URL = "https://coding-intl.dashscope.aliyuncs.com/v1/chat/completions"
-MODEL = "qwen3.5-plus"
+# --- Real LLM caller via OpenAI-compatible API ---
+API_KEY = os.environ.get("QWEN_API_KEY", "")
+API_URL = os.environ.get("QWEN_API_URL", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")
+MODEL = os.environ.get("QWEN_MODEL", "qwen-plus")
 
 
 async def real_llm_caller(prompt: str) -> str:

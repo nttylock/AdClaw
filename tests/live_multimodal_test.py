@@ -8,6 +8,7 @@ Tests: image processing, text file, PDF-like, and the two-tier architecture
 
 import asyncio
 import json
+import os
 import sys
 import tempfile
 import time
@@ -24,10 +25,10 @@ from adclaw.memory_agent.multimodal import MultimodalProcessor, is_multimodal_fi
 from adclaw.memory_agent.query import QueryAgent
 from adclaw.memory_agent.models import AOMConfig
 
-# Real LLM for text extraction
-API_KEY_LLM = "sk-sp-7f611522d81c409b94dd033fa92d9c6b"
-LLM_URL = "https://coding-intl.dashscope.aliyuncs.com/v1/chat/completions"
-LLM_MODEL = "qwen3.5-plus"
+# Real LLM for text extraction — set env vars before running
+API_KEY_LLM = os.environ.get("QWEN_API_KEY", "")
+LLM_URL = os.environ.get("QWEN_API_URL", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")
+LLM_MODEL = os.environ.get("QWEN_MODEL", "qwen-plus")
 
 
 async def real_llm_caller(prompt: str) -> str:

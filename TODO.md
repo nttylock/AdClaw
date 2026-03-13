@@ -101,24 +101,10 @@
 
 ---
 
-## Server Status
-
-| Server | IP | Specs | Purpose |
-|--------|-----|-------|---------|
-| claude-worker | 188.166.47.214 | 4vCPU/8GB/160GB, AMS | AdClaw + AgentHub |
-| temnikova.com | 178.128.47.171 | 4vCPU/8GB/160GB, LON | Citedy |
-
-**Disk**: 48GB, ~40GB used (79%). Main consumers: Docker images (8GB), /root (12GB), swap (6GB).
-
----
-
 ## Key URLs
 
 | Resource | URL |
 |----------|-----|
-| AdClaw Web UI | http://188.166.47.214:8088/ |
-| AgentHub | https://agenthub.clawsy.app/ |
-| Telegram Bot | @tonepen_bot |
 | GitHub | https://github.com/nttylock/AdClaw |
 | Docker Hub | nttylock/adclaw:latest |
 
