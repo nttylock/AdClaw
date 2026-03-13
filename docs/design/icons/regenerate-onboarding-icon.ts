@@ -1,0 +1,182 @@
+/**
+ * Regenerate only the onboarding icon with new prompt
+ */
+
+import { GoogleGenAI } from "@google/genai";
+import { removeBackground } from "@imgly/background-removal-node";
+import * as fs from "fs";
+import * as path from "path";
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
+
+const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+if (!apiKey) {
+  console.error("Error: GOOGLE_GENERATIVE_AI_API_KEY not set");
+  process.exit(1);
+}
+
+const ai = new GoogleGenAI({ apiKey });
+
+// Style reference images
+const STYLE_REFERENCES = [
+  "/agent-icons/onboarding/onboarding-context-step6.png",
+  "/agent-icons/onboarding/onboarding-context-step7.png",
+  "/agent-icons/onboarding/onboarding-step4-gaps.png",
+  "/agent-icons/onboarding/onboarding-step7-autopilot.png",
+  "/agent-icons/stats/stats-articles.png",
+  "/agent-icons/stats/stats-domains.png",
+];
+
+// Base style matching existing icons
+const BASE_STYLE = `
+CRITICAL STYLE REQUIREMENTS (match the reference images exactly):
+- Clean solid background (any color is fine - will be removed automatically)
+- 3D isometric perspective with soft depth
+- Glowing gradient effect on the main object
+- Glassmorphism with subtle transparency and glow
+- Soft drop shadow underneath
+- Clean, minimal, professional SaaS icon style
+- Single centered object
+- High detail, smooth gradients
+- NO text, NO labels, NO numbers
+- Output size: 512x512 pixels
+- Background will be automatically removed using AI (free, local processing)
+`;
+
+// New onboarding prompt
+const ONBOARDING_PROMPT = `Subject: A glowing rocket ship blasting off with dynamic trail of particles, representing launch and beginning of journey.
+Colors: amber and orange gradient (#F59E0B to #F97316)
+Style: Dynamic, energetic, exciting startup and new beginnings
+${BASE_STYLE}`;
+
+function loadReferenceImage(
+  filename: string,
+): { inlineData: { mimeType: string; data: string } } | null {
+  const cleanFilename = filename.startsWith("/agent-icons/")
+    ? filename.slice("/agent-icons/".length)
+    : filename;
+
+  const filepath = path.join(
+    process.cwd(),
+    "public",
+    "agent-icons",
+    cleanFilename,
+  );
+  if (!fs.existsSync(filepath)) {
+    console.warn(`Reference not found: ${filepath}`);
+    return null;
+  }
+  const data = fs.readFileSync(filepath).toString("base64");
+  return {
+    inlineData: {
+      mimeType: "image/png",
+      data,
+    },
+  };
+}
+
+async function regenerateOnboardingIcon(): Promise<boolean> {
+  console.log("🔄 Regenerating onboarding icon with new prompt...");
+  console.log("New concept: Glowing rocket ship blasting off");
+
+  const allRefs = STYLE_REFERENCES.map((filename) =>
+    loadReferenceImage(filename),
+  ).filter(Boolean);
+  console.log(`Loaded ${allRefs.length} style reference images\n`);
+
+  const contents: any[] = [];
+
+  for (const ref of allRefs) {
+    contents.push(ref);
+  }
+
+  contents.push({
+    text: `These ${allRefs.length} images are style references. Match their EXACT visual style:
+- Same 3D isometric perspective
+- Same soft glowing gradients
+- Same glassmorphism transparency effect
+- Same shadow style
+- Same level of detail and polish
+
+Now create a NEW icon with this exact style:\n\n`,
+  });
+
+  contents.push({ text: ONBOARDING_PROMPT });
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents,
+      config: {
+        responseModalities: ["Text", "Image"],
+      },
+    });
+
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData?.mimeType?.startsWith("image/")) {
+          console.log("✓ Generated new onboarding icon");
+
+          // Save temporarily
+          const tempFilename = "header-onboarding-temp.png";
+          const tempFilepath = path.join(
+            process.cwd(),
+            "public",
+            "new-icons",
+            tempFilename,
+          );
+          fs.writeFileSync(
+            tempFilepath,
+            Buffer.from(part.inlineData.data, "base64"),
+          );
+
+          // Remove background
+          console.log("Removing background...");
+          const result = await removeBackground(tempFilepath);
+          const arrayBuffer = await result.arrayBuffer();
+          const transparentBuffer = Buffer.from(arrayBuffer);
+
+          // Clean up temp file
+          fs.unlinkSync(tempFilepath);
+
+          // Save final version (overwrite existing)
+          const finalPath = path.join(
+            process.cwd(),
+            "public",
+            "new-icons",
+            "header-onboarding.png",
+          );
+          fs.writeFileSync(finalPath, transparentBuffer);
+
+          console.log(
+            `✓ Saved new onboarding icon (${transparentBuffer.length} bytes)`,
+          );
+          return true;
+        }
+      }
+    }
+
+    const text = response.text;
+    if (text) {
+      console.log(`✗ No image. Response: ${text.substring(0, 150)}...`);
+    }
+    return false;
+  } catch (error: any) {
+    console.error(`✗ Error: ${error.message || error}`);
+    return false;
+  }
+}
+
+async function main() {
+  const success = await regenerateOnboardingIcon();
+
+  if (success) {
+    console.log("\n✅ Onboarding icon regenerated successfully!");
+    console.log("📍 Location: /public/new-icons/header-onboarding.png");
+  } else {
+    console.log("\n❌ Failed to regenerate onboarding icon");
+  }
+}
+
+main().catch(console.error);
