@@ -12,33 +12,91 @@ First public release. Fork of [CoPaw](https://github.com/agentscope-ai/CoPaw) wi
 
 ### Added
 
+#### Multi-Agent System
 - **Multi-agent personas** — create specialized agents (researcher, writer, SEO, ads) with SOUL.md identity, own LLM, skills, and cron schedule
 - **@tag routing** in Telegram — `@researcher find AI trends` sends to the right agent
-- **Coordinator delegation** — one agent orchestrates the rest automatically
+- **Coordinator delegation** — one agent orchestrates the rest, delegating tasks automatically
 - **Shared memory** across personas (file-based + vector store)
-- **96 built-in skills** — SEO, ads, content, social media, analytics, growth hacking
+- **5 persona templates** — Researcher, Content Writer, SEO Specialist, Ads Manager, Social Media
+
+#### Skills & Tools
+- **96+ built-in skills** — SEO (12), Ads (12), Marketing (30+), Social (5), Analytics, Browser (8), Office (4)
 - **10 agency-agent skills** — growth-hacker, social-media-strategist, tiktok-strategist, instagram-curator, analytics-reporter, app-store-optimizer, reddit-community-builder, trend-researcher, feedback-synthesizer, twitter-engager
+- **6 Citedy skills** — instagram-scraper, tiktok-scraper, youtube-video-extractor, social-extractor, domain-hunter, skill-quality-eval
 - **52 Citedy MCP tools** for SEO and marketing automation
 - **4 MCP servers** — citedy, agent_browser, xai_search, exa
-- **Always-On Memory (AOM)** — SQLite + sqlite-vec + FTS5, semantic search, auto-consolidation
+- **Self-healing skills** — broken YAML auto-fixed by LLM (3 attempts/session max)
+- **Skill quality evaluation** — `GET /api/skills/{name}/quality`
+
+#### Memory System
+- **Always-On Memory (AOM)** — SQLite + sqlite-vec + FTS5, hybrid search (vector + keyword + RRF ranking), auto-consolidation (60-min cycle)
+- **Multimodal memory** — ingest images, audio, PDF via Gemini Flash integration
+- **File inbox** — watch a directory for new files, auto-ingest into AOM
 - **Memory optimization (R1-R4)** — zero-LLM-cost deterministic layers:
   - R1: Pre-compression (rule cleanup + N-gram codebook, 8-15% token savings)
   - R2: Tiered context loading (L0/L1/L2 progressive summaries)
   - R3: Near-duplicate detection (hybrid shingle-hash + word-overlap, 90% rate)
   - R4: Temporal pruning (green >7d delete, yellow >30d condense, red keep)
+- **AOM REST API** — 12 endpoints: stats, CRUD, semantic query, file upload, consolidation, config
+- **Frozen memory snapshots** — hash-based prompt caching (HIT/REBUILT logging)
+
+#### Security
 - **Security scanner** — 208 patterns, 15 categories for skill code analysis
 - **Memory sanitizer** — 33 threat patterns, 7 categories for prompt injection defense
 - **LLM audit** for skills — async security review via `POST /api/skills/{name}/llm-audit`
-- **Self-healing skills** — broken YAML auto-fixed by LLM (3 attempts/session max)
 - **Security badges** in UI — visual pattern scan + LLM audit status per skill
-- **Skill quality evaluation** — `GET /api/skills/{name}/quality`
-- **Frozen memory snapshots** — hash-based prompt caching
-- **Browser automation** — Playwright + Chromium + Xvfb in Docker, PinchTab for token-efficient control
-- **Telegram bot** — interactive menu, paginated /skills, continuous typing indicator, persistent keyboard
-- **Web console** — glassmorphism design, dark pill sidebar, manage personas/skills/models/channels
-- **Agent watchdog** — auto-restart on crash
-- **Diagnostics page** — health status, error log, restart button
-- **Docker image** with multi-stage build, entrypoint auto-configuration
+
+#### Channels (7 supported)
+- **Telegram** — interactive menu (/personas, /model, /skills, /status, /new), paginated commands, continuous typing indicator, persistent reply keyboard, message streaming (Bot API 9.5)
+- **Discord** — full messaging support
+- **DingTalk** — audio files, rich text images, duplicate message prevention
+- **Feishu (Lark)** — audio and file support
+- **QQ** — messaging channel
+- **Console** — local terminal chat
+- **iMessage** — Apple Messages integration
+
+#### LLM Providers (12 built-in)
+- openai, anthropic, aliyun-intl, aliyun-codingplan, azure-openai, openrouter, xai, ollama, llamacpp, mlx, modelscope, dashscope
+- Custom provider support with API key management
+- Model connection testing in Web UI
+
+#### Web Console
+- **Glassmorphism design** — gradient backgrounds, dark pill sidebar, pill buttons, Slate palette
+- **Pages**: Workspace, Skills, MCP, Personas, Models, Channels, Diagnostics, Sessions, Cron Jobs, Heartbeat, Environments, Chat
+- **Citedy Design System** — 4-phase redesign with `citedy-overrides.less` for Ant Design
+- API Keys Reference table + bulk ENV import
+
+#### Infrastructure
+- **Agent watchdog** — auto-restart on crash with health check
+- **Diagnostics page + API** — health status, error log, restart button
+- **Heartbeat monitoring** — file-based health pulse tracking
+- **LLM output filtering** — strip `<think>` tags from Qwen/DeepSeek, filter tool calls from user channels
+- **Atomic session saves** — tmp+rename pattern, corrupted sessions auto-backed up and recovered
+- **Browser automation** — Playwright + Chromium + Xvfb in Docker, PinchTab for token-efficient browser control
+
+#### CLI (13 commands)
+- `adclaw init` — initialize working directory
+- `adclaw app` — start web server
+- `adclaw channels` — configure messaging channels
+- `adclaw chats` — manage chat sessions
+- `adclaw clean` — cleanup temp data
+- `adclaw cron` — manage scheduled tasks
+- `adclaw env` — environment variable management
+- `adclaw providers` — LLM provider configuration
+- `adclaw skills` — skill management
+- `adclaw uninstall` — remove AdClaw data
+
+#### Docker & Deployment
+- **Multi-stage Dockerfile** — frontend build + runtime with Chromium, Xvfb, Supervisor
+- **Multi-architecture** — amd64, arm64
+- **Non-root execution** — app runs as `adclaw` user, system services as root
+- **Smart entrypoint** — auto-config Citedy MCP, Exa, Telegram from env vars; skill sync on start; config migration for new defaults
+- **docker-compose.yml** — data + secret volumes, all env vars documented
+
+#### Testing
+- **36+ test files** covering memory (8), security (5), personas (5), agents (3), delegation, diagnostics, watchdog, MCP resilience
+- **23 memory optimization tests** (R1-R4)
+- **Live stress-test script** — 120 memories, dedup verification, consolidation
 
 ### Security
 
