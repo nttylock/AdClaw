@@ -48,6 +48,14 @@
 - [x] Coordinator + specialist architecture
 - [x] UI: CRUD, templates, cron config
 
+### Memory Optimization (claw-compactor R1-R4)
+- [x] R1: Deterministic pre-compression (`compressor.py`) — rule-based cleanup + N-gram codebook, 8-15% savings
+- [x] R2: Tiered context loading (`tiers.py`) — L0/L1/L2 progressive summaries by priority scoring
+- [x] R3: Near-duplicate detection (`dedup.py`) — hybrid shingle-hash + word-overlap, 90% live detection rate
+- [x] R4: Temporal pruning in consolidation — green >7d delete, yellow >30d condense, red never
+- [x] AOM REST API: `skip_llm` parameter for bulk ingestion
+- [x] Live stress-test script (`scripts/test_memory_live.py`) — 120 memories, dedup verification
+
 ### Infrastructure
 - [x] Agent watchdog (auto-restart on crash)
 - [x] Diagnostics page + API (health, errors, restart)

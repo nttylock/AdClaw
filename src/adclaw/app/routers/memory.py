@@ -36,6 +36,7 @@ class MemoryCreateRequest(BaseModel):
     source_type: str = "manual"
     source_id: str = ""
     metadata: Optional[dict] = None
+    skip_llm: bool = False
 
 
 class MemoryQueryRequest(BaseModel):
@@ -98,6 +99,7 @@ async def create_memory(request: Request, body: MemoryCreateRequest):
         content=body.content,
         source_type=body.source_type,
         source_id=body.source_id,
+        skip_llm=body.skip_llm,
         metadata=body.metadata,
     )
     return mem.model_dump()

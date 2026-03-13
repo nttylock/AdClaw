@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from typing import Any, Callable, Coroutine, List, Optional
 
+from .dedup import ShingleCache, find_near_duplicate
 from .embeddings import EmbeddingPipeline
 from .models import AOMConfig, Memory
 from .multimodal import MultimodalProcessor, is_multimodal_file, is_supported_file
@@ -46,6 +47,7 @@ class IngestAgent:
         self.config = config or AOMConfig()
         self.multimodal = multimodal
         self._sanitizer = MemorySanitizer(mode="block")
+        self._shingle_cache = ShingleCache(max_size=200)
 
     async def ingest(
         self,
@@ -96,6 +98,27 @@ class IngestAgent:
         # Filter by importance threshold
         if importance < self.config.importance_threshold:
             importance = self.config.importance_threshold
+
+        # R3: Near-duplicate detection (catches paraphrases SHA-256 misses)
+        try:
+            recent = await self.store.recent_memories(limit=100)
+            existing_entries = [(m.id, m.content) for m in recent]
+            dup_id = find_near_duplicate(
+                content,
+                existing_entries,
+                threshold=0.6,
+                cache=self._shingle_cache,
+            )
+            if dup_id:
+                logger.info(
+                    "Near-duplicate detected (match=%s), skipping ingest",
+                    dup_id[:12],
+                )
+                existing_mem = await self.store.get_memory(dup_id)
+                if existing_mem:
+                    return existing_mem
+        except Exception as exc:
+            logger.debug("Near-dedup check failed (non-fatal): %s", exc)
 
         memory = Memory(
             content=content,

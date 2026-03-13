@@ -213,6 +213,58 @@ AdClaw is built on [AgentScope](https://github.com/agentscope-ai/AgentScope) and
 
 ---
 
+## Memory System
+
+AdClaw features a dual-layer memory architecture: **ReMe** (per-agent file-based memory) and **AOM** (Always-On Memory — shared vector/embedding store).
+
+### Always-On Memory (AOM)
+
+| Component | Description |
+|-----------|-------------|
+| **MemoryStore** | SQLite + sqlite-vec + FTS5 — persistent storage with vector and keyword search |
+| **IngestAgent** | Sanitization (33 threat patterns) -> LLM extraction -> embedding -> storage |
+| **ConsolidationEngine** | Vector-neighbor clustering -> LLM insight generation (60-min cycle) |
+| **EmbeddingPipeline** | Configurable embedding models for semantic search |
+
+### Memory Optimization (R1-R4)
+
+Four deterministic (zero-LLM-cost) optimization layers inspired by [claw-compactor](https://github.com/aeromomo/claw-compactor):
+
+| Layer | Module | What it does | Impact |
+|-------|--------|--------------|--------|
+| **R1** Pre-Compression | `compressor.py` | Rule-based markdown cleanup, line dedup, bullet merging + N-gram codebook with lossless $XX codes | 8-15% token savings before LLM summarization |
+| **R2** Tiered Context | `tiers.py` | Generates L0 (200 tok) / L1 (1000 tok) / L2 (3000 tok) progressive summaries by priority scoring | Load only the context depth you need |
+| **R3** Near-Dedup | `dedup.py` | Hybrid shingle-hash Jaccard + word-overlap similarity (threshold 0.6) with LRU shingle cache | 90% paraphrase detection rate in live tests |
+| **R4** Temporal Pruning | `consolidate.py` | Age-based cleanup: green (notes) >7d deleted, yellow (actions) >30d condensed, red (decisions) never | Prevents DB bloat over time |
+
+### AOM REST API
+
+```
+GET  /api/memory/stats              — memory counts and breakdown
+GET  /api/memory/memories            — list memories (filter by source_type, importance)
+POST /api/memory/memories            — ingest new memory {content, source_type, source_id, skip_llm}
+DEL  /api/memory/memories/{id}       — soft-delete a memory
+POST /api/memory/query               — semantic search {question, max_results}
+POST /api/memory/consolidate         — trigger consolidation cycle (includes R4 pruning)
+GET  /api/memory/consolidations      — list generated insights
+GET  /api/memory/config              — AOM configuration
+PUT  /api/memory/config              — update AOM config
+POST /api/memory/memories/upload     — upload and ingest a file (text, image, audio, PDF)
+GET  /api/memory/multimodal/status   — check multimodal processing availability
+```
+
+### Live Testing
+
+```bash
+# Inject 110+ memories, test near-dedup, run consolidation, verify stats
+python3 scripts/test_memory_live.py
+
+# Clean up test data
+python3 scripts/test_memory_live.py --cleanup
+```
+
+---
+
 ## Credits & Pricing
 
 Citedy uses a credit-based system (1 credit = $0.01 USD):

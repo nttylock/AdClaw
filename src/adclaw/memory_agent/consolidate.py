@@ -5,10 +5,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, Callable, Coroutine, List, Optional
+from datetime import datetime, timezone
+from typing import Any, Callable, Coroutine, Dict, List, Optional
 
 from .embeddings import EmbeddingPipeline
-from .models import AOMConfig, Consolidation
+from .models import AOMConfig, Consolidation, Memory
 from .store import MemoryStore
 
 logger = logging.getLogger(__name__)
@@ -83,6 +84,20 @@ class ConsolidationEngine:
                 logger.warning("Insight generation failed: %s", exc)
 
         logger.info("Consolidation: %d clusters → %d insights", len(clusters), len(results))
+
+        # R4: Temporal pruning — age-based cleanup
+        try:
+            prune_stats = await temporal_prune(self.store)
+            if prune_stats["deleted"] > 0 or prune_stats["condensed"] > 0:
+                logger.info(
+                    "Temporal pruning: deleted=%d, condensed=%d, kept=%d",
+                    prune_stats["deleted"],
+                    prune_stats["condensed"],
+                    prune_stats["kept"],
+                )
+        except Exception as exc:
+            logger.warning("Temporal pruning failed: %s", exc)
+
         return results
 
     async def _generate_insight(self, memory_ids: List[str]) -> Optional[Consolidation]:
@@ -117,6 +132,71 @@ class ConsolidationEngine:
             importance=importance,
         )
         return await self.store.insert_consolidation(consolidation)
+
+
+# ---------------------------------------------------------------------------
+# R4: Temporal Pruning
+# ---------------------------------------------------------------------------
+
+# Classification: green (ephemeral), yellow (useful), red (critical)
+_GREEN_TYPES = {"note", "info", "chat", "manual"}
+_RED_TYPES = {"decision", "critical", "config", "error"}
+_GREEN_MAX_DAYS = 7
+_YELLOW_MAX_DAYS = 30
+
+
+def _classify_memory_color(mem: Memory) -> str:
+    """Classify memory into green/yellow/red by source_type and importance."""
+    st = mem.source_type.lower()
+    if st in _RED_TYPES or mem.importance >= 0.8:
+        return "red"
+    if st in _GREEN_TYPES and mem.importance < 0.5:
+        return "green"
+    return "yellow"
+
+
+def _memory_age_days(mem: Memory) -> float:
+    """Calculate age in days from created_at string."""
+    try:
+        created = datetime.fromisoformat(mem.created_at.replace("Z", "+00:00"))
+        now = datetime.now(timezone.utc)
+        return (now - created).total_seconds() / 86400
+    except Exception:
+        return 0.0
+
+
+async def temporal_prune(store: MemoryStore) -> Dict[str, int]:
+    """Age-based pruning: delete old green, condense old yellow, keep red.
+
+    Returns:
+        Stats dict with counts: deleted, condensed, kept.
+    """
+    stats = {"deleted": 0, "condensed": 0, "kept": 0}
+    memories = await store.list_memories(limit=500, min_importance=0.0)
+
+    for mem in memories:
+        color = _classify_memory_color(mem)
+        age = _memory_age_days(mem)
+
+        if color == "red":
+            stats["kept"] += 1
+            continue
+
+        if color == "green" and age > _GREEN_MAX_DAYS:
+            await store.delete_memory(mem.id, hard=False)
+            stats["deleted"] += 1
+        elif color == "yellow" and age > _YELLOW_MAX_DAYS:
+            # Condense to first line only
+            first_line = mem.content.split("\n")[0][:200]
+            if len(first_line) < len(mem.content):
+                await store.update_memory_content(mem.id, first_line)
+                stats["condensed"] += 1
+            else:
+                stats["kept"] += 1
+        else:
+            stats["kept"] += 1
+
+    return stats
 
 
 class ConsolidationScheduler:

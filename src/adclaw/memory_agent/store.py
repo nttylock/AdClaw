@@ -246,6 +246,31 @@ class MemoryStore:
         await self._db.commit()
         return cur.rowcount > 0
 
+    async def recent_memories(self, limit: int = 100) -> List[Memory]:
+        """Return most recent non-deleted memories (for near-dedup checks)."""
+        assert self._db is not None
+        rows = await self._db.execute_fetchall(
+            "SELECT * FROM memories WHERE is_deleted = 0 "
+            "ORDER BY created_at DESC LIMIT ?",
+            (limit,),
+        )
+        return [self._row_to_memory(r) for r in rows]
+
+    async def update_memory_content(
+        self, memory_id: str, content: str
+    ) -> bool:
+        """Update memory content (used by temporal pruning condensation)."""
+        assert self._db is not None
+        import hashlib
+        content_hash = hashlib.sha256(content.encode()).hexdigest()
+        cur = await self._db.execute(
+            "UPDATE memories SET content = ?, content_hash = ?, updated_at = ? "
+            "WHERE id = ?",
+            (content, content_hash, _utcnow(), memory_id),
+        )
+        await self._db.commit()
+        return cur.rowcount > 0
+
     async def get_unconsolidated_memories(self, limit: int = 50) -> List[Memory]:
         assert self._db is not None
         rows = await self._db.execute_fetchall(

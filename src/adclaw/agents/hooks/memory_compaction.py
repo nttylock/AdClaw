@@ -16,6 +16,7 @@ from ..utils import (
     safe_count_message_tokens,
     safe_count_str_tokens,
 )
+from ...memory_agent.compressor import pre_compress, rule_compress
 
 if TYPE_CHECKING:
     from ..memory import MemoryManager
@@ -163,9 +164,25 @@ class MemoryCompactionHook:
                     messages=messages_to_compact,
                 )
 
+                # R1: Deterministic pre-compression before LLM
+                previous_summary = agent.memory.get_compressed_summary()
+                if previous_summary:
+                    compressed_summary, comp_stats = pre_compress(
+                        previous_summary,
+                    )
+                    if comp_stats.savings_pct > 1.0:
+                        logger.info(
+                            "Pre-compressed summary: %.1f%% saved "
+                            "(%d → %d chars)",
+                            comp_stats.savings_pct,
+                            comp_stats.original_len,
+                            comp_stats.after_codebook,
+                        )
+                        previous_summary = compressed_summary
+
                 compact_content = await self.memory_manager.compact_memory(
                     messages=messages_to_compact,
-                    previous_summary=agent.memory.get_compressed_summary(),
+                    previous_summary=previous_summary,
                 )
 
                 await agent.memory.update_compressed_summary(compact_content)
