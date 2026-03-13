@@ -11,7 +11,6 @@ dependencies = [
     "dingtalk-stream>=0.24.3",
     "uvicorn>=0.40.0",
     "apscheduler>=3.11.2,<4",
-    "playwright>=1.49.0",
     "questionary>=2.1.1",
     "mss>=9.0.0",
     "reme-ai==0.3.0.5",
@@ -69,6 +68,9 @@ mlx = [
 ]
 ollama = [
     "ollama>=0.6.1",
+]
+browser = [
+    "playwright>=1.49.0",
 ]
 
 [tool.pytest.ini_options]
