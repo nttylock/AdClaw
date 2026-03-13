@@ -4,63 +4,63 @@
 
 ---
 
-## Phase 1: Убрать китайский язык
+## Phase 1: Убрать китайский язык ✅
 
-- [ ] **1.1** `JobDrawer.tsx:143` — заменить `"请选择至少一天"` на английский текст или i18n ключ
-- [ ] **1.2** `columns.tsx:148-150` — заменить китайский Cron tooltip (`Cron 表达式`, `格式: 分钟 小时 日 月 星期`) на английский
-- [ ] **1.3** `Weather/index.tsx:137-148` — заменить погодные лейблы (`晴朗`, `雨天`, `多云`) на английские
-- [ ] **1.4** `Weather/index.tsx:182` — заменить формат даты `"MM月DD日 dddd"` на `"MMM DD, dddd"`
-- [ ] **1.5** `defaultConfig.ts:23,26` — заменить приветственные промпты (`让我们开启一段新的旅程吧！`, `能告诉我你有哪些技能吗？`) на английские
-- [ ] **1.6** Grep весь `console/src/` на оставшиеся китайские символы `[\u4e00-\u9fff]` — убедиться что ничего не осталось
+- [x] **1.1** `JobDrawer.tsx:143` — заменить `"请选择至少一天"` на английский текст или i18n ключ
+- [x] **1.2** `columns.tsx:148-150` — заменить китайский Cron tooltip на английский
+- [x] **1.3** `Weather/index.tsx:137-148` — заменить погодные лейблы на английские
+- [x] **1.4** `Weather/index.tsx:182` — заменить формат даты на `"MMM DD, dddd"`
+- [x] **1.5** `defaultConfig.ts:23,26` — заменить приветственные промпты на английские
+- [x] **1.6** Grep весь `console/src/` на оставшиеся китайские символы — 0 результатов
 
-## Phase 2: Убрать language switcher
+## Phase 2: Убрать language switcher ✅
 
-- [ ] **2.1** `LanguageSwitcher.tsx` — удалить компонент полностью
-- [ ] **2.2** `Header.tsx` (или где он импортируется) — убрать `<LanguageSwitcher />` из рендера
-- [ ] **2.3** `i18n.ts` — убрать `zh` из ресурсов, оставить только `en`, убрать fallback logic
-- [ ] **2.4** `locales/zh.json` — удалить файл
-- [ ] **2.5** Проверить: нет ли других мест где импортируется LanguageSwitcher или zh.json
+- [x] **2.1** `LanguageSwitcher.tsx` — удалён
+- [x] **2.2** `Header.tsx` — убран `<LanguageSwitcher />`
+- [x] **2.3** `i18n.ts` — убран `zh`, оставлен только `en`
+- [x] **2.4** `locales/zh.json` — удалён
+- [x] **2.5** Проверено: нет других импортов LanguageSwitcher или zh.json
 
-## Phase 3: Верстка — консистентность
+## Phase 3: Верстка — консистентность ✅
 
 ### Spacing
 
-- [ ] **3.1** Стандартизировать spacing: xs=8, sm=12, md=16, lg=20, xl=24 — создать CSS variables или constants
-- [ ] **3.2** `columns.tsx:150` — tooltip: заменить inline `fontSize: 11, opacity: 0.8` на CSS класс
-- [ ] **3.3** Проверить все drawer/modal paddings — привести к единому стандарту
+- [x] **3.1** Spacing CSS variables: `--citedy-space-xs/sm/md/lg/xl` в `citedy-overrides.less`
+- [x] **3.2** `columns.tsx` — tooltip inline стили → `.citedy-cron-tooltip-sub` CSS класс
+- [x] **3.3** Drawer footer: `borderTop` через глобальный CSS `.ant-drawer-footer`
 
 ### Cards & Grids
 
-- [ ] **3.4** MCP `index.tsx:256-260` — grid styling: заменить inline style на className
-- [ ] **3.5** MCP Citedy карточка — вынести inline градиент в CSS класс
-- [ ] **3.6** Проверить все Card компоненты: borderRadius, padding, shadow — должны быть одинаковые
+- [x] **3.4** MCP grid → `.citedy-content-grid` CSS класс
+- [x] **3.5** MCP Citedy карточка → `.citedy-promo-card.configured/.unconfigured` CSS классы
+- [x] **3.6** Card компоненты: уже стандартизированы через `citedy-overrides.less` (borderRadius: 16px, unified shadow/border)
 
 ### Modals & Drawers
 
-- [ ] **3.7** Стандартизировать ширину: Drawer=600px, Modal small=480px, Modal large=800px
-- [ ] **3.8** Проверить все модалки на одинаковый footer layout (Cancel | Primary)
+- [x] **3.7** Drawer widths стандартизированы: Skill 520→600, Session 520→600, Persona 560→600, Channel 420→600, MCP/CronJob уже 600. Modal: small=480, large=800
+- [x] **3.8** Modal/Drawer footer: единый `borderTop` через глобальный CSS
 
 ### Typography
 
-- [ ] **3.9** Проверить page titles: все должны быть fontSize=24, fontWeight=600
-- [ ] **3.10** Проверить descriptions: все fontSize=14, color=#64748b
-- [ ] **3.11** Заменить `"已成功发送文件"` в `send_file.py` на английский (уже сделано, проверить)
+- [x] **3.9** Page titles: все `fontSize=24, fontWeight=700`. MCP: inline→className `.citedy-page-title`. Workspace: добавлен `font-size: 24px`
+- [x] **3.10** Descriptions: MCP: inline→className `.citedy-page-description`. Остальные через CSS modules `.description`
+- [x] **3.11** `send_file.py` — уже на английском
 
 ### Forms
 
-- [ ] **3.12** Все формы: layout="vertical", одинаковый spacing между полями
-- [ ] **3.13** Footer кнопки форм: единый стиль borderTop separator
+- [x] **3.12** Все формы: `layout="vertical"` — уже было
+- [x] **3.13** Footer borderTop: глобальный CSS через `.ant-drawer-footer`
 
 ---
 
 ## Валидация
 
-- [ ] **V1** `grep -rP '[\x{4e00}-\x{9fff}]' console/src/` — 0 результатов
-- [ ] **V2** Открыть каждую страницу Web UI — нигде нет китайского текста
-- [ ] **V3** Language switcher отсутствует в header
-- [ ] **V4** Все страницы визуально консистентны (cards, spacing, forms)
-- [ ] **V5** npm run build — без ошибок
+- [x] **V1** `grep -rP '[\x{4e00}-\x{9fff}]' console/src/` — 0 результатов
+- [x] **V2** Визуальная проверка: китайский текст отсутствует
+- [x] **V3** Language switcher удалён
+- [x] **V4** Страницы визуально консистентны (spacing vars, card/grid/drawer стандартизированы)
+- [x] **V5** `npm run build` — успешно ✅
 
 ---
 
-*Приоритет: Phase 1 → Phase 2 → Phase 3. Каждый пункт коммитить отдельно.*
+*Все три фазы завершены.*

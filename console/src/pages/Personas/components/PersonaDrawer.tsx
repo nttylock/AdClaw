@@ -201,7 +201,7 @@ export function PersonaDrawer({
 
   return (
     <Drawer
-      width={560}
+      width={600}
       placement="right"
       title={isEditing ? `Edit: ${editingPersona.name}` : "Create Agent Persona"}
       open={open}

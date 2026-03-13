@@ -28,6 +28,13 @@
   --citedy-blue-500: #3b82f6;
   --citedy-cyan-500: #06b6d4;
 
+  /* Spacing scale */
+  --citedy-space-xs: 8px;
+  --citedy-space-sm: 12px;
+  --citedy-space-md: 16px;
+  --citedy-space-lg: 20px;
+  --citedy-space-xl: 24px;
+
   --citedy-card-bg: linear-gradient(135deg,
     rgba(248, 250, 252, 0.8),
     rgba(255, 255, 255, 0.6),
@@ -430,4 +437,66 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ---- Page Header Utility ---- */
+
+.citedy-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--citedy-space-md);
+}
+
+.citedy-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--citedy-slate-900);
+}
+
+.citedy-page-description {
+  margin: 0;
+  color: var(--citedy-slate-500);
+  font-size: 14px;
+}
+
+/* ---- Content Grid ---- */
+
+.citedy-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--citedy-space-lg);
+}
+
+/* ---- Promo Card (Citedy) ---- */
+
+.citedy-promo-card {
+  margin-bottom: var(--citedy-space-lg);
+}
+
+.citedy-promo-card.configured {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%) !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+.citedy-promo-card.unconfigured {
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%) !important;
+  border: 1px solid #fde68a !important;
+}
+
+/* ---- Drawer Footer ---- */
+
+.ant-drawer-footer,
+[class*="ant-drawer-footer"] {
+  border-top: 1px solid rgba(226, 232, 240, 0.4) !important;
+  padding: 12px 24px !important;
+}
+
+/* ---- Cron Tooltip ---- */
+
+.citedy-cron-tooltip-sub {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 4px;
 }

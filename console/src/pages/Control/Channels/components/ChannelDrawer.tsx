@@ -163,7 +163,7 @@ export function ChannelDrawer({
 
   return (
     <Drawer
-      width={420}
+      width={600}
       placement="right"
       title={
         <div className={styles.drawerTitle}>

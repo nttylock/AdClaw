@@ -146,7 +146,7 @@ export const createColumns = (
             title={
               <div>
                 <div>Cron expression: {cron}</div>
-                <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4 }}>
+                <div className="citedy-cron-tooltip-sub">
                   Format: minute hour day month weekday
                 </div>
               </div>

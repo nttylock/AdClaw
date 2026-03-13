@@ -114,7 +114,7 @@ export function SkillDrawer({
 
   return (
     <Drawer
-      width={520}
+      width={600}
       placement="right"
       title={editingSkill ? t("skills.viewSkill") : t("skills.createSkill")}
       open={open}

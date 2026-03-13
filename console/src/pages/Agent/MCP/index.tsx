@@ -167,19 +167,12 @@ function MCPPage() {
 
   return (
     <div style={{ padding: 24 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
+      <div className="citedy-page-header">
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 4 }}>
+          <h1 className="citedy-page-title">
             {t("mcp.title")}
           </h1>
-          <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>
+          <p className="citedy-page-description">
             {t("mcp.description")}
           </p>
         </div>
@@ -190,16 +183,7 @@ function MCPPage() {
 
       {citedyStatus && (
         <Card
-          style={{
-            marginBottom: 20,
-            borderRadius: 8,
-            background: citedyStatus.configured
-              ? "linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)"
-              : "linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%)",
-            border: citedyStatus.configured
-              ? "1px solid #bbf7d0"
-              : "1px solid #fde68a",
-          }}
+          className={`citedy-promo-card ${citedyStatus.configured ? "configured" : "unconfigured"}`}
         >
           <div
             style={{
@@ -252,13 +236,7 @@ function MCPPage() {
       ) : clients.length === 0 ? (
         <Empty description={t("mcp.emptyState")} />
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
-            gap: 20,
-          }}
-        >
+        <div className="citedy-content-grid">
           {clients.map((client) => (
             <MCPClientCard
               key={client.key}

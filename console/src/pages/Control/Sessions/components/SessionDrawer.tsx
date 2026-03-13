@@ -22,7 +22,7 @@ export function SessionDrawer({
 
   return (
     <Drawer
-      width={520}
+      width={600}
       placement="right"
       title={t("sessions.editSession")}
       open={open}
