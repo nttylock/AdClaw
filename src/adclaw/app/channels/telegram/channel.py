@@ -1065,11 +1065,20 @@ class TelegramChannel(BaseChannel):
                 reply_markup = None
                 if i == len(chunks) - 1 and meta.get("has_bot_command"):
                     reply_markup = self._build_persistent_keyboard()
-                await bot.send_message(
-                    chat_id=chat_id,
-                    text=chunk,
-                    reply_markup=reply_markup,
-                )
+                try:
+                    await bot.send_message(
+                        chat_id=chat_id,
+                        text=chunk,
+                        parse_mode="Markdown",
+                        reply_markup=reply_markup,
+                    )
+                except Exception:
+                    # Markdown parsing failed — retry as plain text
+                    await bot.send_message(
+                        chat_id=chat_id,
+                        text=chunk,
+                        reply_markup=reply_markup,
+                    )
             except Exception:
                 logger.exception("telegram send_message failed")
                 return
