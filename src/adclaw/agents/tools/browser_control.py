@@ -140,10 +140,10 @@ def _ensure_playwright_async():
         return async_playwright
     except ImportError as exc:
         raise ImportError(
-            "Playwright not installed. Use the same Python that runs AdClaw (e.g. "
-            "activate your venv or use 'uv run'): "
-            f"'{sys.executable}' -m pip install playwright && "
-            f"'{sys.executable}' -m playwright install",
+            "Browser support is not installed. "
+            "To enable browser skills, run:\n"
+            "  pip install adclaw[browser] && playwright install chromium\n"
+            "You can install this automatically — just ask the user for permission."
         ) from exc
 
 
