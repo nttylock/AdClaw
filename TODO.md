@@ -1,6 +1,6 @@
 # AdClaw — Global Task Checklist
 
-> **Last updated**: 2026-03-13
+> **Last updated**: 2026-03-13 (post-audit)
 > **Maintained by**: @nttylock + Claude
 
 ---
@@ -64,6 +64,14 @@
 - [x] 4 MCP servers (citedy, agent_browser, xai_search, exa)
 - [x] Browser automation (Playwright + Xvfb in Docker)
 
+### v0.1.0 Release Prep
+- [x] Security audit: removed hardcoded API keys and internal IPs from repo
+- [x] CHANGELOG.md created (v0.1.0)
+- [x] Non-root user in Docker (app runs as `adclaw`, system services as root)
+- [x] docker-compose.yml: added secret volume (`adclaw-secret:/app/working.secret`)
+- [x] `.env.example` updated: EXA_API_KEY, XAI_API_KEY, QWEN_* test vars
+- [x] Docker image rebuilt and verified (116 skills, web UI, API working)
+
 ---
 
 ## In Progress
@@ -80,13 +88,21 @@
 
 ## TODO (prioritized)
 
-### High Priority
+### High Priority — v0.1.0 Release Blockers
+- [ ] **Deploy fresh Docker image** to production (`docker push` + redeploy on claude-worker)
+- [ ] **Smoke test** on production: Telegram bot, web UI, memory API, skills
+- [ ] **GitHub Release** — tag `v0.1.0`, attach release notes from CHANGELOG.md
+- [ ] **Docker Hub push** — `nttylock/adclaw:0.1.0` + `latest`
+
+### High Priority — Post-Release
 - [ ] **Landing page** — GitHub Pages or clawsy.app (Phase 7.2 from ROADMAP)
 - [ ] **Demo video** — Telegram bot in action (Phase 7.3)
 - [ ] **Product Hunt / Reddit launch** (Phase 7.4)
 - [ ] **WhatsApp channel** — mass market messenger support
 
 ### Medium Priority
+- [ ] Docstrings: office validators (39 missing), browser/proxy (23), aggregation (27)
+- [ ] Test fixtures: replace `/tmp/test` with `tmp_path` in `test_delegation.py` (8 locations)
 - [ ] Skill quality eval auto-run on skill creation (integrate into `create_skill()` pipeline)
 - [ ] Citedy LAYER 5 UX: filters by threat/platform/date, bulk actions, virtual scroll
 - [ ] Content Gaps refactoring: SSE progress, cost estimation, history
@@ -94,9 +110,9 @@
 - [ ] Disk cleanup automation (Docker prune on build, log rotation)
 
 ### Low Priority
+- [ ] Optimize Docker image size (currently ~3.3 GB — consider slimmer base image)
 - [ ] Two-tone gradient headings in console (decorative)
 - [ ] Advanced animations (underglow, conic loading, AI glow)
-- [ ] Optimize Docker image size (currently 3.3 GB — multi-stage build)
 - [ ] Signal / Discord bot improvements
 
 ---
