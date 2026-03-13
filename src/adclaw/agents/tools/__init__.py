@@ -18,6 +18,7 @@ from .file_search import (
 from .shell import execute_shell_command
 from .send_file import send_file_to_user
 from .browser_control import browser_use
+from .herenow_publish import publish_to_herenow
 from .desktop_screenshot import desktop_screenshot
 from .memory_search import create_memory_search_tool
 from .get_current_time import get_current_time
@@ -36,6 +37,7 @@ __all__ = [
     "send_file_to_user",
     "desktop_screenshot",
     "browser_use",
+    "publish_to_herenow",
     "create_memory_search_tool",
     "get_current_time",
 ]
