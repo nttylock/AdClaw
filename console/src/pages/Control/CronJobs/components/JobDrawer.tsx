@@ -186,7 +186,7 @@ export function JobDrawer({
                           href="https://crontab.guru/"
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ color: "#1890ff" }}
+                          style={{ color: "#0f172a" }}
                         >
                           {t("cronJobs.cronHelperLink")} →
                         </a>
@@ -375,7 +375,7 @@ export function JobDrawer({
               gap: 8,
               marginTop: 24,
               paddingTop: 16,
-              borderTop: "1px solid #f0f0f0",
+              borderTop: "1px solid rgba(226, 232, 240, 0.4)",
             }}
           >
             <Button onClick={onClose}>{t("common.cancel")}</Button>

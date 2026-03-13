@@ -20,8 +20,12 @@ export const createColumns = (
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 250,
+      width: 280,
       fixed: "left",
+      ellipsis: true,
+      render: (id: string) => (
+        <span style={{ fontFamily: "monospace", fontSize: 12 }}>{id}</span>
+      ),
     },
     {
       title: "Name",

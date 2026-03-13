@@ -168,7 +168,7 @@ export default function DiagnosticsPage() {
             <span>
               System Status: <strong>{statusCfg.label}</strong>
               {health && (
-                <span style={{ marginLeft: 16, color: "#888" }}>
+                <span style={{ marginLeft: 16, color: "#64748b" }}>
                   Uptime: {formatUptime(health.uptime_seconds)}
                 </span>
               )}
@@ -232,13 +232,13 @@ export default function DiagnosticsPage() {
                       {sub.status}
                     </Tag>
                   </div>
-                  <div style={{ color: "#666", fontSize: 13 }}>
+                  <div style={{ color: "#475569", fontSize: 13 }}>
                     {typeof sub.detail === "string"
                       ? sub.detail
                       : JSON.stringify(sub.detail)}
                   </div>
                   {sub.count != null && (
-                    <div style={{ color: "#999", fontSize: 12, marginTop: 4 }}>
+                    <div style={{ color: "#64748b", fontSize: 12, marginTop: 4 }}>
                       Count: {sub.count}
                     </div>
                   )}
@@ -263,7 +263,7 @@ export default function DiagnosticsPage() {
                 style={{
                   margin: 0,
                   padding: 12,
-                  background: "#f5f5f5",
+                  background: "#f8fafc",
                   borderRadius: 4,
                   fontSize: 12,
                   whiteSpace: "pre-wrap",

@@ -12,11 +12,13 @@
 
 .title {
   margin-bottom: 4px;
+  color: var(--citedy-slate-900);
+  font-weight: 700;
 }
 
 .description {
   margin: 0;
-  color: #999;
+  color: var(--citedy-slate-500);
   font-size: 14px;
 }
 
@@ -77,13 +79,14 @@
   margin: 0;
   font-size: 14px;
   font-weight: 600;
+  color: var(--citedy-slate-900);
 }
 
 .infoText {
   margin: 0;
   margin-bottom: 12px;
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-500);
   flex-shrink: 0;
 }
 
@@ -91,7 +94,7 @@
   margin: 0;
   margin-bottom: 12px;
   font-size: 12px;
-  color: #666;
+  color: var(--citedy-slate-600);
   font-family: monospace;
   flex-shrink: 0;
   overflow: hidden;
@@ -101,7 +104,7 @@
 
 .divider {
   height: 1px;
-  background-color: #e8e8e8;
+  background-color: rgba(226, 232, 240, 0.6);
   margin-bottom: 16px;
   flex-shrink: 0;
 }
@@ -166,7 +169,7 @@
 
 .editorHeader {
   padding: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.4);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -177,11 +180,12 @@
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--citedy-slate-900);
 }
 
 .filePath {
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-500);
   font-family: monospace;
 }
 
@@ -220,7 +224,7 @@
   flex-direction: column;
   height: 100%;
   overflow: auto;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--citedy-slate-200);
   padding: 16px;
   border-radius: 8px;
 }
@@ -242,7 +246,7 @@
 
 .toggleLabel {
   font-size: 12px;
-  color: #666;
+  color: var(--citedy-slate-600);
   white-space: nowrap;
 }
 
@@ -251,12 +255,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
-}
-
-.buttonGroup {
-  display: flex;
-  align-items: center;
+  color: var(--citedy-slate-400);
 }
 
 .copyButton {
@@ -265,21 +264,22 @@
 
 .fileItem {
   padding: 12px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(226, 232, 240, 0.6);
   border-radius: 8px;
   margin-bottom: 8px;
   cursor: pointer;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.6);
   transition: all 0.2s;
 
   &:hover:not(.selected) {
-    border-color: #d9d9d9;
-    background-color: #fafafa;
+    border-color: var(--citedy-slate-300);
+    background-color: var(--citedy-slate-50);
   }
 
   &.selected {
-    border: 2px solid #615ced;
-    background-color: #f6f5ff;
+    border: 2px solid var(--citedy-slate-900);
+    background-color: rgba(15, 23, 42, 0.04);
+    border-radius: 10px;
   }
 }
 
@@ -303,16 +303,17 @@
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--citedy-slate-900);
 }
 
 .fileItemMeta {
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-500);
 }
 
 .expandIcon {
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-400);
   margin-left: 8px;
 }
 
@@ -324,21 +325,21 @@
 
 .dailyMemoryItem {
   padding: 10px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid rgba(226, 232, 240, 0.6);
   border-radius: 6px;
   margin-bottom: 6px;
   cursor: pointer;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.6);
   transition: all 0.2s;
 
   &:hover:not(.selected) {
-    border-color: #d9d9d9;
-    background-color: #fafafa;
+    border-color: var(--citedy-slate-300);
+    background-color: var(--citedy-slate-50);
   }
 
   &.selected {
-    border: 2px solid #615ced;
-    background-color: #f6f5ff;
+    border: 2px solid var(--citedy-slate-900);
+    background-color: rgba(15, 23, 42, 0.04);
   }
 }
 
@@ -346,18 +347,19 @@
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 2px;
+  color: var(--citedy-slate-900);
 }
 
 .dailyMemoryMeta {
   font-size: 11px;
-  color: #999;
+  color: var(--citedy-slate-500);
 }
 
 .attribution {
   margin: 0;
   padding: 4px 0 0;
   font-size: 11px;
-  color: #bbb;
+  color: var(--citedy-slate-400);
   text-align: right;
   flex-shrink: 0;
 }

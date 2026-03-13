@@ -34,8 +34,10 @@ export default function Header({ selectedKey }: HeaderProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "#fff",
-        borderBottom: "1px solid #f0f0f0",
+        background: "rgba(255, 255, 255, 0.8)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
       }}
     >
       <span style={{ fontSize: 18, fontWeight: 500 }}>

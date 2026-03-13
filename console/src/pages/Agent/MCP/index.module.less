@@ -1,22 +1,25 @@
 .mcpCard {
-  border-radius: 12px;
-  transition: all 0.2s ease-in-out;
+  border-radius: 16px;
+  transition: all 0.3s ease;
   cursor: pointer;
   padding: 16px;
+  position: relative;
+  overflow: hidden;
 
   &.enabledCard {
-    border: 2px solid #615ced !important;
-    box-shadow: rgba(97, 92, 237, 0.2) 0px 4px 12px !important;
+    border: 2px solid var(--citedy-slate-900) !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12) !important;
   }
 
   &.hover {
-    border: 1px solid #615ced;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border: 1px solid var(--citedy-slate-300) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
   }
 
   &.normal {
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(226, 232, 240, 0.4) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   }
 }
 
@@ -29,9 +32,9 @@
 
 .mcpTitle {
   margin: 0;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--citedy-slate-600);
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -40,20 +43,22 @@
 
 .typeBadge {
   font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 2px 8px;
+  border-radius: 9999px;
   font-weight: 500;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
 
   &.local {
-    background-color: #e6f7ff;
-    color: #1890ff;
-    border: 1px solid #91d5ff;
+    background-color: rgba(59, 130, 246, 0.08);
+    color: var(--citedy-blue-500);
+    border: 1px solid rgba(59, 130, 246, 0.2);
   }
 
   &.remote {
-    background-color: #fff7e6;
-    color: #fa8c16;
-    border: 1px solid #ffd591;
+    background-color: rgba(245, 158, 11, 0.08);
+    color: var(--citedy-amber-500);
+    border: 1px solid rgba(245, 158, 11, 0.2);
   }
 }
 
@@ -65,7 +70,7 @@
 
 .description {
   font-size: 14px;
-  color: #666;
+  color: var(--citedy-slate-600);
   line-height: 1.6;
   margin-bottom: 32px;
   min-height: 64px;
@@ -83,7 +88,7 @@
   gap: 8px;
   padding-top: 16px;
   margin-top: auto;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(226, 232, 240, 0.4);
 }
 
 .actionButton {
@@ -98,9 +103,9 @@
   justify-content: center;
 
   &:hover {
-    background-color: #ff4d4f;
-    color: #fff;
-    border-color: #ff4d4f;
+    background-color: var(--citedy-red-600) !important;
+    color: #fff !important;
+    border-color: var(--citedy-red-600) !important;
   }
 }
 
@@ -116,11 +121,11 @@
   border-radius: 50%;
 
   &.enabled {
-    background-color: #52c41a;
+    background-color: var(--citedy-green-500);
   }
 
   &.disabled {
-    background-color: #d9d9d9;
+    background-color: var(--citedy-slate-300);
   }
 }
 
@@ -128,30 +133,27 @@
   font-size: 12px;
 
   &.enabled {
-    color: #52c41a;
+    color: var(--citedy-green-500);
   }
 
   &.disabled {
-    color: #999;
+    color: var(--citedy-slate-400);
   }
 }
 
 .editJsonTextArea {
   width: 100%;
   min-height: 500px;
-  font-family:
-    Monaco,
-    Courier New,
-    monospace;
+  font-family: Monaco, Courier New, monospace;
   font-size: 13px;
   padding: 16px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border: 1px solid var(--citedy-slate-200);
+  border-radius: 8px;
   resize: vertical;
 }
 
 .preformattedText {
-  background-color: #f5f5f5;
+  background-color: var(--citedy-slate-50);
   padding: 16px;
   border-radius: 8px;
   max-height: 500px;

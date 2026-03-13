@@ -309,7 +309,7 @@ export function PersonaDrawer({
 
         <div
           style={{
-            border: "1px solid #f0f0f0",
+            border: "1px solid rgba(226, 232, 240, 0.4)",
             borderRadius: 8,
             padding: 16,
             marginBottom: 24,

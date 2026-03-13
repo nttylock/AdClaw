@@ -144,7 +144,7 @@ export default function ChatPage() {
 
       <Modal open={showModelPrompt} closable={false} footer={null} width={480}>
         <Result
-          icon={<ExclamationCircleOutlined style={{ color: "#faad14" }} />}
+          icon={<ExclamationCircleOutlined style={{ color: "#f59e0b" }} />}
           title={t("modelConfig.promptTitle")}
           subTitle={t("modelConfig.promptMessage")}
           extra={[

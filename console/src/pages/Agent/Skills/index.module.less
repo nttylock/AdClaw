@@ -17,12 +17,13 @@
 .title {
   margin-bottom: 4px;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--citedy-slate-900);
 }
 
 .description {
   margin: 0;
-  color: #999;
+  color: var(--citedy-slate-500);
   font-size: 14px;
 }
 
@@ -32,7 +33,7 @@
 }
 
 .loadingText {
-  color: #999;
+  color: var(--citedy-slate-500);
 }
 
 .importHintBlock {
@@ -42,40 +43,42 @@
 .importHintTitle {
   margin: 0;
   font-size: 13px;
-  color: #666;
+  color: var(--citedy-slate-600);
 }
 
 .importHintList {
   margin: 8px 0;
   padding: 0 0 0 20px;
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-500);
 }
 
 .importUrlInput {
   width: 100%;
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
+  border: 1px solid var(--citedy-slate-200);
+  border-radius: 9999px;
   outline: none;
   font-size: 14px;
+  transition: all 0.2s ease;
 
   &:focus {
-    border-color: #615ced;
+    border-color: var(--citedy-slate-900);
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
   }
 }
 
 .importUrlError {
   margin-top: 8px;
-  color: #ff4d4f;
+  color: var(--citedy-red-600);
   font-size: 13px;
 }
 
 .importLoadingText {
   margin-top: 8px;
   font-size: 13px;
-  color: #666;
+  color: var(--citedy-slate-600);
 }
 
 .skillsGrid {
@@ -86,30 +89,33 @@
 
 .skillCard {
   border-radius: 16px;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 
   &.enabledCard {
-    border: 2px solid #615ced !important;
-    box-shadow: rgba(97, 92, 237, 0.2) 0px 8px 24px !important;
+    border: 2px solid var(--citedy-slate-900) !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12) !important;
 
     .statusDot.enabled {
-      background-color: #52c41a;
+      background-color: var(--citedy-green-500);
     }
 
     .statusText.enabled {
-      color: #52c41a;
+      color: var(--citedy-green-500);
     }
   }
 
   &.hover {
-    border: 1px solid #615ced;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border: 1px solid var(--citedy-slate-300) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
   }
 
   &.normal {
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(226, 232, 240, 0.4) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   }
 }
 
@@ -122,13 +128,13 @@
 
 .skillTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--citedy-slate-600);
 }
 
 .fileIcon {
-  font-size: 22px;
+  font-size: 16px;
   display: flex;
   align-items: center;
 }
@@ -145,11 +151,11 @@
   border-radius: 50%;
 
   &.enabled {
-    background-color: #52c41a;
+    background-color: var(--citedy-green-500);
   }
 
   &.disabled {
-    background-color: #d9d9d9;
+    background-color: var(--citedy-slate-300);
   }
 }
 
@@ -157,11 +163,11 @@
   font-size: 12px;
 
   &.enabled {
-    color: #52c41a;
+    color: var(--citedy-green-500);
   }
 
   &.disabled {
-    color: #999;
+    color: var(--citedy-slate-400);
   }
 }
 
@@ -172,14 +178,14 @@
 
 .infoLabel {
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-500);
   margin-bottom: 4px;
 }
 
 .infoCode {
   font-size: 12px;
-  color: #666;
-  background-color: #f5f5f5;
+  color: var(--citedy-slate-600);
+  background-color: var(--citedy-slate-50);
   padding: 2px 6px;
   border-radius: 4px;
   overflow: hidden;
@@ -197,7 +203,7 @@
     white-space: normal;
     font-family: inherit;
     background-color: transparent;
-    color: #888;
+    color: var(--citedy-slate-500);
     padding: 0;
   }
 }
@@ -208,7 +214,7 @@
   align-items: center;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(226, 232, 240, 0.4);
 }
 
 .actionButton {
@@ -222,9 +228,9 @@
   justify-content: center;
 
   &:hover {
-    background-color: #ff4d4f;
-    color: #fff;
-    border-color: #ff4d4f;
+    background-color: var(--citedy-red-600) !important;
+    color: #fff !important;
+    border-color: var(--citedy-red-600) !important;
   }
 }
 
@@ -255,7 +261,7 @@
 
 .toggleLabel {
   font-size: 12px;
-  color: #666;
+  color: var(--citedy-slate-600);
   white-space: nowrap;
 }
 
@@ -263,7 +269,7 @@
   min-height: 200px;
   max-height: 300px;
   overflow: auto;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--citedy-slate-200);
   border-radius: 6px;
   background-color: #fff;
 }

@@ -1,5 +1,6 @@
 import { Card, Button, Tag } from "@agentscope-ai/design";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Brain } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Persona } from "../../../api/types";
 import styles from "../index.module.less";
@@ -96,6 +97,20 @@ export function PersonaCard({
           aria-label={`Delete persona ${persona.name}`}
         />
       </div>
+
+      {/* Decorative icon */}
+      <Brain
+        style={{
+          position: "absolute",
+          bottom: -16,
+          right: -16,
+          width: 128,
+          height: 128,
+          opacity: 0.03,
+          pointerEvents: "none",
+          color: "#8b5cf6",
+        }}
+      />
     </Card>
   );
 }

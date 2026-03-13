@@ -1,6 +1,6 @@
 import { Card, Button, Modal, Tooltip, Input } from "@agentscope-ai/design";
 import { DeleteOutlined } from "@ant-design/icons";
-import { Server } from "lucide-react";
+import { Server, Plug } from "lucide-react";
 import type { MCPClientInfo } from "../../../../api/types";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -94,7 +94,7 @@ export function MCPClientCard({
         <div className={styles.cardHeader}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span className={styles.fileIcon}>
-              <Server style={{ color: "#1890ff", fontSize: 20 }} />
+              <Server style={{ color: "#3b82f6", fontSize: 20 }} />
             </span>
             <Tooltip title={client.name}>
               <h3 className={styles.mcpTitle}>{client.name}</h3>
@@ -147,6 +147,20 @@ export function MCPClientCard({
             disabled={client.enabled}
           />
         </div>
+
+        {/* Decorative icon */}
+        <Plug
+          style={{
+            position: "absolute",
+            bottom: -16,
+            right: -16,
+            width: 128,
+            height: 128,
+            opacity: 0.03,
+            pointerEvents: "none",
+            color: "#06b6d4",
+          }}
+        />
       </Card>
 
       <Modal

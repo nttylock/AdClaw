@@ -186,8 +186,6 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
       onCollapse={(value) => setCollapsed(value)}
       width={260}
       style={{
-        background: "#fff",
-        borderRight: "1px solid #f0f0f0",
         overflow: "auto",
         height: "100vh",
       }}
@@ -212,7 +210,7 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
               <span
                 style={{
                   fontSize: 11,
-                  color: "#bbb",
+                  color: "#94a3b8",
                   fontWeight: 400,
                   lineHeight: 1,
                 }}
@@ -234,7 +232,7 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           onClick={() => setCollapsed(!collapsed)}
           style={{
             margin: "auto",
-            color: "#615ced",
+            color: "#0f172a",
           }}
         />
       </div>
@@ -256,9 +254,9 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
         <div
           style={{
             padding: "12px 16px",
-            borderTop: "1px solid #f0f0f0",
+            borderTop: "1px solid rgba(226, 232, 240, 0.6)",
             fontSize: 12,
-            color: "#666",
+            color: "#475569",
           }}
         >
           <div

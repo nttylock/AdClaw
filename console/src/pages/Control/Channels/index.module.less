@@ -5,12 +5,13 @@
 .title {
   margin-bottom: 16px;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--citedy-slate-900);
 }
 
 .description {
   margin-bottom: 24px;
-  color: #999;
+  color: var(--citedy-slate-500);
   font-size: 14px;
 }
 
@@ -20,7 +21,7 @@
 }
 
 .loadingText {
-  color: #999;
+  color: var(--citedy-slate-500);
 }
 
 .channelsGrid {
@@ -34,23 +35,24 @@
 .channelCard {
   border-radius: 16px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 
   &.hover {
-    border: 2px solid #615ced;
-    box-shadow: 0 12px 32px rgba(97, 92, 237, 0.3);
+    transform: translateY(-2px);
+    border: 1px solid var(--citedy-slate-300) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
   }
 
   &.enabled {
-    border: 2px solid #615ced;
-    box-shadow: 0 8px 24px rgba(97, 92, 237, 0.2);
-    transform: scale(1.02);
+    border: 2px solid var(--citedy-slate-900) !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12) !important;
   }
 
   &.normal {
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    transform: scale(1);
+    border: 1px solid rgba(226, 232, 240, 0.4) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   }
 }
 
@@ -66,7 +68,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-400);
 }
 
 .statusDot {
@@ -75,39 +77,41 @@
   border-radius: 50%;
 
   &.enabled {
-    background-color: #52c41a;
-    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
+    background-color: var(--citedy-emerald-500);
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
   }
 
   &.disabled {
-    background-color: #d9d9d9;
+    background-color: var(--citedy-slate-300);
     box-shadow: none;
   }
 }
 
 .channelTag {
   font-size: 12px;
-  color: #b37feb;
+  color: var(--citedy-slate-600);
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(97, 92, 237, 0.08);
+  background: rgba(226, 232, 240, 0.4);
+  backdrop-filter: blur(8px);
 }
 
 .cardTitle {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
+  color: var(--citedy-slate-600);
   margin-bottom: 8px;
 }
 
 .cardDescription {
   font-size: 12px;
-  color: #999;
+  color: var(--citedy-slate-500);
   margin-bottom: 12px;
 }
 
 .cardHint {
   font-size: 12px;
-  color: #bbb;
+  color: var(--citedy-slate-400);
 }
 
 /* ---- Channel Drawer Styles ---- */

@@ -387,7 +387,7 @@ function EnvironmentsPage() {
                   </td>
                   <td>{ref.key}</td>
                   <td style={{ fontFamily: "inherit" }}>{ref.plugin}</td>
-                  <td style={{ fontFamily: "inherit", color: "#666" }}>
+                  <td style={{ fontFamily: "inherit", color: "#475569" }}>
                     {ref.description}
                   </td>
                 </tr>

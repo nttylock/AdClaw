@@ -10,9 +10,9 @@ const statusIcon = (status: string) => {
 };
 
 const scoreColor = (score: number) => {
-  if (score >= 80) return "#52c41a";
-  if (score >= 50) return "#faad14";
-  return "#f5222d";
+  if (score >= 80) return "#22c55e";
+  if (score >= 50) return "#f59e0b";
+  return "#dc2626";
 };
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 export function SecurityBadges({ security }: Props) {
   if (!security) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#bbb", marginTop: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#cbd5e1", marginTop: 8 }}>
         <span>Not scanned</span>
       </div>
     );

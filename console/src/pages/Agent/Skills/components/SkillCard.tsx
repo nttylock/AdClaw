@@ -10,6 +10,7 @@ import {
   FileImageFilled,
   CodeFilled,
 } from "@ant-design/icons";
+import { Sparkles } from "lucide-react";
 import type { SkillSpec } from "../../../../api/types";
 import { useTranslation } from "react-i18next";
 import { SecurityBadges } from "./SecurityBadges";
@@ -59,7 +60,7 @@ const getFileIcon = (filePath: string) => {
     case "txt":
     case "md":
     case "markdown":
-      return <FileTextFilled style={{ color: "#1890ff" }} />;
+      return <FileTextFilled style={{ color: "#3b82f6" }} />;
     case "zip":
     case "rar":
     case "7z":
@@ -67,7 +68,7 @@ const getFileIcon = (filePath: string) => {
     case "gz":
       return <FileZipFilled style={{ color: "#fa8c16" }} />;
     case "pdf":
-      return <FilePdfFilled style={{ color: "#f5222d" }} />;
+      return <FilePdfFilled style={{ color: "#dc2626" }} />;
     case "doc":
     case "docx":
       return <FileWordFilled style={{ color: "#2b579a" }} />;
@@ -96,9 +97,9 @@ const getFileIcon = (filePath: string) => {
     case "rs":
     case "rb":
     case "php":
-      return <CodeFilled style={{ color: "#52c41a" }} />;
+      return <CodeFilled style={{ color: "#22c55e" }} />;
     default:
-      return <FileTextFilled style={{ color: "#1890ff" }} />;
+      return <FileTextFilled style={{ color: "#3b82f6" }} />;
   }
 };
 
@@ -197,6 +198,20 @@ export function SkillCard({
           />
         )}
       </div>
+
+      {/* Decorative icon */}
+      <Sparkles
+        style={{
+          position: "absolute",
+          bottom: -16,
+          right: -16,
+          width: 128,
+          height: 128,
+          opacity: 0.03,
+          pointerEvents: "none",
+          color: "#3b82f6",
+        }}
+      />
     </Card>
   );
 }

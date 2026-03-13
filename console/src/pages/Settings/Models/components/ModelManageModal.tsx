@@ -500,16 +500,16 @@ export function ModelManageModal({
             style={{
               padding: "12px 16px",
               marginBottom: 8,
-              background: "#f6f8fa",
+              background: "#f8fafc",
               borderRadius: 8,
-              border: "1px solid #e8e8e8",
+              border: "1px solid rgba(226, 232, 240, 0.4)",
               display: "flex",
               alignItems: "center",
               gap: 10,
             }}
           >
-            <LoadingOutlined spin style={{ fontSize: 16, color: "#615CED" }} />
-            <span style={{ color: "#333", fontSize: 13, flex: 1 }}>
+            <LoadingOutlined spin style={{ fontSize: 16, color: "#0f172a" }} />
+            <span style={{ color: "#334155", fontSize: 13, flex: 1 }}>
               {task.status === "pending"
                 ? t("models.localDownloadPending")
                 : t("models.localDownloading", { repo: task.name })}
@@ -629,16 +629,16 @@ export function ModelManageModal({
             style={{
               padding: "12px 16px",
               marginBottom: 8,
-              background: "#f6f8fa",
+              background: "#f8fafc",
               borderRadius: 8,
-              border: "1px solid #e8e8e8",
+              border: "1px solid rgba(226, 232, 240, 0.4)",
               display: "flex",
               alignItems: "center",
               gap: 10,
             }}
           >
-            <LoadingOutlined spin style={{ fontSize: 16, color: "#615CED" }} />
-            <span style={{ color: "#333", fontSize: 13, flex: 1 }}>
+            <LoadingOutlined spin style={{ fontSize: 16, color: "#0f172a" }} />
+            <span style={{ color: "#334155", fontSize: 13, flex: 1 }}>
               {task.status === "pending"
                 ? t("models.downloadPending")
                 : t("models.localDownloading", { repo: task.repo_id })}

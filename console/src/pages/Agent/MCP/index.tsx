@@ -179,7 +179,7 @@ function MCPPage() {
           <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 4 }}>
             {t("mcp.title")}
           </h1>
-          <p style={{ margin: 0, color: "#999", fontSize: 14 }}>
+          <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>
             {t("mcp.description")}
           </p>
         </div>
@@ -212,7 +212,7 @@ function MCPPage() {
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
                 Citedy SEO & Marketing Tools
               </h3>
-              <p style={{ margin: "4px 0 0", color: "#666", fontSize: 13 }}>
+              <p style={{ margin: "4px 0 0", color: "#475569", fontSize: 13 }}>
                 {citedyStatus.configured
                   ? `API Key: ${citedyStatus.api_key_prefix || "configured"}`
                   : "API key not configured — get a free key to unlock 52 marketing tools"}
@@ -247,7 +247,7 @@ function MCPPage() {
 
       {loading ? (
         <div style={{ textAlign: "center", padding: 60 }}>
-          <p style={{ color: "#999" }}>{t("common.loading")}</p>
+          <p style={{ color: "#64748b" }}>{t("common.loading")}</p>
         </div>
       ) : clients.length === 0 ? (
         <Empty description={t("mcp.emptyState")} />
@@ -294,7 +294,7 @@ function MCPPage() {
         width={800}
       >
         <div style={{ marginBottom: 12 }}>
-          <p style={{ margin: 0, fontSize: 13, color: "#666" }}>
+          <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>
             {t("mcp.formatSupport")}:
           </p>
           <ul
@@ -302,7 +302,7 @@ function MCPPage() {
               margin: "8px 0",
               padding: "0 0 0 20px",
               fontSize: 12,
-              color: "#999",
+              color: "#64748b",
             }}
           >
             <li>
@@ -327,7 +327,7 @@ function MCPPage() {
             fontFamily: "Monaco, Courier New, monospace",
             fontSize: 13,
             padding: 16,
-            border: "1px solid #d9d9d9",
+            border: "1px solid #e2e8f0",
             borderRadius: 4,
             resize: "vertical",
           }}

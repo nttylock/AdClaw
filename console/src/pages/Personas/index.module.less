@@ -17,12 +17,13 @@
 .title {
   margin-bottom: 4px;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--citedy-slate-900);
 }
 
 .description {
   margin: 0;
-  color: #999;
+  color: var(--citedy-slate-500);
   font-size: 14px;
 }
 
@@ -32,13 +33,13 @@
 }
 
 .loadingText {
-  color: #999;
+  color: var(--citedy-slate-500);
 }
 
 .emptyState {
   text-align: center;
   padding: 80px 0;
-  color: #999;
+  color: var(--citedy-slate-400);
   font-size: 14px;
 }
 
@@ -50,17 +51,20 @@
 
 .personaCard {
   border-radius: 16px;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 
   &.hover {
-    border: 1px solid #615ced;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border: 1px solid var(--citedy-slate-300) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
   }
 
   &.normal {
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(226, 232, 240, 0.4) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   }
 }
 
@@ -77,21 +81,21 @@
 
 .personaTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--citedy-slate-600);
 }
 
 .soulPreview {
   margin-bottom: 12px;
   padding: 8px;
-  background-color: #f5f5f5;
+  background-color: var(--citedy-slate-50);
   border-radius: 6px;
   overflow: hidden;
 
   code {
     font-size: 12px;
-    color: #666;
+    color: var(--citedy-slate-600);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     display: -webkit-box;
@@ -113,7 +117,7 @@
   align-items: center;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(226, 232, 240, 0.4);
 }
 
 .actionButton {
@@ -127,8 +131,8 @@
   justify-content: center;
 
   &:hover {
-    background-color: #ff4d4f;
-    color: #fff;
-    border-color: #ff4d4f;
+    background-color: var(--citedy-red-600) !important;
+    color: #fff !important;
+    border-color: var(--citedy-red-600) !important;
   }
 }
