@@ -94,6 +94,11 @@ COPY src ./src
 COPY --from=console-builder /app/src/adclaw/console/ ./src/adclaw/console/
 RUN pip install --no-cache-dir .
 
+# Non-root user for running the app (supervisord stays root for system services).
+RUN groupadd -r adclaw && useradd -r -g adclaw -m -s /bin/bash adclaw \
+  && mkdir -p /app/working /app/working.secret \
+  && chown -R adclaw:adclaw /app/working /app/working.secret
+
 # Config.json is generated at runtime by entrypoint.sh (only if missing),
 # so it persists user settings across container restarts.
 

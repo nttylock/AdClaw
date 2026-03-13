@@ -119,6 +119,9 @@ else:
     print(f'entrypoint: all skills up to date ({skipped} existing)')
 " 2>/dev/null || true
 
+# Ensure working dirs are owned by adclaw user (entrypoint runs as root)
+chown -R adclaw:adclaw "${ADCLAW_WORKING_DIR:-/app/working}" "${ADCLAW_WORKING_DIR:-/app/working}.secret" 2>/dev/null || true
+
 envsubst '${ADCLAW_PORT}' \
   < /etc/supervisor/conf.d/supervisord.conf.template \
   > /etc/supervisor/conf.d/supervisord.conf

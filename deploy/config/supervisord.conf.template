@@ -13,12 +13,13 @@ stdout_logfile=/var/log/dbus.out.log
 
 [program:app]
 command=adclaw app --host 0.0.0.0 --port ${ADCLAW_PORT}
+user=adclaw
 autostart=true
 autorestart=true
 priority=30
 stderr_logfile=/var/log/app.err.log
 stdout_logfile=/var/log/app.out.log
-environment=DISPLAY=":1",PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/usr/bin/chromium",ADCLAW_RUNNING_IN_CONTAINER="1"
+environment=DISPLAY=":1",PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/usr/bin/chromium",ADCLAW_RUNNING_IN_CONTAINER="1",HOME="/home/adclaw"
 
 [program:pinchtab]
 command=/bin/sh -c "sleep 2; exec pinchtab"
