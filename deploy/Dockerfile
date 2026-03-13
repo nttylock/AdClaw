@@ -69,7 +69,10 @@ RUN apt-get update && apt-get install -y --fix-missing \
 RUN sed -i 's/^CHROMIUM_FLAGS=""/CHROMIUM_FLAGS="--no-sandbox"/' /usr/bin/chromium
 
 # PinchTab: token-efficient browser control for AI agents (12MB Go binary).
-RUN curl -fsSL https://pinchtab.com/install.sh | bash
+# Install as root, then copy binary to /usr/local/bin so the adclaw user can run it.
+RUN curl -fsSL https://pinchtab.com/install.sh | bash \
+  && cp /root/.pinchtab/bin/*/pinchtab-linux-* /usr/local/bin/pinchtab-bin \
+  && chmod 755 /usr/local/bin/pinchtab-bin
 ENV PINCHTAB_PORT=9867
 
 # agent-browser: install CLI globally, use system Chromium (skip download).
@@ -96,8 +99,8 @@ RUN pip install --no-cache-dir .
 
 # Non-root user for running the app (supervisord stays root for system services).
 RUN groupadd -r adclaw && useradd -r -g adclaw -m -s /bin/bash adclaw \
-  && mkdir -p /app/working /app/working.secret \
-  && chown -R adclaw:adclaw /app/working /app/working.secret
+  && mkdir -p /app/working /app/working.secret /home/adclaw/.config/pinchtab \
+  && chown -R adclaw:adclaw /app/working /app/working.secret /home/adclaw/.config
 
 # Config.json is generated at runtime by entrypoint.sh (only if missing),
 # so it persists user settings across container restarts.
