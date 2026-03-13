@@ -145,9 +145,9 @@ export const createColumns = (
           <Tooltip
             title={
               <div>
-                <div>Cron 表达式: {cron}</div>
+                <div>Cron expression: {cron}</div>
                 <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4 }}>
-                  格式: 分钟 小时 日 月 星期
+                  Format: minute hour day month weekday
                 </div>
               </div>
             }

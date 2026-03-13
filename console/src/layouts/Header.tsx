@@ -1,5 +1,4 @@
 import { Layout } from "antd";
-import LanguageSwitcher from "../components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 
 const { Header: AntHeader } = Layout;
@@ -43,7 +42,6 @@ export default function Header({ selectedKey }: HeaderProps) {
       <span style={{ fontSize: 18, fontWeight: 500 }}>
         {t(keyToLabel[selectedKey] || "nav.chat")}
       </span>
-      <LanguageSwitcher />
     </AntHeader>
   );
 }
