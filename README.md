@@ -16,7 +16,7 @@
 
 ## What is AdClaw?
 
-One `docker run` — and you get a **multi-agent AI marketing team** with:
+`pip install adclaw` — and you get a **multi-agent AI marketing team** with:
 
 - **Multi-agent personas** — create specialized agents (researcher, writer, SEO, ads), each with its own identity (SOUL.md), LLM, skills, and schedule
 - **@tag routing** in Telegram — `@researcher find AI trends` sends the message to the right agent
@@ -73,18 +73,32 @@ One `docker run` — and you get a **multi-agent AI marketing team** with:
 
 ## Quick Start
 
-### Docker (recommended)
+### pip install (fastest)
+
+```bash
+pip install adclaw
+adclaw init
+adclaw app
+```
+
+Open http://localhost:8088 — the welcome wizard will guide you.
+
+**Want browser automation skills?** (web scraping, screenshots, form filling)
+
+```bash
+pip install adclaw[browser]
+playwright install chromium
+```
+
+### Docker (all-inclusive, with browser skills)
 
 ```bash
 docker run -d --name adclaw --restart unless-stopped \
   -p 8088:8088 \
   -v adclaw-data:/app/working \
   -v adclaw-secret:/app/working.secret \
-  -e CITEDY_API_KEY=your_key_here \
   nttylock/adclaw:latest
 ```
-
-Open http://localhost:8088 — the welcome wizard will guide you.
 
 ### Docker Compose
 
@@ -93,16 +107,6 @@ git clone https://github.com/nttylock/AdClaw.git
 cd AdClaw
 cp .env.example .env  # edit with your keys
 docker compose up -d
-```
-
-### From Source
-
-```bash
-git clone https://github.com/nttylock/AdClaw.git
-cd AdClaw
-pip install .
-adclaw init
-adclaw app
 ```
 
 ---
