@@ -22,8 +22,9 @@
 - **@tag routing** in Telegram — `@researcher find AI trends` sends the message to the right agent
 - **Coordinator delegation** — one agent orchestrates the rest, delegating tasks automatically
 - **Shared memory** — agents read each other's output files for seamless collaboration
-- **96 built-in skills** — SEO, ads, content, social media, analytics, growth hacking
+- **117 built-in skills** — SEO, ads, content, social media, analytics, growth hacking
 - **52 marketing tools** via Citedy MCP server
+- **Instant file publishing** — upload any file to [here.now](https://here.now), get a shareable link, host static sites, use your own domain
 - **Multi-channel** — Telegram, Discord, DingTalk, Feishu, QQ, Console
 - **Web UI** — manage personas, skills, models, and channels from the browser
 
@@ -68,6 +69,7 @@
 | Self-Healing Skills | Broken skill YAML? Auto-fixed by your LLM — no manual intervention |
 | Security Scanning | Every skill gets a security score (0-100) from 208-pattern static analysis |
 | Security Badges | Visual badges on each skill card: pattern scan, LLM audit, auto-heal status |
+| File Publishing | Instantly publish any file to the web via [here.now](https://here.now) — share reports, host static sites, publish on your own domain |
 
 ---
 
