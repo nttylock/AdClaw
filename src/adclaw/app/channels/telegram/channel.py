@@ -288,13 +288,13 @@ class TelegramChannel(BaseChannel):
         # Menu button texts that should be intercepted
         _MENU_BUTTONS = {
             "👤 Persona", "⚙️ Model", "🆕 New Chat",
-            "🔧 Skills", "📊 Status",
+            "🔧 Skills", "📊 Status", "🌐 Tasks",
         }
         # Slash commands handled directly (not forwarded to agent)
         _DIRECT_COMMANDS = {
             "/start", "/new",
             "/personas", "/model", "/skills", "/status",
-            "/compact", "/clear", "/history",
+            "/compact", "/clear", "/history", "/tasks",
         }
 
         async def handle_message(
@@ -679,6 +679,7 @@ class TelegramChannel(BaseChannel):
                     [
                         KeyboardButton("🔧 Skills"),
                         KeyboardButton("📊 Status"),
+                        KeyboardButton("🌐 Tasks"),
                     ],
                 ],
                 resize_keyboard=True,
@@ -1013,6 +1014,32 @@ class TelegramChannel(BaseChannel):
             )
             return True
 
+        if command in ("🌐 Tasks", "/tasks"):
+            # Forward to agent so it uses agenthub-worker skill
+            content_parts = [
+                TextContent(
+                    type=ContentType.TEXT,
+                    text="Show me open tasks on AgentHub",
+                ),
+            ]
+            meta = {
+                "chat_id": chat_id,
+                "user_id": chat_id,
+                "username": "",
+                "message_id": "",
+                "is_group": False,
+                "has_bot_command": True,
+            }
+            native = {
+                "channel_id": self.channel,
+                "sender_id": chat_id,
+                "content_parts": content_parts,
+                "meta": meta,
+            }
+            if self._enqueue is not None:
+                self._enqueue(native)
+            return True
+
         # Forward agent-handled commands (/compact, /clear, /history)
         if command in ("/compact", "/clear", "/history"):
             content_parts = [
@@ -1164,6 +1191,7 @@ class TelegramChannel(BaseChannel):
                 BotCommand("compact", "Compact conversation memory"),
                 BotCommand("clear", "Clear conversation history"),
                 BotCommand("history", "Show conversation history"),
+                BotCommand("tasks", "Browse AgentHub tasks"),
             ]
             try:
                 await self._application.bot.set_my_commands(commands)
