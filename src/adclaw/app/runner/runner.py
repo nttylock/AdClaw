@@ -194,11 +194,45 @@ class AgentRunner(Runner):
             # in the session state.
             agent.rebuild_sys_prompt()
 
-            async for msg, last in stream_printing_messages(
-                agents=[agent],
-                coroutine_task=agent(msgs),
-            ):
-                yield msg, last
+            try:
+                async for msg, last in stream_printing_messages(
+                    agents=[agent],
+                    coroutine_task=agent(msgs),
+                ):
+                    yield msg, last
+            except Exception as first_err:
+                # If LLM rejected the request (often due to stale session
+                # content), clear conversation history and retry once.
+                err_str = str(first_err).lower()
+                is_retryable = (
+                    "badrequest" in type(first_err).__name__.lower()
+                    or "invalid_parameter" in err_str
+                    or "400" in err_str[:30]
+                )
+                if not is_retryable:
+                    raise
+
+                logger.warning(
+                    "LLM rejected request (likely stale session), "
+                    "clearing history and retrying: %s",
+                    first_err,
+                )
+                # Clear the agent's conversation memory
+                if hasattr(agent, "memory") and hasattr(
+                    agent.memory, "clear"
+                ):
+                    agent.memory.clear()
+                elif hasattr(agent, "memory") and hasattr(
+                    agent.memory, "content"
+                ):
+                    agent.memory.content.clear()
+
+                # Retry with clean context
+                async for msg, last in stream_printing_messages(
+                    agents=[agent],
+                    coroutine_task=agent(msgs),
+                ):
+                    yield msg, last
 
         except asyncio.CancelledError:
             if agent is not None:
