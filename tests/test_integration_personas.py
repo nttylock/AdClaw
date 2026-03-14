@@ -75,8 +75,8 @@ class TestFullOrchestration:
     def test_unknown_tag_returns_none(self):
         assert self.mgr.resolve_tag("@unknown hello") is None
 
-    def test_tag_case_sensitive(self):
-        assert self.mgr.resolve_tag("@Researcher find trends") is None  # uppercase
+    def test_tag_case_insensitive(self):
+        assert self.mgr.resolve_tag("@Researcher find trends") == "researcher"  # case-insensitive
 
     def test_tag_at_middle_ignored(self):
         assert self.mgr.resolve_tag("hello @researcher") is None  # not at start

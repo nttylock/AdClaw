@@ -12,29 +12,12 @@ import { useLocalStorageState } from "ahooks";
 import defaultConfig, { DefaultConfig } from "./OptionsPanel/defaultConfig";
 import Weather from "./Weather";
 import PersonaSelector from "./PersonaSelector";
+import { getPersonaColor } from "./personaColors";
 import { getApiUrl, getApiToken } from "../../api/config";
 import { providerApi } from "../../api/modules/provider";
 import { personaApi } from "../../api/modules/persona";
 import type { Persona } from "../../api/types/persona";
 import "./index.module.less";
-
-const PERSONA_COLORS: Record<string, string> = {
-  coordinator: "#64748b",
-  researcher: "#3b82f6",
-  "content-writer": "#8b5cf6",
-  seo: "#06b6d4",
-  ads: "#f59e0b",
-  social: "#ec4899",
-};
-
-function getPersonaColor(persona: Persona): string {
-  if (persona.is_coordinator) return PERSONA_COLORS.coordinator;
-  const id = persona.id.toLowerCase();
-  for (const key of Object.keys(PERSONA_COLORS)) {
-    if (id.includes(key)) return PERSONA_COLORS[key];
-  }
-  return "#64748b";
-}
 
 interface PersonaTabsProps {
   personas: Persona[];
@@ -75,7 +58,6 @@ function PersonaTabs({ personas, activeTab, onTabChange }: PersonaTabsProps) {
 
   return (
     <div style={containerStyle}>
-      {/* "All" tab */}
       <button
         style={{
           ...baseTabStyle,
@@ -98,7 +80,6 @@ function PersonaTabs({ personas, activeTab, onTabChange }: PersonaTabsProps) {
         All
       </button>
 
-      {/* Per-persona tabs */}
       {nonCoordinator.map((persona) => {
         const color = getPersonaColor(persona);
         const isActive = activeTab === persona.id;
@@ -159,7 +140,7 @@ export default function ChatPage() {
   useEffect(() => {
     personaApi.listPersonas().then((list) => {
       if (Array.isArray(list)) setPersonas(list);
-    }).catch(() => {/* silently ignore if personas not available */});
+    }).catch((err) => console.warn("Failed to load personas:", err));
   }, []);
 
   const handleTabChange = (tabId: string) => {
@@ -179,6 +160,9 @@ export default function ChatPage() {
   const handleSkipConfiguration = () => {
     setShowModelPrompt(false);
   };
+
+  // Compute session_id from React state (not global)
+  const currentSessionId = activeTab === "all" ? "" : `${activeTab}::console--default`;
 
   const options = useMemo(() => {
     const handleModelError = () => {
@@ -219,11 +203,11 @@ export default function ChatPage() {
       const lastMessage = input[input.length - 1];
       const session = lastMessage?.session || {};
 
-      const session_id = window.currentSessionId || session?.session_id || "";
+      const session_id = currentSessionId || session?.session_id || "";
       const user_id = window.currentUserId || session?.user_id || "default";
       const channel = window.currentChannel || session?.channel || "console";
 
-      // Prepend @persona tag if a persona is selected
+      // Prepend @persona tag if a persona is selected via chip bar
       const processedInput = input.slice(-1).map((msg: any) => {
         if (selectedPersona && msg?.content) {
           const contents = Array.isArray(msg.content) ? msg.content : [msg.content];
@@ -285,6 +269,7 @@ export default function ChatPage() {
         ...optionsConfig?.sender,
         beforeUI: (
           <PersonaSelector
+            personas={personas}
             selected={selectedPersona}
             onSelect={setSelectedPersona}
           />
@@ -294,7 +279,7 @@ export default function ChatPage() {
         "weather search mock": Weather,
       },
     } as unknown as IAgentScopeRuntimeWebUIOptions;
-  }, [optionsConfig, selectedPersona]);
+  }, [optionsConfig, selectedPersona, activeTab, personas, currentSessionId]);
 
   return (
     <div style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
