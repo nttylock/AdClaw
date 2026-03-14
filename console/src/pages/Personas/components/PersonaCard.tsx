@@ -72,6 +72,42 @@ export function PersonaCard({
             </Tag>
           )}
         </div>
+
+        {persona.cron?.enabled && persona.cron.schedule && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: "6px 10px",
+              borderRadius: 8,
+              background: "rgba(248,250,252,0.8)",
+              border: "1px solid rgba(226,232,240,0.4)",
+              fontSize: 12,
+              color: "var(--citedy-slate-600)",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <span style={{ fontSize: 14 }}>⏰</span>
+            <code style={{ fontSize: 11, color: "var(--citedy-slate-500)" }}>
+              {persona.cron.schedule}
+            </code>
+            {persona.cron.prompt && (
+              <span
+                style={{
+                  marginLeft: 4,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  flex: 1,
+                }}
+              >
+                — {persona.cron.prompt.slice(0, 60)}
+                {persona.cron.prompt.length > 60 ? "…" : ""}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className={styles.cardFooter}>

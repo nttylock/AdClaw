@@ -26,11 +26,13 @@ import {
   ExternalLink,
   HeartPulse,
   Users,
+  LayoutDashboard,
 } from "lucide-react";
 
 const { Sider } = Layout;
 
 const keyToPath: Record<string, string> = {
+  dashboard: "/dashboard",
   chat: "/chat",
   channels: "/channels",
   sessions: "/sessions",
@@ -90,6 +92,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
       label: t("nav.chat"),
       icon: <MessageSquare size={16} />,
       children: [
+        {
+          key: "dashboard",
+          label: "Dashboard",
+          icon: <LayoutDashboard size={16} />,
+        },
         {
           key: "chat",
           label: t("nav.chat"),

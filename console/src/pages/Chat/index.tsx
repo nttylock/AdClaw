@@ -1,8 +1,8 @@
+import React, { useMemo, useState, useEffect } from "react";
 import {
   AgentScopeRuntimeWebUI,
   IAgentScopeRuntimeWebUIOptions,
 } from "@agentscope-ai/chat";
-import { useMemo, useState } from "react";
 import { Modal, Button, Result } from "antd";
 import { ExclamationCircleOutlined, SettingOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -11,9 +11,125 @@ import sessionApi from "./sessionApi";
 import { useLocalStorageState } from "ahooks";
 import defaultConfig, { DefaultConfig } from "./OptionsPanel/defaultConfig";
 import Weather from "./Weather";
+import PersonaSelector from "./PersonaSelector";
 import { getApiUrl, getApiToken } from "../../api/config";
 import { providerApi } from "../../api/modules/provider";
+import { personaApi } from "../../api/modules/persona";
+import type { Persona } from "../../api/types/persona";
 import "./index.module.less";
+
+const PERSONA_COLORS: Record<string, string> = {
+  coordinator: "#64748b",
+  researcher: "#3b82f6",
+  "content-writer": "#8b5cf6",
+  seo: "#06b6d4",
+  ads: "#f59e0b",
+  social: "#ec4899",
+};
+
+function getPersonaColor(persona: Persona): string {
+  if (persona.is_coordinator) return PERSONA_COLORS.coordinator;
+  const id = persona.id.toLowerCase();
+  for (const key of Object.keys(PERSONA_COLORS)) {
+    if (id.includes(key)) return PERSONA_COLORS[key];
+  }
+  return "#64748b";
+}
+
+interface PersonaTabsProps {
+  personas: Persona[];
+  activeTab: string;
+  onTabChange: (tabId: string) => void;
+}
+
+function PersonaTabs({ personas, activeTab, onTabChange }: PersonaTabsProps) {
+  const nonCoordinator = personas.filter((p) => !p.is_coordinator);
+
+  const containerStyle: React.CSSProperties = {
+    display: "flex",
+    gap: 0,
+    borderBottom: "1px solid rgba(226,232,240,0.6)",
+    padding: "0 24px",
+    flexShrink: 0,
+  };
+
+  const baseTabStyle: React.CSSProperties = {
+    padding: "10px 16px",
+    fontSize: 13,
+    fontWeight: 500,
+    cursor: "pointer",
+    color: "#64748b",
+    transition: "all 0.15s",
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    userSelect: "none",
+    background: "none",
+    border: "none",
+    borderBottom: "2px solid transparent",
+    outline: "none",
+  };
+
+  const allTabColor = "#64748b";
+  const isAllActive = activeTab === "all";
+
+  return (
+    <div style={containerStyle}>
+      {/* "All" tab */}
+      <button
+        style={{
+          ...baseTabStyle,
+          borderBottomColor: isAllActive ? allTabColor : "transparent",
+          color: isAllActive ? allTabColor : "#94a3b8",
+          fontWeight: isAllActive ? 600 : 500,
+        }}
+        onClick={() => onTabChange("all")}
+      >
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: allTabColor,
+            display: "inline-block",
+            flexShrink: 0,
+          }}
+        />
+        All
+      </button>
+
+      {/* Per-persona tabs */}
+      {nonCoordinator.map((persona) => {
+        const color = getPersonaColor(persona);
+        const isActive = activeTab === persona.id;
+        return (
+          <button
+            key={persona.id}
+            style={{
+              ...baseTabStyle,
+              borderBottomColor: isActive ? color : "transparent",
+              color: isActive ? color : "#94a3b8",
+              fontWeight: isActive ? 600 : 500,
+            }}
+            onClick={() => onTabChange(persona.id)}
+          >
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: color,
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
+            {persona.name}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 interface CustomWindow extends Window {
   currentSessionId?: string;
@@ -29,6 +145,9 @@ export default function ChatPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showModelPrompt, setShowModelPrompt] = useState(false);
+  const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [personas, setPersonas] = useState<Persona[]>([]);
   const [optionsConfig] = useLocalStorageState<OptionsConfig>(
     "agent-scope-runtime-webui-options",
     {
@@ -36,6 +155,21 @@ export default function ChatPage() {
       listenStorageChange: true,
     },
   );
+
+  useEffect(() => {
+    personaApi.listPersonas().then((list) => {
+      if (Array.isArray(list)) setPersonas(list);
+    }).catch(() => {/* silently ignore if personas not available */});
+  }, []);
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    if (tabId === "all") {
+      window.currentSessionId = "";
+    } else {
+      window.currentSessionId = `${tabId}::console--default`;
+    }
+  };
 
   const handleConfigureModel = () => {
     setShowModelPrompt(false);
@@ -89,8 +223,23 @@ export default function ChatPage() {
       const user_id = window.currentUserId || session?.user_id || "default";
       const channel = window.currentChannel || session?.channel || "console";
 
+      // Prepend @persona tag if a persona is selected
+      const processedInput = input.slice(-1).map((msg: any) => {
+        if (selectedPersona && msg?.content) {
+          const contents = Array.isArray(msg.content) ? msg.content : [msg.content];
+          const tagged = contents.map((c: any) => {
+            if (c?.type === "text" && c.text && !c.text.startsWith("@")) {
+              return { ...c, text: `@${selectedPersona} ${c.text}` };
+            }
+            return c;
+          });
+          return { ...msg, content: tagged };
+        }
+        return msg;
+      });
+
       const requestBody = {
-        input: input.slice(-1),
+        input: processedInput,
         session_id,
         user_id,
         channel,
@@ -132,15 +281,33 @@ export default function ChatPage() {
           console.log(data);
         },
       },
+      sender: {
+        ...optionsConfig?.sender,
+        beforeUI: (
+          <PersonaSelector
+            selected={selectedPersona}
+            onSelect={setSelectedPersona}
+          />
+        ),
+      },
       customToolRenderConfig: {
         "weather search mock": Weather,
       },
     } as unknown as IAgentScopeRuntimeWebUIOptions;
-  }, [optionsConfig]);
+  }, [optionsConfig, selectedPersona]);
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
-      <AgentScopeRuntimeWebUI options={options} />
+    <div style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
+      {personas.length > 0 && (
+        <PersonaTabs
+          personas={personas}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+      )}
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <AgentScopeRuntimeWebUI key={activeTab} options={options} />
+      </div>
 
       <Modal open={showModelPrompt} closable={false} footer={null} width={480}>
         <Result

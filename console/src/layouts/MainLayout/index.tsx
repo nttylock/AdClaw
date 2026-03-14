@@ -17,12 +17,14 @@ import ModelsPage from "../../pages/Settings/Models";
 import EnvironmentsPage from "../../pages/Settings/Environments";
 import DiagnosticsPage from "../../pages/Control/Diagnostics";
 import PersonasPage from "../../pages/Personas";
+import DashboardPage from "../../pages/Dashboard";
 import WelcomePage from "../../pages/Welcome";
 
 const { Content } = Layout;
 
 const pathToKey: Record<string, string> = {
   "/welcome": "welcome",
+  "/dashboard": "dashboard",
   "/chat": "chat",
   "/channels": "channels",
   "/sessions": "sessions",
@@ -71,6 +73,7 @@ export default function MainLayout() {
           <ConsoleCronBubble />
           <div className="page-content">
             <Routes>
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/channels" element={<ChannelsPage />} />
               <Route path="/sessions" element={<SessionsPage />} />
