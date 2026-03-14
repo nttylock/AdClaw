@@ -741,7 +741,7 @@ chmod +x scripts/test_mission_control_live.py
 
 - [ ] **Step 3: Run against live instance**
 
-Run: `python3 scripts/test_mission_control_live.py --base-url http://188.166.47.214:8088`
+Run: `python3 scripts/test_mission_control_live.py --base-url http://localhost:8088`
 Expected: Phases 0, 1, 3, 4, 5, 6 pass. Phase 2 may warn if LLM is slow.
 
 - [ ] **Step 4: Commit**
@@ -765,7 +765,7 @@ Expected: All 329+ tests PASS.
 
 - [ ] **Step 3: Run live E2E**
 
-Run: `python3 scripts/test_mission_control_live.py --base-url http://188.166.47.214:8088`
+Run: `python3 scripts/test_mission_control_live.py --base-url http://localhost:8088`
 Expected: All phases pass.
 
 - [ ] **Step 4: Final commit**

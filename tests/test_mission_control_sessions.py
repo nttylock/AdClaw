@@ -15,7 +15,7 @@ class TestSessionIsolation:
         sessions_dir = tmp_path / "sessions"
         sessions_dir.mkdir()
 
-        user = "42286890"
+        user = "123456789"
         personas = ["coordinator", "researcher", "content-writer"]
 
         for pid in personas:

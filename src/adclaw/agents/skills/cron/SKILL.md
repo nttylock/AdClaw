@@ -4,93 +4,93 @@ description: Manage scheduled cron jobs via the adclaw CLI — create, list, pau
 metadata: { "adclaw": { "emoji": "⏰" } }
 ---
 
-# 定时任务管理
+# Scheduled Task Management
 
-使用 `adclaw cron` 命令管理定时任务。
+Use the `adclaw cron` command to manage scheduled tasks.
 
-## 常用命令
+## Common Commands
 
 ```bash
-# 列出所有任务
+# List all tasks
 adclaw cron list
 
-# 查看任务详情
+# View task details
 adclaw cron get <job_id>
 
-# 查看任务状态
+# View task status
 adclaw cron state <job_id>
 
-# 删除任务
+# Delete a task
 adclaw cron delete <job_id>
 
-# 暂停/恢复任务
+# Pause / Resume a task
 adclaw cron pause <job_id>
 adclaw cron resume <job_id>
 
-# 立即执行一次
+# Run a task immediately (one-time execution)
 adclaw cron run <job_id>
 ```
 
-## 创建任务
+## Creating Tasks
 
-支持两种任务类型：
-- **text**：定时向频道发送固定消息
-- **agent**：定时向 Agent 提问并发送回复到频道
+Two task types are supported:
+- **text**: Send a fixed message to a channel on a schedule
+- **agent**: Ask the Agent a question on a schedule and send the reply to a channel
 
-### 快速创建
+### Quick Create
 
 ```bash
-# 每天 9:00 发送文本消息
+# Send a text message every day at 9:00
 adclaw cron create \
   --type text \
-  --name "每日早安" \
+  --name "Daily Good Morning" \
   --cron "0 9 * * *" \
   --channel imessage \
   --target-user "CHANGEME" \
   --target-session "CHANGEME" \
-  --text "早上好！"
+  --text "Good morning!"
 
-# 每 2 小时向 Agent 提问
+# Ask the Agent a question every 2 hours
 adclaw cron create \
   --type agent \
-  --name "检查待办" \
+  --name "Check To-Dos" \
   --cron "0 */2 * * *" \
   --channel dingtalk \
   --target-user "CHANGEME" \
   --target-session "CHANGEME" \
-  --text "我有什么待办事项？"
+  --text "What are my pending to-do items?"
 ```
 
-### 必填参数
+### Required Parameters
 
-创建任务需要：
-- `--type`：任务类型（text 或 agent）
-- `--name`：任务名称
-- `--cron`：cron 表达式（如 `"0 9 * * *"` 表示每天 9:00）
-- `--channel`：目标频道（imessage / discord / dingtalk / qq / console）
-- `--target-user`：用户标识
-- `--target-session`：会话标识
-- `--text`：消息内容（text 类型）或提问内容（agent 类型）
+Creating a task requires:
+- `--type`: Task type (text or agent)
+- `--name`: Task name
+- `--cron`: Cron expression (e.g., `"0 9 * * *"` means every day at 9:00)
+- `--channel`: Target channel (imessage / discord / dingtalk / qq / console)
+- `--target-user`: User identifier
+- `--target-session`: Session identifier
+- `--text`: Message content (for text type) or question content (for agent type)
 
-### 从 JSON 创建（复杂配置）
+### Create from JSON (Advanced Configuration)
 
 ```bash
 adclaw cron create -f job_spec.json
 ```
 
-## Cron 表达式示例
+## Cron Expression Examples
 
 ```
-0 9 * * *      # 每天 9:00
-0 */2 * * *    # 每 2 小时
-30 8 * * 1-5   # 工作日 8:30
-0 0 * * 0      # 每周日零点
-*/15 * * * *   # 每 15 分钟
+0 9 * * *      # Every day at 9:00
+0 */2 * * *    # Every 2 hours
+30 8 * * 1-5   # Weekdays at 8:30
+0 0 * * 0      # Every Sunday at midnight
+*/15 * * * *   # Every 15 minutes
 ```
 
-## 使用建议
+## Usage Tips
 
-- 缺少参数时，询问用户补充后再创建
-- 暂停/删除/恢复前，用 `adclaw cron list` 查找 job_id
-- 排查问题时，用 `adclaw cron state <job_id>` 查看状态
-- 给用户的命令要完整、可直接复制执行
+- If required parameters are missing, ask the user to provide them before creating the task
+- Before pausing, deleting, or resuming a task, use `adclaw cron list` to find the job_id
+- When troubleshooting, use `adclaw cron state <job_id>` to check the task status
+- Commands shown to the user should be complete and ready to copy-paste

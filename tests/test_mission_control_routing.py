@@ -62,7 +62,7 @@ class TestSessionScoping:
 
     def test_telegram_session_format(self):
         """Telegram sessions: persona_id::telegram--chat_id"""
-        session = "researcher::telegram--42286890"
+        session = "researcher::telegram--123456789"
         assert session.startswith("researcher::")
 
 

@@ -10,7 +10,7 @@ def test_sanitize_qq_text_replaces_http_and_https_urls() -> None:
     assert had_url is True
     assert "http://" not in sanitized
     assert "https://" not in sanitized
-    assert sanitized.count("[链接已省略]") == 2
+    assert sanitized.count("[link omitted]") == 2
 
 
 def test_sanitize_qq_text_keeps_plain_text_unchanged() -> None:

@@ -11,66 +11,66 @@ metadata:
   }
 ---
 
-# 钉钉 Channel 自动连接（可视浏览器）
+# DingTalk Channel Auto-Connect (Visible Browser)
 
-此 skill 用于通过可视浏览器自动化完成钉钉应用创建与 AdClaw channel 绑定。
+This skill automates DingTalk app creation and AdClaw channel binding using a visible browser.
 
-## 强制规则
+## Mandatory Rules
 
-1. 必须使用可视浏览器模式启动：
+1. Must launch the browser in visible mode:
 
 ```json
 {"action": "start", "headed": true}
 ```
 
-2. 遇到登录关卡必须暂停：
-   - 若页面出现登录界面（如 `登录`、扫码登录、手机号/密码登录），立即停止自动操作。
-   - 明确提示用户先手动登录，再等待用户回复“登录好了/继续”。
-   - 未收到用户确认前，不得继续执行后续步骤。
+2. Must pause at login gates:
+   - If the page shows a login screen (e.g., login form, QR code login, phone/password login), stop all automated actions immediately.
+   - Clearly instruct the user to log in manually first, then wait for the user to reply "logged in" or "continue".
+   - Do not proceed with subsequent steps until the user confirms.
 
-3. 任何应用配置变更都必须新建版本并发布后才生效：
-   - 配置完机器人相关信息后**一定要发布机器人**
-   - 不论是新建应用还是修改应用信息（名称、描述、图标、机器人配置等），最终都**必须执行“创建新版本 + 发布”**。
-   - 若未完成发布，不得宣称配置已生效。
+3. Any app configuration change requires creating a new version and publishing before it takes effect:
+   - After configuring bot-related settings, **you must publish the bot**.
+   - Whether creating a new app or modifying app info (name, description, icon, bot config, etc.), you **must create a new version and publish**.
+   - Do not claim the configuration is active until publishing is complete.
 
-## 执行前显著确认（必须先做）
+## Pre-Execution Confirmation (Must Do First)
 
-在开始自动化点击前，先向用户发起一次“配置确认”，明确告知可自定义项、图片规范、默认值。建议使用如下结构化确认：
+Before starting automated clicks, send the user a "configuration confirmation" that clearly states customizable fields, image specifications, and default values. Use the following structured confirmation:
 
-1. 让用户可自定义以下字段：
-   - 应用名称
-   - 应用描述
-   - 机器人图标图片链接或本地路径
-   - 机器人消息预览图链接或本地路径
+1. Let the user customize the following fields:
+   - App name
+   - App description
+   - Bot icon image URL or local path
+   - Bot message preview image URL or local path
 
-2. 明确告知图片规范（显著提示）：
-   - 机器人图标：仅支持 JPG/PNG，`240*240px` 以上，`1:1`，`2MB` 以内，无圆角。
-   - 机器人消息预览图：格式 `png/jpeg/jpg`，不超过 `2MB`。
+2. Clearly state image specifications (prominently):
+   - Bot icon: JPG/PNG only, `240x240px` minimum, `1:1` aspect ratio, under `2MB`, no rounded corners.
+   - Bot message preview image: `png/jpeg/jpg` format, under `2MB`.
 
-3. 明确告知默认值（用户不指定时自动采用）：
-   - 应用名称：`AdClaw`
-   - 应用描述：`Your personal assistant`
-   - 机器人图标：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
-   - 机器人消息预览图：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+3. Clearly state default values (used automatically if the user does not specify):
+   - App name: `AdClaw`
+   - App description: `Your personal assistant`
+   - Bot icon: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+   - Bot message preview image: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
 
-4. 若用户未给任何自定义值，必须先明确回复：
-   - “将全部采用默认设置（AdClaw / Your personal assistant / 默认图片）后继续执行。”
+4. If the user provides no custom values, you must explicitly reply:
+   - "Proceeding with all default settings (AdClaw / Your personal assistant / default images)."
 
-## 图片上传策略（link/path 都支持）
+## Image Upload Strategy (Both Links and Paths Supported)
 
-1. 若用户提供本地路径，直接用于上传。
-2. 若用户提供图片 link，先下载到本地临时文件，再执行上传。
-3. 上传动作顺序必须是：
-   - 先点击页面上传入口（触发 chooser）
-   - 再调用 `file_upload` 传入本地路径数组（`paths_json`）
-4. 若上传报错且判断为图片规格不符合（尺寸、比例、大小、格式）：
-   - 立即暂停自动化
-   - 明确让用户手动上传符合规范的图片
-   - 用户确认“已上传/继续”后，从当前步骤继续后续流程
+1. If the user provides a local path, use it directly for upload.
+2. If the user provides an image link, download it to a local temporary file first, then upload.
+3. The upload action sequence must be:
+   - Click the upload entry point on the page (to trigger the file chooser)
+   - Then call `file_upload` with the local path array (`paths_json`)
+4. If an upload error occurs due to image specification mismatch (dimensions, aspect ratio, file size, format):
+   - Pause automation immediately
+   - Clearly ask the user to manually upload a compliant image
+   - After the user confirms "uploaded" or "continue", resume the workflow from the current step
 
-### 上传动作实战经验
+### Upload Practical Tips
 
-1. `file_upload` 的 `paths_json` 必须是“JSON 字符串数组”，注意转义：
+1. The `paths_json` parameter of `file_upload` must be a "JSON string array" — note the escaping:
 
 ```json
 {
@@ -80,106 +80,106 @@ metadata:
 }
 ```
 
-2. 若页面在 iframe 内，建议优先带上 `frame_selector`，否则可能出现找不到上传控件或 chooser 未触发。
+2. If the page content is inside an iframe, always include `frame_selector` — otherwise the upload control or file chooser may not be found.
 
-3. 上传前必须先点击上传入口；若直接 `file_upload` 会报：
+3. You must click the upload entry point before calling `file_upload`. Calling it directly will result in:
    - `No chooser. Click upload then file_upload.`
 
-4. 机器人图标区域的常见结构特征可用于定位（示例）：
-   - `text: "* 机器人图标"`
-   - `button: "使用应用图标"`
-   - `button: "avatar"`（通常内部有 `img "avatar"`）
+4. Common structural features of the bot icon area that can be used for locating elements (examples):
+   - `text: "* Bot Icon"`
+   - `button: "Use App Icon"`
+   - `button: "avatar"` (usually contains an `img "avatar"` inside)
 
-5. 当 snapshot 中同时出现“使用应用图标”和“avatar”时，优先点击 `avatar` 按钮触发上传，再执行 `file_upload`。
+5. When the snapshot shows both "Use App Icon" and "avatar", prefer clicking the `avatar` button to trigger the upload, then call `file_upload`.
 
-## 自动化流程
+## Automation Workflow
 
-### 步骤 1：打开钉钉开发者后台
+### Step 1: Open the DingTalk Developer Console
 
-1. 可视模式启动浏览器（`headed: true`）
-2. 打开 `https://open-dev.dingtalk.com/`
-3. 调用 `snapshot` 判断是否需要登录
+1. Launch the browser in visible mode (`headed: true`)
+2. Navigate to `https://open-dev.dingtalk.com/`
+3. Call `snapshot` to check if login is required
 
-若需要登录，使用如下话术暂停：
+If login is required, pause with the following message:
 
-> 检测到需要登录钉钉开发者后台。我已暂停自动操作，请先在弹出的浏览器中完成登录。完成后回复“继续”，我再从当前页面接着执行。
+> Login to the DingTalk Developer Console is required. I have paused automation — please log in using the browser window that appeared. Once done, reply "continue" and I will resume from the current page.
 
-### 步骤 2：创建企业内部应用
+### Step 2: Create an Internal Enterprise App
 
-用户确认登录后继续：
+After the user confirms login, continue:
 
-1. 进入创建路径：
-   - 应用开发 -> 企业内部应用 -> 钉钉应用 -> 创建应用
-2. 填写应用信息（优先使用用户自定义，否则使用默认值）：
-   - 应用名称：默认 `AdClaw`
-   - 应用描述：默认 `Your personal assistant`
-3. 保存并创建应用
+1. Navigate to the creation path:
+   - App Development -> Internal Enterprise Apps -> DingTalk Apps -> Create App
+2. Fill in the app information (use user-provided values first, otherwise use defaults):
+   - App name: default `AdClaw`
+   - App description: default `Your personal assistant`
+3. Save and create the app
 
-若页面文案或结构与预期不一致，重新 `snapshot`，按可见文本语义重新定位元素。
+If the page layout or text differs from expectations, re-run `snapshot` and locate elements based on visible text semantics.
 
-### 步骤 3：添加机器人能力并发布
+### Step 3: Add Bot Capability and Publish
 
-1. 点击**应用能力**中的**添加应用能力**，找到**机器人**并添加
-2. 将**机器人配置**右侧的switch按钮切换为打开
-3. 填写**机器人名称**，**机器人简介**和**机器人描述**
-4. 上传**机器人图标**（用户自定义或默认图）：
-   - 点击机器人图标下面的图片
-   - 默认图链接：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
-   - 若为 link，先下载到本地再上传
-   - 若提示图片不合规，暂停并让用户手动上传合规图片后继续
-5. 上传**机器人消息预览图**（用户自定义或默认图）：
-   - 点击机器人消息预览图下面的图片
-   - 默认图链接：`https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
-   - 若为 link，先下载到本地再上传
-   - 若提示图片不合规，暂停并让用户手动上传合规图片后继续
-6. 确认消息接收模式设置为 `Stream 模式`
-7. 选择**发布**，此时会有进一步弹出的确认页面，选择发布。注意：**一定要发布机器人**之后再进行下一步
+1. Click **Add App Capability** under **App Capabilities**, find **Bot**, and add it
+2. Toggle the switch button next to **Bot Configuration** to enabled
+3. Fill in **Bot Name**, **Bot Summary**, and **Bot Description**
+4. Upload the **Bot Icon** (user-provided or default):
+   - Click the image below the bot icon label
+   - Default image URL: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+   - If a link is provided, download it locally first, then upload
+   - If the image is rejected as non-compliant, pause and ask the user to manually upload a compliant image before continuing
+5. Upload the **Bot Message Preview Image** (user-provided or default):
+   - Click the image below the bot message preview image label
+   - Default image URL: `https://img.alicdn.com/imgextra/i4/O1CN01M0iyHF1FVNzM9qjC0_!!6000000000492-2-tps-254-254.png`
+   - If a link is provided, download it locally first, then upload
+   - If the image is rejected as non-compliant, pause and ask the user to manually upload a compliant image before continuing
+6. Confirm the message receiving mode is set to `Stream Mode`
+7. Select **Publish** — a confirmation dialog will appear, confirm the publish. Note: **You must publish the bot** before proceeding to the next step
 
-### 步骤 4：创建版本并发布
+### Step 4: Create a Version and Publish
 
-1. 打开 `应用发布 -> 版本管理与发布`
-2. 创建新版本（每次配置变更后都要创建）
-3. 填写版本描述，应用可见范围选择全部员工
-4. 按页面提示完成发布，此时会有新的弹窗出现，选择确认发布
-5. 只有看到发布成功状态，才可继续执行后续步骤/给用户“已生效”结论
+1. Go to `App Publishing -> Version Management & Publishing`
+2. Create a new version (required after every configuration change)
+3. Fill in the version description, set app visibility to all employees
+4. Follow the on-screen prompts to complete publishing — a new dialog will appear, confirm the publish
+5. Only after seeing a successful publish status may you proceed to subsequent steps or tell the user the configuration is active
 
-### 步骤 5：获取凭证
+### Step 5: Retrieve Credentials
 
-1. 打开 `基础信息 -> 凭证与基础信息`
-2. 告知用户`Client ID`（AppKey）和`Client Secret`（AppSecret）在该页面上。不主动进行修改，引导用户自行绑定
+1. Go to `Basic Information -> Credentials & Basic Info`
+2. Inform the user that the `Client ID` (AppKey) and `Client Secret` (AppSecret) are on this page. Do not modify them proactively — guide the user to bind them on their own
 
-## AdClaw 绑定方式
+## AdClaw Binding Methods
 
-拿到凭证后，引导用户选择以下任一方式：
+After obtaining the credentials, guide the user to choose one of the following methods:
 
-1. 控制台前端配置：
-   - AdClaw console 中进入 `控制 -> 频道 -> DingTalk`
-   - 填入 `Client ID` 与 `Client Secret`
+1. Console UI configuration:
+   - In the AdClaw console, go to `Settings -> Channels -> DingTalk`
+   - Enter the `Client ID` and `Client Secret`
 
-2. 配置文件方式：
+2. Configuration file method:
 
 ```json
 "dingtalk": {
   "enabled": true,
   "bot_prefix": "[BOT]",
-  "client_id": "你的 Client ID",
-  "client_secret": "你的 Client Secret"
+  "client_id": "Your Client ID",
+  "client_secret": "Your Client Secret"
 }
 ```
 
-路径：`~/.adclaw/config.json`，位于 `channels.dingtalk` 下。
+Path: `~/.adclaw/config.json`, under `channels.dingtalk`.
 
-### 凭证交付要求（强制）
+### Credential Delivery Requirements (Mandatory)
 
-1. agent 只负责引导用户进入凭证页、获取并展示 `Client ID` 与真实 `Client Secret`。
-2. agent 不主动改 `console` 配置、不主动改 `~/.adclaw/config.json`。
-3. 必须提示用户按以下两种方式之一手动填写：
-   - 控制台前端：`控制 -> 频道 -> DingTalk`
-   - 配置文件：编辑 `~/.adclaw/config.json` 的 `channels.dingtalk` 字段
+1. The agent is only responsible for guiding the user to the credentials page and displaying the `Client ID` and actual `Client Secret`.
+2. The agent must not proactively modify the `console` configuration or `~/.adclaw/config.json`.
+3. The agent must instruct the user to fill in the credentials manually using one of these two methods:
+   - Console UI: `Settings -> Channels -> DingTalk`
+   - Configuration file: edit the `channels.dingtalk` section in `~/.adclaw/config.json`
 
-## Browser 工具调用模式
+## Browser Tool Call Pattern
 
-默认按以下顺序执行：
+Follow this default sequence:
 
 1. `start` with `headed: true`
 2. `open`
@@ -188,9 +188,9 @@ metadata:
 5. frequent `snapshot` after page transitions
 6. `stop` when done
 
-## 稳定性与恢复策略
+## Stability and Recovery Strategy
 
-- 优先使用最新 `snapshot` 的 `ref`；仅在必要时使用 `selector`。
-- 每次关键点击或跳转后，使用短等待（`wait_for`）并立即重新 `snapshot`。
-- 若中途会话失效或要求重新登录，必须再次暂停，待用户登录后从当前步骤继续。
-- 若因租户权限、管理员审批等阻塞自动化，明确说明卡点，并请用户手动完成该步骤后再续跑。
+- Prefer using `ref` from the latest `snapshot`; only use `selector` when necessary.
+- After each critical click or navigation, use a short wait (`wait_for`) and immediately re-run `snapshot`.
+- If the session expires or re-login is required mid-process, pause again and wait for the user to log in before resuming from the current step.
+- If automation is blocked by tenant permissions, admin approval, or similar issues, clearly explain the blocker and ask the user to complete that step manually before continuing.

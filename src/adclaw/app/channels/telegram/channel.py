@@ -314,7 +314,7 @@ class TelegramChannel(BaseChannel):
             meta = _message_meta(update)
             chat_id = meta.get("chat_id", "")
 
-            # Strip @botname from commands (e.g. /skills@tonepen_bot → /skills)
+            # Strip @botname from commands (e.g. /skills@your_bot → /skills)
             text = raw_text.split("@")[0] if raw_text.startswith("/") else raw_text
 
             if text in _MENU_BUTTONS or text in _DIRECT_COMMANDS:
