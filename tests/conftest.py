@@ -6,6 +6,7 @@ import pytest
 from adclaw.memory_agent.embeddings import FakeEmbeddingPipeline
 from adclaw.memory_agent.models import AOMConfig
 from adclaw.memory_agent.store import MemoryStore
+from adclaw.config.config import PersonaConfig, Config, AgentsConfig
 
 
 @pytest.fixture
@@ -48,3 +49,26 @@ def aom_config():
         embedding_dimensions=32,
         importance_threshold=0.3,
     )
+
+
+@pytest.fixture
+def sample_personas():
+    """Three personas: coordinator + researcher + writer."""
+    return [
+        PersonaConfig(id="coordinator", name="Coordinator", is_coordinator=True, soul_md="## Role\nOrchestrate the team."),
+        PersonaConfig(id="researcher", name="Mike", soul_md="## Role\nResearch and analyze."),
+        PersonaConfig(id="content-writer", name="Mira", soul_md="## Role\nWrite content."),
+    ]
+
+@pytest.fixture
+def persona_manager(sample_personas, tmp_path):
+    """PersonaManager with 3 personas and temp working dir."""
+    from adclaw.agents.persona_manager import PersonaManager
+    mgr = PersonaManager(working_dir=str(tmp_path), personas=sample_personas)
+    mgr.ensure_dirs()
+    return mgr
+
+@pytest.fixture
+def config_with_personas(sample_personas):
+    """Config object with 3 personas."""
+    return Config(agents=AgentsConfig(personas=sample_personas))
