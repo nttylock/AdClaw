@@ -201,15 +201,15 @@ class AgentRunner(Runner):
                 ):
                     yield msg, last
             except Exception as first_err:
-                # If LLM rejected the request (often due to stale session
-                # content), clear conversation history and retry once.
+                # Only retry on specific LLM rejection errors (BadRequestError
+                # from openai SDK), not on arbitrary 400s or other exceptions.
+                from openai import BadRequestError as _OAIBadRequest
+
+                if not isinstance(first_err, _OAIBadRequest):
+                    raise
+
                 err_str = str(first_err).lower()
-                is_retryable = (
-                    "badrequest" in type(first_err).__name__.lower()
-                    or "invalid_parameter" in err_str
-                    or "400" in err_str[:30]
-                )
-                if not is_retryable:
+                if "invalid_parameter" not in err_str:
                     raise
 
                 logger.warning(
@@ -226,6 +226,15 @@ class AgentRunner(Runner):
                     agent.memory, "content"
                 ):
                     agent.memory.content.clear()
+
+                # Notify user that session was reset
+                from agentscope.message import Msg
+                reset_msg = Msg(
+                    name="system",
+                    role="assistant",
+                    content="⚠️ Session history was cleared due to a provider error. Continuing with fresh context.",
+                )
+                yield reset_msg, False
 
                 # Retry with clean context
                 async for msg, last in stream_printing_messages(

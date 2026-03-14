@@ -1,35 +1,17 @@
-import { useEffect, useState } from "react";
 import type { Persona } from "../../api/types";
-import { personaApi } from "../../api/modules/persona";
+import { getPersonaColor } from "./personaColors";
 
 interface PersonaSelectorProps {
+  personas: Persona[];
   selected: string | null;
   onSelect: (personaId: string | null) => void;
 }
 
-const PERSONA_COLORS: Record<string, string> = {
-  coordinator: "#64748b",
-  researcher: "#3b82f6",
-  "content-writer": "#8b5cf6",
-  "seo-specialist": "#06b6d4",
-  "ads-manager": "#f59e0b",
-  "social-media": "#ec4899",
-};
-
-function getColor(id: string): string {
-  return PERSONA_COLORS[id] || "#64748b";
-}
-
 export default function PersonaSelector({
+  personas,
   selected,
   onSelect,
 }: PersonaSelectorProps) {
-  const [personas, setPersonas] = useState<Persona[]>([]);
-
-  useEffect(() => {
-    personaApi.listPersonas().then(setPersonas).catch(() => {});
-  }, []);
-
   if (personas.length <= 1) return null;
 
   return (
@@ -54,7 +36,7 @@ export default function PersonaSelector({
       </span>
       {personas.map((p) => {
         const isActive = selected === p.id;
-        const color = getColor(p.id);
+        const color = getPersonaColor(p);
         return (
           <button
             key={p.id}
